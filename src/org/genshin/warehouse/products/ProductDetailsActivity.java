@@ -3,6 +3,7 @@ package org.genshin.warehouse.products;
 import org.genshin.gsa.ScanSystem;
 import org.genshin.spree.SpreeConnector;
 import org.genshin.warehouse.R;
+import org.genshin.warehouse.WarehouseActivity;
 import org.genshin.warehouse.Warehouse.ResultCodes;
 import org.genshin.warehouse.products.ProductEditActivity;
 
@@ -11,6 +12,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -148,5 +150,14 @@ public class ProductDetailsActivity extends Activity {
             }
         }
     }
-
+	
+	@Override
+	public boolean onKeyLongPress(int keyCode, KeyEvent event) {
+	    if (keyCode == KeyEvent.KEYCODE_BACK) 
+	    {
+	    	startActivity(new Intent(this, WarehouseActivity.class));
+	        return true;
+	    }
+	    return super.onKeyLongPress(keyCode, event);
+	}
 }

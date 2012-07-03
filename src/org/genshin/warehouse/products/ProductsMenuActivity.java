@@ -430,11 +430,9 @@ public class ProductsMenuActivity extends Activity {
 	public boolean onKeyLongPress(int keyCode, KeyEvent event) {
 	    if (keyCode == KeyEvent.KEYCODE_BACK) 
 	    {
-	    	Toast.makeText(this, "テスト", Toast.LENGTH_LONG).show();
+	    	startActivity(new Intent(this, WarehouseActivity.class));
 	        return true;
 	    }
 	    return super.onKeyLongPress(keyCode, event);
 	}
-
-
 }
