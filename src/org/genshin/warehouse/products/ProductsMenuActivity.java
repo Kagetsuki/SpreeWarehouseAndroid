@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import org.genshin.gsa.ScanSystem;
 import org.genshin.warehouse.R;
 import org.genshin.warehouse.Warehouse;
+import org.genshin.warehouse.WarehouseActivity;
 import org.genshin.warehouse.Warehouse.ResultCodes;
 import org.genshin.warehouse.products.ProductDetailsActivity;
 
@@ -15,6 +16,7 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -423,5 +425,16 @@ public class ProductsMenuActivity extends Activity {
 		
 	}
 	*/
+	
+	@Override
+	public boolean onKeyLongPress(int keyCode, KeyEvent event) {
+	    if (keyCode == KeyEvent.KEYCODE_BACK) 
+	    {
+	    	Toast.makeText(this, "テスト", Toast.LENGTH_LONG).show();
+	        return true;
+	    }
+	    return super.onKeyLongPress(keyCode, event);
+	}
+
 
 }
