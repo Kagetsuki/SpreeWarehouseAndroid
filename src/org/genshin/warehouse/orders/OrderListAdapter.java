@@ -65,7 +65,6 @@ public class OrderListAdapter extends ArrayAdapter<OrderListItem> {
 		//	paymentState.setImageResource(android.R.drawable.presence_away);
 		else
 			paymentState.setImageResource(android.R.drawable.presence_invisible);
-		Log.v("test", "" + data[position].paymentState);
 			
 		ImageView pickingState = 
 					(ImageView) convertView.findViewById(R.id.picking_status_icon);
