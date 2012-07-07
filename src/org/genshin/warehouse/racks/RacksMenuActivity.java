@@ -140,6 +140,8 @@ public class RacksMenuActivity extends Activity {
 		});
         
         if (adapter.getGroupCount() == 0) {
+        	finish();
+        	/*
         	LinearLayout layout = new LinearLayout(this);
         	setContentView(layout);
         	TextView textView = new TextView(this);
@@ -148,6 +150,7 @@ public class RacksMenuActivity extends Activity {
         			LinearLayout.LayoutParams.WRAP_CONTENT,
         			LinearLayout.LayoutParams.WRAP_CONTENT));
         	layout.addView(textView);
+        	*/
         }
     }
 
@@ -160,6 +163,13 @@ public class RacksMenuActivity extends Activity {
         Warehouse.Warehouses();
         
 		hookupInterface();
+	}
+	
+	@Override
+	public void onDestroy() {
+		Log.v("test", "FFF");
+		super.onDestroy();
+		finish();
 	}
 
 }
