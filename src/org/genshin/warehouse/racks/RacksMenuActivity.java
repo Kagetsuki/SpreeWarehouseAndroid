@@ -1,34 +1,23 @@
 package org.genshin.warehouse.racks;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 
-import org.genshin.spree.SpreeConnector;
 import org.genshin.warehouse.R;
 import org.genshin.warehouse.Warehouse;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ExpandableListAdapter;
 import android.widget.ExpandableListView;
 import android.widget.ExpandableListView.OnChildClickListener;
-import android.widget.LinearLayout;
-import android.widget.ListAdapter;
-import android.widget.ListView;
 import android.widget.SimpleExpandableListAdapter;
 import android.widget.TextView;
 
 public class RacksMenuActivity extends Activity {
-	private TextView racksRoot;
 	private ExpandableListView racksRootList;
 
     private ExpandableListAdapter adapter;
@@ -46,7 +35,7 @@ public class RacksMenuActivity extends Activity {
 		if (select != null)
 			selectRack.setText(select);
 		else
-			selectRack.setText("ROOT");
+			selectRack.setText("/");
 		String selectId = intent.getStringExtra("ID");
 
         WarehouseDivisions warehouses = Warehouse.Warehouses();
@@ -80,19 +69,14 @@ public class RacksMenuActivity extends Activity {
 					warehouseDivisionMap.put("warehouse", selectContainer.list.get(i).name);
 					
 					ArrayList<HashMap<String, Object>> taxonomyNodeList = new ArrayList<HashMap<String, Object>>();
-					/*
 					for (int j = 0; j < warehouses.divisions.get(i).containers.size(); j++) {
 						HashMap<String, Object> taxonomyNode = new HashMap<String, Object>();
 						taxonomyNode.put("warehouse", warehouses.divisions.get(i).name);
 						taxonomyNode.put("taxonomyName", warehouses.divisions.get(i).containers.get(j).name);
 						taxonomyNode.put("id", "" + warehouses.divisions.get(i).containers.get(j).id);
 						taxonomyNodeList.add(taxonomyNode);
+						
 					}
-					*/
-					HashMap<String, Object> taxonomyNode = new HashMap<String, Object>();
-					taxonomyNode.put("warehouse", selectContainer.list.get(i).name);
-					taxonomyNode.put("taxonomyName", "詳細を表示");
-					taxonomyNodeList.add(taxonomyNode);
 					containerTaxonomyNodes.add(taxonomyNodeList);
 					warehouseRoots.add(warehouseDivisionMap);
 				}
@@ -113,7 +97,6 @@ public class RacksMenuActivity extends Activity {
         racksRootList.setAdapter(adapter); 
         
         racksRootList.setOnChildClickListener(new OnChildClickListener() {
-			
 			public boolean onChildClick(ExpandableListView parent, View v,
 					int groupPosition, int childPosition, long id) {
 				// TODO 自動生成されたメソッド・スタブ
@@ -140,7 +123,7 @@ public class RacksMenuActivity extends Activity {
 		});
         
         if (adapter.getGroupCount() == 0) {
-        	finish();
+        	finishActivity(Warehouse.ResultCodes.CONTAINER_SELECT.ordinal());
         	/*
         	LinearLayout layout = new LinearLayout(this);
         	setContentView(layout);
