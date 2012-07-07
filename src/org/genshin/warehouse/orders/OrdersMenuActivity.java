@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import org.genshin.spree.SpreeConnector;
 import org.genshin.warehouse.R;
 import org.genshin.warehouse.Warehouse;
+import org.genshin.warehouse.WarehouseActivity;
 import org.genshin.warehouse.Warehouse.ResultCodes;
 import org.genshin.warehouse.orders.Order;
 //import org.genshin.warehouse.orders.OrderDetailsActivity;
@@ -25,6 +26,7 @@ import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -249,6 +251,16 @@ public class OrdersMenuActivity extends Activity {
 		}
 		
 		OrdersMenuActivity.selectedOrder = selectedOrder;
+	}
+	
+	@Override
+	public boolean onKeyLongPress(int keyCode, KeyEvent event) {
+	    if (keyCode == KeyEvent.KEYCODE_BACK) 
+	    {
+	    	startActivity(new Intent(this, WarehouseActivity.class));
+	        return true;
+	    }
+	    return super.onKeyLongPress(keyCode, event);
 	}
 	
 	
