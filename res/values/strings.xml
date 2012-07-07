@@ -109,6 +109,7 @@
 	<string name="deleting">Deleting</string>
 	<string name="ordernumber_dummy">R000000000</string>
 	<string name="customer_name_dummy">Spree Customer</string>
+	<string name="three_zero">000</string>
 	
 	
 </resources>

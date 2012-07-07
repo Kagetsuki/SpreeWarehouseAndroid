@@ -30,7 +30,8 @@
         android:layout_alignBottom="@+id/products_list_item_image"
         android:layout_toRightOf="@+id/products_list_item_image"
         android:text="@string/sku"
-        android:textAppearance="?android:attr/textAppearanceSmall" />
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textColor="@color/shikonn" />
 
     <TextView
         android:id="@+id/products_list_item_count"
@@ -40,7 +41,8 @@
         android:layout_alignParentRight="true"
         android:layout_marginRight="16dp"
         android:text="@string/zero"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textColor="@color/konnpeki" />
 
     <TextView
         android:id="@+id/products_list_item_price"
@@ -48,6 +50,8 @@
         android:layout_height="wrap_content"
         android:layout_alignBottom="@+id/products_list_item_name"
         android:layout_alignRight="@+id/products_list_item_count"
-        android:text="TextView" />
+        android:text="TextView"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textColor="@color/tokiwairo" />
 
 </RelativeLayout>

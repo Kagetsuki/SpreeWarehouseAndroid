@@ -5,4 +5,7 @@
     <color name="white">#FFFFFF</color>
     <color name="black">#000000</color>
     <color name="lightblue">#99FFFF</color>
+    <color name="konnpeki">#007bbb</color>
+    <color name="tokiwairo">#007b43</color>
+    <color name="shikonn">#460e44</color>
 </resources>
