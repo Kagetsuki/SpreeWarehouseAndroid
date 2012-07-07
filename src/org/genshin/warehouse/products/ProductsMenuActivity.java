@@ -34,7 +34,6 @@ public class ProductsMenuActivity extends Activity {
 	
 	private ProductListAdapter productsAdapter;
 	
-	public static enum ProductsMenuModeCodes { NORMAL, PRODUCT_SELECT };
 	private int mode;
 
 	private ListView productList;
@@ -163,11 +162,15 @@ public class ProductsMenuActivity extends Activity {
         
 		Intent intent = getIntent();
 
-		mode = ProductsMenuModeCodes.NORMAL.ordinal();
+		mode = Warehouse.ResultCodes.NORMAL.ordinal();
 		String modeString = intent.getStringExtra("MODE");
-		if (modeString != null && modeString.equals("PRODUCT_SELECT")) {
-			mode = ProductsMenuModeCodes.PRODUCT_SELECT.ordinal();
-            Toast.makeText(this, getString(R.string.select_a_product), Toast.LENGTH_LONG).show();
+		if (modeString != null) {
+			if (modeString.equals("PRODUCT_SELECT")) {
+				mode = Warehouse.ResultCodes.PRODUCT_SELECT.ordinal();
+				Toast.makeText(this, getString(R.string.select_a_product), Toast.LENGTH_LONG).show();
+			} else if (modeString.equals("PRODUCT_LIST")) {
+				
+			}
 		} else if (Warehouse.Products().list.size() == 0)
         	Warehouse.Products().getNewestProducts(10);
         
@@ -235,11 +238,17 @@ public class ProductsMenuActivity extends Activity {
 		selectOneProduct.putExtra("MODE", "PRODUCT_SELECT");
 		selectOneProduct.putExtra("FORMAT", format);
 		selectOneProduct.putExtra("CONTENTS", contents);
-		((Activity)ctx).startActivityForResult(selectOneProduct, ResultCodes.PRODUCT_SELECT.ordinal());
+		((Activity)ctx).startActivityForResult(selectOneProduct, Warehouse.ResultCodes.PRODUCT_SELECT.ordinal());
+	}
+	
+	public static void listProductsActivity(Context ctx) {
+		Intent listProducts = new Intent(ctx, ProductsMenuActivity.class);
+		listProducts.putExtra("MODE", "PRODUCT_LIST");
+		((Activity)ctx).startActivityForResult(listProducts, Warehouse.ResultCodes.PRODUCT_LIST.ordinal());
 	}
 	
 	private void productListClickHandler(AdapterView<?> parent, View view, int position) {
-		if (mode == ProductsMenuModeCodes.PRODUCT_SELECT.ordinal()) {
+		if (mode == Warehouse.ResultCodes.PRODUCT_SELECT.ordinal()) {
 			Warehouse.Products().select(Warehouse.Products().list.get(position));
 			setResult(ResultCodes.PRODUCT_SELECT.ordinal());
 			finish();
@@ -249,7 +258,7 @@ public class ProductsMenuActivity extends Activity {
 	}
 	
 	public void onActivityResult(int requestCode, int resultCode, Intent intent) {
-        if (requestCode == ResultCodes.SCAN.ordinal()) {
+        if (requestCode == Warehouse.ResultCodes.SCAN.ordinal()) {
             if (resultCode == RESULT_OK) {
                 String contents = intent.getStringExtra("SCAN_RESULT");
                 String format = intent.getStringExtra("SCAN_RESULT_FORMAT");
