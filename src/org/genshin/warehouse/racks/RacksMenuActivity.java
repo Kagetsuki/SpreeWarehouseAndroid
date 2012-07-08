@@ -152,7 +152,6 @@ public class RacksMenuActivity extends Activity {
 	public void onDestroy() {
 		Log.v("test", "FFF");
 		super.onDestroy();
-		finish();
 	}
 
 }
