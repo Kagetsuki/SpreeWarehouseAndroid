@@ -26,7 +26,7 @@
                     android:src="@drawable/racks" />
 
                 <TextView
-                    android:id="@+id/textView2"
+                    android:id="@+id/stock_history_rack"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Large Text"
@@ -44,7 +44,7 @@
                     android:src="@drawable/products" />
 
                 <TextView
-                    android:id="@+id/textView1"
+                    android:id="@+id/stock_history_item"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:text="Large Text"
@@ -54,7 +54,7 @@
         </LinearLayout>
 
         <TextView
-            android:id="@+id/count"
+            android:id="@+id/stock_history_count"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:gravity="center"

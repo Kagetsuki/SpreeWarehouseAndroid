@@ -61,26 +61,24 @@ public class RacksMenuActivity extends Activity {
 			}
         }
         else {
-        	if (!selectId.equals("0")) {
-	        	ContainerTaxonomy selectContainer = new ContainerTaxonomy(selectId);
+	        ContainerTaxonomy selectContainer = new ContainerTaxonomy(selectId);
 	
-	        	for (int i = 0; i < selectContainer.list.size(); i++) {
-					HashMap<String, String> warehouseDivisionMap = new HashMap<String, String>();
-					warehouseDivisionMap.put("warehouse", selectContainer.list.get(i).name);
+        	for (int i = 0; i < selectContainer.list.size(); i++) {
+				HashMap<String, String> warehouseDivisionMap = new HashMap<String, String>();
+				warehouseDivisionMap.put("warehouse", selectContainer.list.get(i).name);
+				
+				ArrayList<HashMap<String, Object>> taxonomyNodeList = new ArrayList<HashMap<String, Object>>();
+				for (int j = 0; j < warehouses.divisions.get(i).containers.size(); j++) {
+					HashMap<String, Object> taxonomyNode = new HashMap<String, Object>();
+					taxonomyNode.put("warehouse", warehouses.divisions.get(i).name);
+					taxonomyNode.put("taxonomyName", warehouses.divisions.get(i).containers.get(j).name);
+					taxonomyNode.put("id", "" + warehouses.divisions.get(i).containers.get(j).id);
+					taxonomyNodeList.add(taxonomyNode);
 					
-					ArrayList<HashMap<String, Object>> taxonomyNodeList = new ArrayList<HashMap<String, Object>>();
-					for (int j = 0; j < warehouses.divisions.get(i).containers.size(); j++) {
-						HashMap<String, Object> taxonomyNode = new HashMap<String, Object>();
-						taxonomyNode.put("warehouse", warehouses.divisions.get(i).name);
-						taxonomyNode.put("taxonomyName", warehouses.divisions.get(i).containers.get(j).name);
-						taxonomyNode.put("id", "" + warehouses.divisions.get(i).containers.get(j).id);
-						taxonomyNodeList.add(taxonomyNode);
-						
-					}
-					containerTaxonomyNodes.add(taxonomyNodeList);
-					warehouseRoots.add(warehouseDivisionMap);
 				}
-        	}
+				containerTaxonomyNodes.add(taxonomyNodeList);
+				warehouseRoots.add(warehouseDivisionMap);
+			}
         }
 
         SimpleExpandableListAdapter adapter = new SimpleExpandableListAdapter(
@@ -103,37 +101,19 @@ public class RacksMenuActivity extends Activity {
 				ExpandableListAdapter ada = parent.getExpandableListAdapter();
 				Map<String, Object> map = (Map<String, Object>)ada.getChild(groupPosition, childPosition);
 				String text = (String) map.get("taxonomyName");
-				String selectID = (String) map.get("id");
-				
-				if (text.equals("詳細を表示")) {
-					intent = new Intent(getApplicationContext(), RacksMenuActivity.class);
-					text = (String) map.get("warehouse");
-					intent.putExtra("SELECT", text);
-					intent.putExtra("ID", "0");
-					startActivity(intent);
-				}
-				else {
-					intent = new Intent(getApplicationContext(), RacksMenuActivity.class);
-					intent.putExtra("SELECT", text);
-					intent.putExtra("ID", selectID);
-					startActivity(intent);
-				}
+				String selectID = (String) map.get("id");	
+
+				intent = new Intent(getApplicationContext(), RacksMenuActivity.class);
+				intent.putExtra("SELECT", text);
+				intent.putExtra("ID", selectID);
+				startActivity(intent);
+
 				return false;
 			}
 		});
         
         if (adapter.getGroupCount() == 0) {
         	finishActivity(Warehouse.ResultCodes.CONTAINER_SELECT.ordinal());
-        	/*
-        	LinearLayout layout = new LinearLayout(this);
-        	setContentView(layout);
-        	TextView textView = new TextView(this);
-        	textView.setText("子が何もない場合は詳細を表示…");
-        	textView.setLayoutParams(new LinearLayout.LayoutParams(
-        			LinearLayout.LayoutParams.WRAP_CONTENT,
-        			LinearLayout.LayoutParams.WRAP_CONTENT));
-        	layout.addView(textView);
-        	*/
         }
     }
 
@@ -146,12 +126,6 @@ public class RacksMenuActivity extends Activity {
         Warehouse.Warehouses();
         
 		hookupInterface();
-	}
-	
-	@Override
-	public void onDestroy() {
-		Log.v("test", "FFF");
-		super.onDestroy();
 	}
 
 }

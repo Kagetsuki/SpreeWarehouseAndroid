@@ -40,7 +40,6 @@ public class ProductListAdapter extends ArrayAdapter<ProductListItem> {
 		TextView price = (TextView) rowView.findViewById(R.id.products_list_item_price);
 		price.setText("" + data[position].price);
 		
-		
 		return rowView;
 	}
 }

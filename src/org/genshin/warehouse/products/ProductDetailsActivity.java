@@ -1,14 +1,21 @@
 package org.genshin.warehouse.products;
 
+import java.util.ArrayList;
+
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
 import org.genshin.gsa.ScanSystem;
 import org.genshin.spree.SpreeConnector;
 import org.genshin.warehouse.R;
 import org.genshin.warehouse.WarehouseActivity;
 import org.genshin.warehouse.Warehouse.ResultCodes;
 import org.genshin.warehouse.products.ProductEditActivity;
+import org.genshin.warehouse.stocking.StockingMenuActivity;
 
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
@@ -38,7 +45,9 @@ public class ProductDetailsActivity extends Activity {
 	//private Image image;
 
 	Product product;
-
+	
+	private String modeString;
+	private String barcodeString;
 	
 	private void initViewElements() {
 		//id = (TextView) findViewById(R.id.product_id);
@@ -61,6 +70,36 @@ public class ProductDetailsActivity extends Activity {
         	imageSwitcher.setImageResource(R.drawable.spree);
         else
         	imageSwitcher.setImageDrawable(product.images.get(0).data);
+        
+        Intent intent = getIntent();
+        modeString = intent.getStringExtra("MODE");
+        barcodeString = intent.getStringExtra("BARCODE");
+        if (modeString != null) {
+	        if (modeString.equals("UPDATE_PRODUCT_BARCODE")) {
+	        	AlertDialog.Builder question = new AlertDialog.Builder(this);
+				question.setTitle("この商品に登録しますか？");
+				question.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface arg0, int arg1) {
+						ArrayList<NameValuePair> pairs = new ArrayList<NameValuePair>();
+						pairs.add(new BasicNameValuePair("product[visual_code]", barcodeString));
+						spree.connector.putWithArgs("api/products/" + product.id + ".json", pairs);
+						
+						Toast.makeText(getApplicationContext(), R.string.register_barcode, Toast.LENGTH_LONG).show();
+						modeString = null;
+						Intent intent = new Intent(getApplicationContext(), StockingMenuActivity.class);
+						startActivity(intent);
+	
+					}
+				});
+				question.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface arg0, int arg1) {
+						finish();
+					}
+				});
+				question.show();
+	        }
+        }
+
 	}
 
 	private void getProductInfo() {
