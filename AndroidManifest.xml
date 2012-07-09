@@ -37,15 +37,16 @@
         </activity>
         <activity
             android:name=".profiles.ProfileSettingsActivity"
-            android:label="@string/profiles" >
+            android:label="@string/profiles"
+            android:configChanges="keyboardHidden|orientation"
+            android:windowSoftInputMode="stateHidden" >
             
         </activity>
         <activity 
             android:name=".products.ProductsMenuActivity"
             android:label="@string/products" 
             android:configChanges="keyboardHidden|orientation"
-            android:windowSoftInputMode="stateHidden"
-            >
+            android:windowSoftInputMode="stateHidden" >
             
         </activity>
         <activity 
@@ -60,6 +61,8 @@
         </activity>
         <activity 
             android:name=".orders.OrdersMenuActivity"
+            android:configChanges="keyboardHidden|orientation"
+            android:windowSoftInputMode="stateHidden"
             android:label="@string/orders" >
             
         </activity>
@@ -70,17 +73,23 @@
         </activity>
         <activity 
             android:name=".stocking.StockingMenuActivity"
-            android:label="@string/stocking" >
+            android:label="@string/stocking"
+            android:configChanges="keyboardHidden|orientation"
+            android:windowSoftInputMode="stateHidden" >
             
         </activity>
         <activity 
             android:name=".stocking.StockingRepetitiveScanner"
-            android:label="@string/stocking" >
+            android:label="@string/stocking"
+            android:configChanges="keyboardHidden|orientation"
+            android:windowSoftInputMode="stateHidden" >
             
         </activity>
         <activity 
             android:name=".picking.PickingMenuActivity"
-            android:label="@string/picking" >
+            android:label="@string/picking"
+            android:configChanges="keyboardHidden|orientation"
+            android:windowSoftInputMode="stateHidden" >
             
         </activity>
         <activity 

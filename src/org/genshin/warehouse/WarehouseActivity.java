@@ -42,6 +42,11 @@ public class WarehouseActivity extends Activity {
 	ThumbListItem[] menuListItems;
 	
 	private void createMainMenu() {
+		if (profiles.list.size() <= 0) {
+			Profiles.noRegisteredProfiles();
+			return;
+		}
+		
 		//Create main menu list items
 		menuListItems  = new ThumbListItem[] { 
 				new ThumbListItem(R.drawable.products, getString(R.string.products), "", ProductsMenuActivity.class),
@@ -52,6 +57,17 @@ public class WarehouseActivity extends Activity {
 				new ThumbListItem(R.drawable.packing, getString(R.string.packing), "", PackingMenuActivity.class),
 				new ThumbListItem(R.drawable.shipping, getString(R.string.shipping), "", ShippingMenuActivity.class)
 			};
+		
+		//Menu List
+        menuList = (ListView) findViewById(R.id.main_menu_actions_list);
+        ThumbListAdapter menuAdapter = new ThumbListAdapter(this, menuListItems);
+		menuList.setAdapter(menuAdapter);
+        menuList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            public void onItemClick(AdapterView<?> parent, View view,
+                    int position, long id) {
+            	menuListClickHandler(parent, view, position);
+            }
+        });
 	}
 	
 	private void loadProfiles() {
@@ -81,22 +97,13 @@ public class WarehouseActivity extends Activity {
         		ScanSystem.initiateScan(v.getContext());
             }
 		});
-        
-        //Menu List
-        menuList = (ListView) findViewById(R.id.main_menu_actions_list);
-        ThumbListAdapter menuAdapter = new ThumbListAdapter(this, menuListItems);
-		menuList.setAdapter(menuAdapter);
-        menuList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            public void onItemClick(AdapterView<?> parent, View view,
-                    int position, long id) {
-            	menuListClickHandler(parent, view, position);
-            }
-        });
-        
+             
       //Profile Spinner
       profileSpinner = (Spinner) findViewById(R.id.warehouse_profile_spinner);
       //Profile Spinner contents loaded and spinner refreshsed in loadProfiles
       loadProfiles();
+      
+      createMainMenu();
       
       connectionStatusIcon = (ImageView) findViewById(R.id.connection_status_icon);
 	}
@@ -122,7 +129,6 @@ public class WarehouseActivity extends Activity {
         
         warehouse = new Warehouse(this); 
         
-        createMainMenu();
         hookupInterface();
         
         checkConnection();

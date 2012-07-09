@@ -95,6 +95,9 @@
 	<string name="scan_cancelled">Scan Cancelled</string>
 	<string name="select_a_product">Please Select A Product</string>
 	<string name="build">Build</string>
+	<string name="no_profiles">No Profiles Found</string>
+	<string name="please_register_profile">Please register a profile.</string>
+	<string name="register">Register</string>
 
 	<!-- alert content -->
 	<string name="unregistered_barcode_title">Unregistered Barcode</string>

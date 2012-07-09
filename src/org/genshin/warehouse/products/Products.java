@@ -126,8 +126,8 @@ public class Products {
 	 public void unregisteredBarcode(final String code) {
 		AlertDialog.Builder question = new AlertDialog.Builder(ctx);
 
-		question.setMessage(ctx.getString(R.string.unregistered_barcode_new_product));
 		question.setTitle(ctx.getString(R.string.unregistered_barcode_title));
+		question.setMessage(ctx.getString(R.string.unregistered_barcode_new_product));
 		question.setIcon(R.drawable.newproduct);
 		question.setPositiveButton(ctx.getString(R.string.register_to_new_product), new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface arg0, int arg1) {
