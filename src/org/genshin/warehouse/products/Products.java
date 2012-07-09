@@ -140,6 +140,10 @@ public class Products {
 		
 		question.setNeutralButton(ctx.getString(R.string.register_to_existing_product), new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface arg0, int arg1) {
+				Intent intent = new Intent(ctx, ProductsMenuActivity.class);
+				intent.putExtra("MODE", "UPDATE_PRODUCT_BARCODE");
+				intent.putExtra("BARCODE", code);
+				ctx.startActivity(intent);
 			}
 		});
 

@@ -9,13 +9,14 @@ import org.genshin.warehouse.WarehouseActivity;
 import org.genshin.warehouse.Warehouse.ResultCodes;
 import org.genshin.warehouse.products.ProductDetailsActivity;
 
-
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -34,7 +35,8 @@ public class ProductsMenuActivity extends Activity {
 	
 	private ProductListAdapter productsAdapter;
 	
-	private int mode;
+	private static int mode;
+	private static Intent intent;
 
 	private ListView productList;
 	private TextView statusText;
@@ -160,7 +162,7 @@ public class ProductsMenuActivity extends Activity {
         
         hookupInterface();
         
-		Intent intent = getIntent();
+		intent = getIntent();
 
 		mode = Warehouse.ResultCodes.NORMAL.ordinal();
 		String modeString = intent.getStringExtra("MODE");
@@ -170,6 +172,9 @@ public class ProductsMenuActivity extends Activity {
 				Toast.makeText(this, getString(R.string.select_a_product), Toast.LENGTH_LONG).show();
 			} else if (modeString.equals("PRODUCT_LIST")) {
 				
+			} else if (modeString.equals("UPDATE_PRODUCT_BARCODE")) {
+				mode = Warehouse.ResultCodes.UPDATE_PRODUCT_BARCODE.ordinal();
+				Toast.makeText(this, getString(R.string.select_a_product), Toast.LENGTH_LONG).show();
 			}
 		} else if (Warehouse.Products().list.size() == 0)
         	Warehouse.Products().getNewestProducts(10);
@@ -230,6 +235,12 @@ public class ProductsMenuActivity extends Activity {
 	public static void showProductDetails(Context ctx, Product product) {
 		ProductsMenuActivity.setSelectedProduct(product);
 		Intent productDetailsIntent = new Intent(ctx, ProductDetailsActivity.class);
+		if (mode == Warehouse.ResultCodes.UPDATE_PRODUCT_BARCODE.ordinal()) {
+			String modeString = intent.getStringExtra("MODE");
+			String barcodeString = intent.getStringExtra("BARCODE");
+			productDetailsIntent.putExtra("MODE", modeString);
+			productDetailsIntent.putExtra("BARCODE", barcodeString);
+		}
     	ctx.startActivity(productDetailsIntent);
 	}
 	

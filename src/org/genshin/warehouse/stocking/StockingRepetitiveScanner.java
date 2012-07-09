@@ -21,9 +21,13 @@ import org.json.JSONObject;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.widget.ListView;
 import android.widget.Toast;
 
 public class StockingRepetitiveScanner extends RepetitiveScanner {
+	
+	private ListView historyListView;
+	
 	@Override
 	public void beforeScanning() {
 		// TODO Auto-generated method stub
