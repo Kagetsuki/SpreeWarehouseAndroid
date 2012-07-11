@@ -58,13 +58,22 @@
         android:layout_below="@+id/product_price_title"
         android:text="@string/permalink"
         android:textAppearance="?android:attr/textAppearanceSmall" />
+    
+    <TextView
+        android:id="@+id/product_visualCode"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/product_permalink"
+        android:text="@string/barcode"
+        android:textAppearance="?android:attr/textAppearanceSmall" />
 
     <TextView
         android:id="@+id/product_count_on_hand"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
-        android:layout_below="@+id/product_permalink"
+        android:layout_below="@+id/product_visualCode"
         android:text="@string/stock"
         android:textAppearance="?android:attr/textAppearanceLarge" />
 

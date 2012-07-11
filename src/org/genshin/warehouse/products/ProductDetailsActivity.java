@@ -40,6 +40,7 @@ public class ProductDetailsActivity extends Activity {
 	private TextView countOnHand;
 	private TextView description;
 	private TextView permalink;
+	private TextView visualCode;
 	private ImageSwitcher imageSwitcher;
 	private ProductImageViewer imageViewer;
 	//private Image image;
@@ -58,6 +59,7 @@ public class ProductDetailsActivity extends Activity {
 		countOnHand = (TextView) findViewById(R.id.product_count_on_hand);
 		description = (TextView) findViewById(R.id.product_description);
 		permalink = (TextView) findViewById(R.id.product_permalink);
+		visualCode = (TextView) findViewById(R.id.product_visualCode);
 		imageSwitcher = (ImageSwitcher) findViewById(R.id.product_image_switcher);
 	}
 	
@@ -119,6 +121,7 @@ public class ProductDetailsActivity extends Activity {
 		countOnHand.setText("" + product.countOnHand);
 		description.setText(product.description);
 		permalink.setText(product.permalink);
+		visualCode.setText(product.visualCode);
 
 	}
 
