@@ -5,16 +5,19 @@ import java.util.HashMap;
 
 public class RacksListData {
 	
-	HashMap<String, String> data;
+	String name;
+	String group;
 	String id;
 
 	public RacksListData() {
-		this.data = new HashMap<String, String>();
+		this.name = null;
+		this.group = null;
 		this.id = null;
 	}
 
-	public RacksListData(HashMap<String, String> data, String id) {
-		this.data = data;
+	public RacksListData(String name, String group, String id) {
+		this.name = name;
+		this.group = group;
 		this.id = id;
 	}
 

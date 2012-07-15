@@ -65,7 +65,7 @@ public class RacksMenuActivity extends Activity {
 				
 				RacksMenuAdapter adapter = (RacksMenuAdapter)parent.getExpandableListAdapter();
 				String selectId = adapter.getChild(groupPosition, childPosition).id;
-				String text = adapter.getChild(groupPosition, childPosition).data.get("taxonomyName");	
+				String text = adapter.getChild(groupPosition, childPosition).name;	
 
 				intent = new Intent(getApplicationContext(), RacksMenuActivity.class);
 				intent.putExtra("SELECT_NAME", text);
@@ -83,7 +83,7 @@ public class RacksMenuActivity extends Activity {
 					// 子要素が空の場合の処理
 					//String selectId = adapter.getGroup(groupPosition).id;
 					String selectId = "0";
-					String text = adapter.getGroup(groupPosition).data.get("warehouse");
+					String text = adapter.getGroup(groupPosition).name;
 					intent = new Intent(getApplicationContext(), RacksMenuActivity.class);
 					intent.putExtra("SELECT_NAME", text);
 					intent.putExtra("ID", selectId);
@@ -122,14 +122,14 @@ public class RacksMenuActivity extends Activity {
         if (selectId == null) {
 			for (int i = 0; i < warehouses.count; i++) {
 				RacksListData warehouseDivisionMap = new RacksListData();
-				warehouseDivisionMap.data.put("warehouse", warehouses.divisions.get(i).name);
+				warehouseDivisionMap.name = (warehouses.divisions.get(i).name);
 				warehouseDivisionMap.id = ("" + warehouses.divisions.get(i).id);
 
 				ArrayList<RacksListData> taxonomyNodeList = new ArrayList<RacksListData>();
 				for (int j = 0; j < warehouses.divisions.get(i).containers.size(); j++) {
 					RacksListData taxonomyNode = new RacksListData();
-					taxonomyNode.data.put("warehouse", warehouses.divisions.get(i).name);
-					taxonomyNode.data.put("taxonomyName", warehouses.divisions.get(i).containers.get(j).name);
+					taxonomyNode.group = (warehouses.divisions.get(i).name);
+					taxonomyNode.name = (warehouses.divisions.get(i).containers.get(j).name);
 					taxonomyNode.id = ("" + warehouses.divisions.get(i).containers.get(j).id);
 					taxonomyNodeList.add(taxonomyNode);
 				}
@@ -142,14 +142,14 @@ public class RacksMenuActivity extends Activity {
 	
         	for (int i = 0; i < selectContainer.list.size(); i++) {
 				RacksListData warehouseDivisionMap = new RacksListData();
-				warehouseDivisionMap.data.put("warehouse", selectContainer.list.get(i).name);
+				warehouseDivisionMap.name = (selectContainer.list.get(i).name);
 				
 				ArrayList<RacksListData> taxonomyNodeList = new ArrayList<RacksListData>();
 
 				// 子要素がない場合はnull挿入・・・とりあえず今は参考データがないので全部null
 				RacksListData taxonomyNode = new RacksListData();
-				taxonomyNode.data.put("warehouse", null);
-				taxonomyNode.data.put("taxonomyName", null);
+				taxonomyNode.group = null;
+				taxonomyNode.name = null;
 				taxonomyNode.id = null;
 				taxonomyNodeList.add(taxonomyNode);
 

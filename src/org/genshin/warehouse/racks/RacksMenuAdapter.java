@@ -49,10 +49,10 @@ public class RacksMenuAdapter extends BaseExpandableListAdapter {
 		}
 		
 		TextView title = (TextView) convertView.findViewById(R.id.childview_title);
-		title.setText(childData.get(groupPosition).get(childPosition).data.get("taxonomyName"));		
+		title.setText(childData.get(groupPosition).get(childPosition).name);		
 
 		TextView groupTitle = (TextView) convertView.findViewById(R.id.childview_group);
-		groupTitle.setText(childData.get(groupPosition).get(childPosition).data.get("warehouse"));
+		groupTitle.setText(childData.get(groupPosition).get(childPosition).group);
 
 		return convertView;
 	}
@@ -86,7 +86,7 @@ public class RacksMenuAdapter extends BaseExpandableListAdapter {
 		}
 		
 		TextView title = (TextView) convertView.findViewById(R.id.group_title);
-		title.setText(groupData.get(groupPosition).data.get("warehouse"));
+		title.setText(groupData.get(groupPosition).name);
 		
 		ImageView icon = (ImageView) convertView.findViewById(R.id.group_icon);
 		// 子要素が空の場合はindicator非表示
