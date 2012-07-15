@@ -57,11 +57,15 @@ import org.xml.sax.XMLReader;
 
 import android.app.Activity;
 import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.net.http.AndroidHttpClient;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
-public class RESTConnector extends Activity {
+public class RESTConnector extends AsyncTask<String, Void, HttpResponse> {
 	private Context ctx;
 	private Boolean initialized;
 	private HttpClient client;
@@ -89,12 +93,18 @@ public class RESTConnector extends Activity {
 	public String baseURL() {
 		return protocolHeader() + server + ":" + port + "/";
 	}
-	
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		initialized = false;
-	}
+	 
+	 public boolean isNetworkAvailable() {
+		    /*ConnectivityManager cm = (ConnectivityManager) 
+		    	getSystemService(Context.CONNECTIVITY_SERVICE);
+		    NetworkInfo networkInfo = cm.getActiveNetworkInfo();
+		    // if no network is available networkInfo will be null
+		    // otherwise check if we are connected
+		    if (networkInfo != null && networkInfo.isConnected()) {
+		        return true;
+		    }*/
+		    return false;
+		} 
 
 	private HttpClient getHttpClient() {
 		try {
@@ -424,6 +434,12 @@ public class RESTConnector extends Activity {
 	    public Socket createSocket() throws IOException {
 	        return sslContext.getSocketFactory().createSocket();
 	    }
+	}
+
+	@Override
+	protected HttpResponse doInBackground(String... params) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }
 
