@@ -2,6 +2,7 @@ package org.genshin.warehouse;
 
 import java.util.ArrayList;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -12,10 +13,12 @@ import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import org.apache.http.HttpResponse;
 import org.genshin.gsa.Dialogs;
 import org.genshin.gsa.ScanSystem;
 import org.genshin.gsa.ThumbListAdapter;
 import org.genshin.gsa.ThumbListItem;
+import org.genshin.gsa.network.ConnectionStatus;
 import org.genshin.warehouse.Warehouse.ResultCodes;
 import org.genshin.warehouse.orders.OrdersMenuActivity;
 import org.genshin.warehouse.packing.PackingMenuActivity;
@@ -35,7 +38,7 @@ public class WarehouseActivity extends Activity {
 	//Interface objects
 	private Button scanButton;
 	private ListView menuList;
-	private ImageView connectionStatusIcon;
+	
 	private Spinner profileSpinner; 
 	private Profiles profiles;
 
@@ -105,21 +108,36 @@ public class WarehouseActivity extends Activity {
       
       createMainMenu();
       
-      connectionStatusIcon = (ImageView) findViewById(R.id.connection_status_icon);
+      
 	}
 	
-	private void checkConnection() {
-		Dialogs.showConnecting(this);
-		String check = Warehouse.Spree().connector.test();
-		Dialogs.dismiss();
+	private class ConnectionStatusIndicator extends ConnectionStatus {
+		private ImageView connectionStatusIcon;
+		public ConnectionStatusIndicator(Context ctx) {
+			super(ctx);
+			connectionStatusIcon = (ImageView) findViewById(R.id.connection_status_icon);
+		}
 		
-		if (check == "OK") {
+		@Override
+		protected void onPostExecute(HttpResponse result) {
+			if (connected) {
+				connectionStatusIcon.setImageResource(android.R.drawable.presence_away);
+			}
+			/*if (check == "OK") {
 			connectionStatusIcon.setImageResource(android.R.drawable.presence_online);
 		} else if (check == "ERROR"){
 			connectionStatusIcon.setImageResource(android.R.drawable.presence_away);
 		} else {
 			connectionStatusIcon.setImageResource(android.R.drawable.presence_offline);
+		}*/
 		}
+		
+	}
+	
+	private void checkConnection() {
+		Dialogs.showConnecting(this);
+		new ConnectionStatusIndicator(this).execute();
+		Dialogs.dismiss();
 	}
 	
     @Override

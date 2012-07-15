@@ -49,6 +49,7 @@ import org.apache.http.params.HttpParams;
 import org.apache.http.params.HttpProtocolParams;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
+import org.genshin.warehouse.Warehouse;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -65,7 +66,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
-public class RESTConnector extends AsyncTask<String, Void, HttpResponse> {
+public class RESTConnector {
 	private Context ctx;
 	private Boolean initialized;
 	private HttpClient client;
@@ -93,18 +94,6 @@ public class RESTConnector extends AsyncTask<String, Void, HttpResponse> {
 	public String baseURL() {
 		return protocolHeader() + server + ":" + port + "/";
 	}
-	 
-	 public boolean isNetworkAvailable() {
-		    /*ConnectivityManager cm = (ConnectivityManager) 
-		    	getSystemService(Context.CONNECTIVITY_SERVICE);
-		    NetworkInfo networkInfo = cm.getActiveNetworkInfo();
-		    // if no network is available networkInfo will be null
-		    // otherwise check if we are connected
-		    if (networkInfo != null && networkInfo.isConnected()) {
-		        return true;
-		    }*/
-		    return false;
-		} 
 
 	private HttpClient getHttpClient() {
 		try {
@@ -177,6 +166,9 @@ public class RESTConnector extends AsyncTask<String, Void, HttpResponse> {
 	
 	public String test() {
 		int statusCode = 0;
+		
+		/*if (!isNetworkAvailable())
+			return "NOTCONNECTED";*/
 		
 		HttpGet getter = getGetter("");
 		
@@ -434,12 +426,6 @@ public class RESTConnector extends AsyncTask<String, Void, HttpResponse> {
 	    public Socket createSocket() throws IOException {
 	        return sslContext.getSocketFactory().createSocket();
 	    }
-	}
-
-	@Override
-	protected HttpResponse doInBackground(String... params) {
-		// TODO Auto-generated method stub
-		return null;
 	}
 }
 
