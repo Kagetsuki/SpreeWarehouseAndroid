@@ -14,16 +14,25 @@ import android.view.View;
 import android.widget.ExpandableListAdapter;
 import android.widget.ExpandableListView;
 import android.widget.ExpandableListView.OnChildClickListener;
+import android.widget.ExpandableListView.OnGroupClickListener;
+import android.widget.ImageView;
 import android.widget.SimpleExpandableListAdapter;
 import android.widget.TextView;
 
 public class RacksMenuActivity extends Activity {
 	private ExpandableListView racksRootList;
 
-    private ExpandableListAdapter adapter;
+    private RacksMenuAdapter adapter;
     
     private Intent intent;
     private TextView selectRack;
+    
+    private String mode;
+    
+	private WarehouseDivisions warehouses; // = Warehouse.Warehouses();
+	
+    private ArrayList<RacksListData> warehouseRoots;// = new ArrayList<RacksListData>();
+    private ArrayList<ArrayList<RacksListData>> containerTaxonomyNodes;// = new ArrayList<ArrayList<RacksListData>>();
     
 	private void hookupInterface() {
 		
@@ -31,90 +40,65 @@ public class RacksMenuActivity extends Activity {
 		selectRack = (TextView) findViewById(R.id.racks_select);
 		
 		intent = getIntent();
-		String select = intent.getStringExtra("SELECT");
-		if (select != null)
-			selectRack.setText(select);
+		String selectName = intent.getStringExtra("SELECT_NAME");
+		if (selectName != null)
+			selectRack.setText(selectName);
 		else
 			selectRack.setText("/");
 		String selectId = intent.getStringExtra("ID");
-
-        WarehouseDivisions warehouses = Warehouse.Warehouses();
 		
-        ArrayList<HashMap<String, String>> warehouseRoots = new ArrayList<HashMap<String,String>>();
-        ArrayList<ArrayList<HashMap<String, Object>>> containerTaxonomyNodes = new ArrayList<ArrayList<HashMap<String, Object>>>();
- 
-        if (selectId == null) {
-			for (int i = 0; i < warehouses.count; i++) {
-				HashMap<String, String> warehouseDivisionMap = new HashMap<String, String>();
-				warehouseDivisionMap.put("warehouse", warehouses.divisions.get(i).name);
-	
-				ArrayList<HashMap<String, Object>> taxonomyNodeList = new ArrayList<HashMap<String, Object>>();
-				for (int j = 0; j < warehouses.divisions.get(i).containers.size(); j++) {
-					HashMap<String, Object> taxonomyNode = new HashMap<String, Object>();
-					taxonomyNode.put("warehouse", warehouses.divisions.get(i).name);
-					taxonomyNode.put("taxonomyName", warehouses.divisions.get(i).containers.get(j).name);
-					taxonomyNode.put("id", "" + warehouses.divisions.get(i).containers.get(j).id);
-					taxonomyNodeList.add(taxonomyNode);
-				}
-				containerTaxonomyNodes.add(taxonomyNodeList);
-				warehouseRoots.add(warehouseDivisionMap);
-			}
-        }
-        else {
-	        ContainerTaxonomy selectContainer = new ContainerTaxonomy(selectId);
-	
-        	for (int i = 0; i < selectContainer.list.size(); i++) {
-				HashMap<String, String> warehouseDivisionMap = new HashMap<String, String>();
-				warehouseDivisionMap.put("warehouse", selectContainer.list.get(i).name);
-				
-				ArrayList<HashMap<String, Object>> taxonomyNodeList = new ArrayList<HashMap<String, Object>>();
-				for (int j = 0; j < warehouses.divisions.get(i).containers.size(); j++) {
-					HashMap<String, Object> taxonomyNode = new HashMap<String, Object>();
-					taxonomyNode.put("warehouse", warehouses.divisions.get(i).name);
-					taxonomyNode.put("taxonomyName", warehouses.divisions.get(i).containers.get(j).name);
-					taxonomyNode.put("id", "" + warehouses.divisions.get(i).containers.get(j).id);
-					taxonomyNodeList.add(taxonomyNode);
-					
-				}
-				containerTaxonomyNodes.add(taxonomyNodeList);
-				warehouseRoots.add(warehouseDivisionMap);
-			}
-        }
+		String flag = intent.getStringExtra("MODE");
+		if (flag != null)
+			mode = flag;
+		else
+			mode = "NORMAL";
 
-        SimpleExpandableListAdapter adapter = new SimpleExpandableListAdapter(
-                this,
-                warehouseRoots,
-                android.R.layout.simple_expandable_list_item_1,
-                new String[] {"warehouse"},
-                new int[] { android.R.id.text1 },
-                containerTaxonomyNodes,
-                android.R.layout.simple_expandable_list_item_2,
-                new String[] {"taxonomyName", "warehouse"},
-                new int[] { android.R.id.text1, android.R.id.text2 });
- 
-        racksRootList.setAdapter(adapter); 
-        
+		putJsonData(selectId, mode);
+        adapter = new RacksMenuAdapter(
+        		this, warehouseRoots, containerTaxonomyNodes);     
+        racksRootList.setAdapter(adapter);
+        racksRootList.setGroupIndicator(null);
+
         racksRootList.setOnChildClickListener(new OnChildClickListener() {
 			public boolean onChildClick(ExpandableListView parent, View v,
 					int groupPosition, int childPosition, long id) {
-				// TODO 自動生成されたメソッド・スタブ
-				ExpandableListAdapter ada = parent.getExpandableListAdapter();
-				Map<String, Object> map = (Map<String, Object>)ada.getChild(groupPosition, childPosition);
-				String text = (String) map.get("taxonomyName");
-				String selectID = (String) map.get("id");	
+				
+				RacksMenuAdapter adapter = (RacksMenuAdapter)parent.getExpandableListAdapter();
+				String selectId = adapter.getChild(groupPosition, childPosition).id;
+				String text = adapter.getChild(groupPosition, childPosition).name;	
 
 				intent = new Intent(getApplicationContext(), RacksMenuActivity.class);
-				intent.putExtra("SELECT", text);
-				intent.putExtra("ID", selectID);
+				intent.putExtra("SELECT_NAME", text);
+				intent.putExtra("ID", selectId);
 				startActivity(intent);
 
 				return false;
 			}
 		});
+
+        racksRootList.setOnGroupClickListener(new OnGroupClickListener() {		
+			public boolean onGroupClick(ExpandableListView parent, View v,
+													int groupPosition, long id) {
+				if (adapter.getChild(groupPosition, 0).id == null) {
+					// 子要素が空の場合の処理
+					//String selectId = adapter.getGroup(groupPosition).id;
+					String selectId = "0";
+					String text = adapter.getGroup(groupPosition).name;
+					intent = new Intent(getApplicationContext(), RacksMenuActivity.class);
+					intent.putExtra("SELECT_NAME", text);
+					intent.putExtra("ID", selectId);
+					intent.putExtra("MODE", "DETAIL");
+					startActivity(intent);
+					return true;
+				}
+				else
+					return false;
+			}		
+		});
         
-        if (adapter.getGroupCount() == 0) {
-        	finishActivity(Warehouse.ResultCodes.CONTAINER_SELECT.ordinal());
-        }
+        //if (adapter.getGroupCount() == 0) {
+        // 	finishActivity(Warehouse.ResultCodes.CONTAINER_SELECT.ordinal());
+        //}
     }
 
 	@Override
@@ -126,6 +110,53 @@ public class RacksMenuActivity extends Activity {
         Warehouse.Warehouses();
         
 		hookupInterface();
+	}
+	
+	public void putJsonData(String selectId, String mode) {
+		
+		warehouses = Warehouse.Warehouses();
+		
+        warehouseRoots = new ArrayList<RacksListData>();
+        containerTaxonomyNodes = new ArrayList<ArrayList<RacksListData>>();
+
+        if (selectId == null) {
+			for (int i = 0; i < warehouses.count; i++) {
+				RacksListData warehouseDivisionMap = new RacksListData();
+				warehouseDivisionMap.name = (warehouses.divisions.get(i).name);
+				warehouseDivisionMap.id = ("" + warehouses.divisions.get(i).id);
+
+				ArrayList<RacksListData> taxonomyNodeList = new ArrayList<RacksListData>();
+				for (int j = 0; j < warehouses.divisions.get(i).containers.size(); j++) {
+					RacksListData taxonomyNode = new RacksListData();
+					taxonomyNode.group = (warehouses.divisions.get(i).name);
+					taxonomyNode.name = (warehouses.divisions.get(i).containers.get(j).name);
+					taxonomyNode.id = ("" + warehouses.divisions.get(i).containers.get(j).id);
+					taxonomyNodeList.add(taxonomyNode);
+				}
+				containerTaxonomyNodes.add(taxonomyNodeList);
+				warehouseRoots.add(warehouseDivisionMap);
+			}
+        }
+        else if (mode.equals("NORMAL")){
+	        ContainerTaxonomy selectContainer = new ContainerTaxonomy(selectId);
+	
+        	for (int i = 0; i < selectContainer.list.size(); i++) {
+				RacksListData warehouseDivisionMap = new RacksListData();
+				warehouseDivisionMap.name = (selectContainer.list.get(i).name);
+				
+				ArrayList<RacksListData> taxonomyNodeList = new ArrayList<RacksListData>();
+
+				// 子要素がない場合はnull挿入・・・とりあえず今は参考データがないので全部null
+				RacksListData taxonomyNode = new RacksListData();
+				taxonomyNode.group = null;
+				taxonomyNode.name = null;
+				taxonomyNode.id = null;
+				taxonomyNodeList.add(taxonomyNode);
+
+				containerTaxonomyNodes.add(taxonomyNodeList);
+				warehouseRoots.add(warehouseDivisionMap);
+			}
+        }
 	}
 
 }
