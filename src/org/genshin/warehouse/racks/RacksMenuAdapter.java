@@ -48,12 +48,18 @@ public class RacksMenuAdapter extends BaseExpandableListAdapter {
 			convertView = inflater.inflate(R.layout.expandable_childview, parent, false);		
 		}
 		
-		TextView title = (TextView) convertView.findViewById(R.id.childview_title);
-		title.setText(childData.get(groupPosition).get(childPosition).name);		
+		TextView name = (TextView) convertView.findViewById(R.id.childview_title);
+		name.setText(childData.get(groupPosition).get(childPosition).name);		
 
-		TextView groupTitle = (TextView) convertView.findViewById(R.id.childview_group);
-		groupTitle.setText(childData.get(groupPosition).get(childPosition).group);
-
+		TextView group = (TextView) convertView.findViewById(R.id.childview_group);
+		group.setText(childData.get(groupPosition).get(childPosition).group);
+		
+		ImageView icon = (ImageView) convertView.findViewById(R.id.childview_icon);
+		if (childData.get(groupPosition).get(childPosition).icon)
+			icon.setImageResource(android.R.drawable.ic_input_add);
+		else
+			icon.setImageResource(android.R.drawable.ic_menu_info_details);
+			
 		return convertView;
 	}
 	
@@ -85,8 +91,8 @@ public class RacksMenuAdapter extends BaseExpandableListAdapter {
 			convertView = inflater.inflate(R.layout.expandable_groupview, parent, false);		
 		}
 		
-		TextView title = (TextView) convertView.findViewById(R.id.group_title);
-		title.setText(groupData.get(groupPosition).name);
+		TextView name = (TextView) convertView.findViewById(R.id.group_title);
+		name.setText(groupData.get(groupPosition).name);
 		
 		ImageView icon = (ImageView) convertView.findViewById(R.id.group_icon);
 		// 子要素が空の場合はindicator非表示
@@ -98,7 +104,6 @@ public class RacksMenuAdapter extends BaseExpandableListAdapter {
 			else
 				icon.setImageResource(android.R.drawable.arrow_down_float);
 		}
-
 
 		return convertView;
 	}

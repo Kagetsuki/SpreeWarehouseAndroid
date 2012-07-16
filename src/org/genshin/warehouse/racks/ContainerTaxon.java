@@ -18,8 +18,7 @@ public class ContainerTaxon {
 			id = json.getInt("id"); //TODO this will fail from QR code scans.
 		} catch (JSONException e) {
 			// TODO QR Code scans will NOT have IDs. 
-			// Cross reference/search with permalink and if that fails trace the tree.
-			
+			// Cross reference/search with permalink and if that fails trace the tree.		
 		}
 		
 		try {
@@ -28,14 +27,6 @@ public class ContainerTaxon {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		try {
-			name = json.getString("name");
-		} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
 		
 		try {
 			permalink = json.getString("permalink");

@@ -21,9 +21,11 @@ public class ContainerTaxonomy {
 	
 	public ArrayList<ContainerTaxon> list;
 	
+	public boolean child = false;
+	
 	public ContainerTaxonomy(JSONObject taxonomyJSON) {
 		getTaxonomyInfo(taxonomyJSON);
-		//getRoot(taxonomyJSON);
+		getRoot(taxonomyJSON);
 	}
 	
 	private void getTaxonomyInfo(JSONObject taxonomyJSON) {
@@ -43,6 +45,7 @@ public class ContainerTaxonomy {
 	
 	private void getRoot(JSONObject taxonomyJSON) {
 		JSONObject rootJSON = null;
+		JSONArray items = null;
 		try {
 			rootJSON = taxonomyJSON.getJSONObject("root");
 		} catch (JSONException e) {
@@ -53,6 +56,27 @@ public class ContainerTaxonomy {
 		
 		if (rootJSON != null)
 			this.root = new ContainerTaxon(rootJSON);
+		
+		if (rootJSON != null) {
+			try {
+				items = rootJSON.getJSONArray("container_taxons");
+			} catch (JSONException e) {
+				// TODO 自動生成された catch ブロック
+				e.printStackTrace();
+			}
+		}
+		
+		if (items != null){
+			try {			
+				for (int i = 0; i < items.length(); i++) {
+					JSONObject item = items.getJSONObject(i).getJSONObject("container_taxon");
+					child = true;
+				}
+			} catch (JSONException e) {
+				child = false;
+				e.printStackTrace();
+			}
+		}
 	}
 	
 	//TODO will probably just be a tree - prune this?
@@ -112,8 +136,11 @@ public class ContainerTaxonomy {
 					JSONObject item = items.getJSONObject(i).getJSONObject("container_taxon");
 					ContainerTaxon listItem = new ContainerTaxon(item);	
 					list.add(listItem);
+					child = true;
 				}
 			} catch (JSONException e) {
+				list.add(null);
+				child = false;
 				e.printStackTrace();
 			}
 		}

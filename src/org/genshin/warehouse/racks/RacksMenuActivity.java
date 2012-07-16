@@ -29,10 +29,10 @@ public class RacksMenuActivity extends Activity {
     
     private String mode;
     
-	private WarehouseDivisions warehouses; // = Warehouse.Warehouses();
+	private WarehouseDivisions warehouses;
 	
-    private ArrayList<RacksListData> warehouseRoots;// = new ArrayList<RacksListData>();
-    private ArrayList<ArrayList<RacksListData>> containerTaxonomyNodes;// = new ArrayList<ArrayList<RacksListData>>();
+    private ArrayList<RacksListData> warehouseRoots;
+    private ArrayList<ArrayList<RacksListData>> containerTaxonomyNodes;
     
 	private void hookupInterface() {
 		
@@ -131,7 +131,11 @@ public class RacksMenuActivity extends Activity {
 					taxonomyNode.group = (warehouses.divisions.get(i).name);
 					taxonomyNode.name = (warehouses.divisions.get(i).containers.get(j).name);
 					taxonomyNode.id = ("" + warehouses.divisions.get(i).containers.get(j).id);
+					taxonomyNode.permalink = (warehouses.divisions.get(i).containers.get(j).permalink);
 					taxonomyNodeList.add(taxonomyNode);
+					
+					if(warehouses.divisions.get(i).containers.taxonomies.get(j).child)
+						taxonomyNode.icon = true;
 				}
 				containerTaxonomyNodes.add(taxonomyNodeList);
 				warehouseRoots.add(warehouseDivisionMap);
@@ -143,6 +147,8 @@ public class RacksMenuActivity extends Activity {
         	for (int i = 0; i < selectContainer.list.size(); i++) {
 				RacksListData warehouseDivisionMap = new RacksListData();
 				warehouseDivisionMap.name = (selectContainer.list.get(i).name);
+				warehouseDivisionMap.id = ("" + selectContainer.list.get(i).id);
+				warehouseDivisionMap.permalink = (selectContainer.list.get(i).permalink);
 				
 				ArrayList<RacksListData> taxonomyNodeList = new ArrayList<RacksListData>();
 
