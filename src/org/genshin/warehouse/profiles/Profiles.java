@@ -51,8 +51,8 @@ public class Profiles {
 	}
 
 	//Create a new profile
-	public Profile createProfile(String server, long port, String profileName, String apiKey) {
-		return helper.createProfile(server, port, profileName, apiKey);
+	public Profile createProfile(String server, long port, String profileName, String apiKey, boolean useHTTPS, boolean allowUnsigned) {
+		return helper.createProfile(server, port, profileName, apiKey, useHTTPS, allowUnsigned);
 	}
 
 	private int getProfileListPosition(Profile profile) {

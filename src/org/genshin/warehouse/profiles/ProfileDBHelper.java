@@ -21,15 +21,19 @@ public class ProfileDBHelper extends SQLiteOpenHelper {
 	private static final String COLUMN_SERVER = "server";
 	private static final String COLUMN_PORT = "port";
 	private static final String COLUMN_APIKEY = "apiKey";
+	private static final String COLUMN_USEHTTPS = "useHTTPS";
+	private static final String COLUMN_ALLOWUNSIGNED = "allowUnsigned";
 	private static final String DATABASE_NAME = "warehouse.db";
-	private static final int DATABASE_VERSION = 4;
+	private static final int DATABASE_VERSION = 5;
 	
 	private String[] allColumns = {
 			ProfileDBHelper.COLUMN_ID,
 			ProfileDBHelper.COLUMN_NAME,
 			ProfileDBHelper.COLUMN_SERVER,
 			ProfileDBHelper.COLUMN_PORT,
-			ProfileDBHelper.COLUMN_APIKEY };
+			ProfileDBHelper.COLUMN_APIKEY,
+			ProfileDBHelper.COLUMN_USEHTTPS,
+			ProfileDBHelper.COLUMN_ALLOWUNSIGNED};
 
 	public static final String DATABASE_CREATE =
 			//Profiles
@@ -39,7 +43,9 @@ public class ProfileDBHelper extends SQLiteOpenHelper {
 			+ COLUMN_NAME + " string not null, "
 			+ COLUMN_SERVER + " string not null, "
 			+ COLUMN_PORT + " integer not null, "
-			+ COLUMN_APIKEY + " string not null);";
+			+ COLUMN_APIKEY + " string not null,"
+			+ COLUMN_USEHTTPS + " boolean not null,"
+			+ COLUMN_ALLOWUNSIGNED + " boolean not null);";
 	
 	public ProfileDBHelper(Context context) {
 		super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -68,13 +74,15 @@ public class ProfileDBHelper extends SQLiteOpenHelper {
 	}
 
 	//Create a new profile
-	public Profile createProfile(String server, long port, String name, String apiKey) {
+	public Profile createProfile(String server, long port, String name, String apiKey, boolean useHTTPS, boolean allowUnsigned) {
 		openDB();
 			ContentValues values = new ContentValues();
 			values.put(ProfileDBHelper.COLUMN_SERVER, server);
 			values.put(ProfileDBHelper.COLUMN_NAME, name);
 			values.put(ProfileDBHelper.COLUMN_PORT, port);
 			values.put(ProfileDBHelper.COLUMN_APIKEY, apiKey);
+			values.put(ProfileDBHelper.COLUMN_USEHTTPS, useHTTPS);
+			values.put(ProfileDBHelper.COLUMN_ALLOWUNSIGNED, allowUnsigned);
 			long insertID = db.insert(ProfileDBHelper.TABLE_PROFILES, null, values);
 			Cursor cursor = db.query(ProfileDBHelper.TABLE_PROFILES, allColumns, ProfileDBHelper.COLUMN_ID + " = " + insertID, null, null, null, null);
 			cursor.moveToFirst();
@@ -95,6 +103,8 @@ public class ProfileDBHelper extends SQLiteOpenHelper {
 			values.put(ProfileDBHelper.COLUMN_NAME, profile.name);
 			values.put(ProfileDBHelper.COLUMN_PORT, profile.port);
 			values.put(ProfileDBHelper.COLUMN_APIKEY, profile.apiKey);
+			values.put(ProfileDBHelper.COLUMN_USEHTTPS, profile.useHTTPS);
+			values.put(ProfileDBHelper.COLUMN_ALLOWUNSIGNED, profile.allowUnsigned);
 			
 			db.update(ProfileDBHelper.TABLE_PROFILES, values, ProfileDBHelper.COLUMN_ID + " = " + profile.id, null);
 		closeDB();
@@ -103,7 +113,13 @@ public class ProfileDBHelper extends SQLiteOpenHelper {
 	//Converts a cursor record to a Profile object
 	private Profile cursorToProfile(Cursor c) {
 		Profile p = new Profile();
-		p.set(c.getLong(0)/*id*/, c.getString(1)/*name*/, c.getString(2)/*server*/, c.getInt(3) /*port*/, c.getString(4)/*apiKey*/);
+		p.set(c.getLong(0)/*id*/,
+				c.getString(1)/*name*/,
+				c.getString(2)/*server*/,
+				c.getInt(3) /*port*/,
+				c.getString(4)/*apiKey*/,
+				(c.getInt(5) != 0)/*useHTTPS*/,
+				(c.getInt(6) != 0)/*allowUnsigned*/);
 		return p;
 	}
 	

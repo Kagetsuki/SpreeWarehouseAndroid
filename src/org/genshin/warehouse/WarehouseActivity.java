@@ -1,5 +1,6 @@
 package org.genshin.warehouse;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import android.app.Activity;
 import android.content.Context;
@@ -14,11 +15,15 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import org.apache.http.HttpResponse;
+import org.apache.http.StatusLine;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.methods.HttpGet;
 import org.genshin.gsa.Dialogs;
 import org.genshin.gsa.ScanSystem;
 import org.genshin.gsa.ThumbListAdapter;
 import org.genshin.gsa.ThumbListItem;
-import org.genshin.gsa.network.ConnectionStatus;
+import org.genshin.gsa.network.NetworkTask;
+import org.genshin.spree.ConnectionStatus;
 import org.genshin.warehouse.Warehouse.ResultCodes;
 import org.genshin.warehouse.orders.OrdersMenuActivity;
 import org.genshin.warehouse.packing.PackingMenuActivity;
@@ -115,21 +120,21 @@ public class WarehouseActivity extends Activity {
 		private ImageView connectionStatusIcon;
 		public ConnectionStatusIndicator(Context ctx) {
 			super(ctx);
-			connectionStatusIcon = (ImageView) findViewById(R.id.connection_status_icon);
 		}
 		
 		@Override
-		protected void onPostExecute(HttpResponse result) {
+		protected void complete() {
+			connectionStatusIcon = (ImageView) findViewById(R.id.connection_status_icon);
 			if (connected) {
 				connectionStatusIcon.setImageResource(android.R.drawable.presence_away);
+				if (status == "OK") {
+					connectionStatusIcon.setImageResource(android.R.drawable.presence_online);
+				} else if (status == "ERROR"){
+					connectionStatusIcon.setImageResource(android.R.drawable.presence_away);
+				} else {
+					connectionStatusIcon.setImageResource(android.R.drawable.presence_offline);
+				}
 			}
-			/*if (check == "OK") {
-			connectionStatusIcon.setImageResource(android.R.drawable.presence_online);
-		} else if (check == "ERROR"){
-			connectionStatusIcon.setImageResource(android.R.drawable.presence_away);
-		} else {
-			connectionStatusIcon.setImageResource(android.R.drawable.presence_offline);
-		}*/
 		}
 		
 	}
@@ -148,19 +153,19 @@ public class WarehouseActivity extends Activity {
         warehouse = new Warehouse(this); 
         
         hookupInterface();
-        
+        NetworkTask.Setup(warehouse.Profiles().selected.server,
+        		warehouse.Profiles().selected.port,
+        		warehouse.Profiles().selected.apiKey,
+        		warehouse.Profiles().selected.useHTTPS);
         checkConnection();
     }
     
-    public void settingsClickHandler(View view)
-	{
+    public void settingsClickHandler(View view) {
 		Intent settingsIntent = new Intent(this, WarehouseSettingsActivity.class);
     	startActivityForResult(settingsIntent, ResultCodes.SETTINGS.ordinal());
 	}
     
-    private void menuListClickHandler(AdapterView<?> parent, View view,
-            int position)
-    {
+    private void menuListClickHandler(AdapterView<?> parent, View view, int position) {
         Intent menuItemIntent = new Intent(parent.getContext(), menuListItems[position].cls);
     	startActivity(menuItemIntent);
     }

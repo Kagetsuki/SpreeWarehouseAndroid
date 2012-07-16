@@ -1,5 +1,6 @@
 package org.genshin.warehouse.profiles;
 
+import org.genshin.gsa.network.NetworkTask;
 import org.genshin.spree.RESTConnector;
 import org.genshin.warehouse.R;
 import org.json.JSONException;
@@ -12,6 +13,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
@@ -32,7 +34,9 @@ public class ProfileSettingsActivity extends Activity {
     EditText port;
     EditText name;
     EditText apiKey;
-	
+	CheckBox forceHTTPS;
+	CheckBox allowUnsigned;
+    
     public static enum resultCodes { scan };
     
     //hooks up interface elements to callbacks and events
@@ -49,6 +53,8 @@ public class ProfileSettingsActivity extends Activity {
         saveButton = (Button) findViewById(R.id.profile_save_button);
         testButton = (Button) findViewById(R.id.profile_test_button);
         scanButton = (Button) findViewById(R.id.profile_scan_button);
+        forceHTTPS = (CheckBox) findViewById(R.id.force_https_checkbox);
+        allowUnsigned = (CheckBox) findViewById(R.id.allow_unsigned_cert_checkbox);
         
         deleteButton.setOnClickListener(new View.OnClickListener() {
         	public void onClick(View v) {
@@ -149,7 +155,10 @@ public class ProfileSettingsActivity extends Activity {
         server.setText(profiles.selected.server);
         name.setText(profiles.selected.name);
         port.setText(String.valueOf(profiles.selected.port));
+        forceHTTPS.setChecked(profiles.selected.useHTTPS);
         apiKey.setText(profiles.selected.apiKey);
+        allowUnsigned.setChecked(profiles.selected.allowUnsigned);
+        
 	}
 	
 	private void setNew() {
@@ -163,7 +172,7 @@ public class ProfileSettingsActivity extends Activity {
 	}
 	
 	private void createProfile() {
-		profiles.createProfile(server.getText().toString(), Long.parseLong(port.getText().toString()), name.getText().toString(), apiKey.getText().toString());
+		profiles.createProfile(server.getText().toString(), Long.parseLong(port.getText().toString()), name.getText().toString(), apiKey.getText().toString(), forceHTTPS.isChecked(), allowUnsigned.isChecked());
 		loadProfiles();
 	}
 	
@@ -177,6 +186,8 @@ public class ProfileSettingsActivity extends Activity {
 		updatedProfile.server = server.getText().toString();
 		updatedProfile.port = Integer.parseInt(port.getText().toString());
 		updatedProfile.apiKey = apiKey.getText().toString();
+		updatedProfile.useHTTPS = forceHTTPS.isChecked();
+		updatedProfile.allowUnsigned = allowUnsigned.isChecked();
 		
 		//update!
 		profiles.updateProfile(updatedProfile);
@@ -214,8 +225,11 @@ public class ProfileSettingsActivity extends Activity {
 					JSONObject profileObj = containerObj.getJSONObject("profile");
 					name.setText(profileObj.getString("name"));
 					server.setText(profileObj.getString("server"));
-			    	port.setText("" + profileObj.getInt("port"));
+					int portNum = profileObj.getInt("port");
+			    	port.setText("" + portNum);
+			    	forceHTTPS.setChecked(NetworkTask.isStandardHTTPSPort(portNum));   		
 			        apiKey.setText(profileObj.getString("key"));
+			        allowUnsigned.setChecked(false);
 				} catch (JSONException e) {
 					e.printStackTrace();
 					Toast.makeText(this, "Invalid Profile Code", Toast.LENGTH_LONG).show();
