@@ -29,14 +29,8 @@ import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpParams;
 import org.apache.http.params.HttpProtocolParams;
 import org.apache.http.protocol.HTTP;
-import org.genshin.spree.RESTConnector.AnyCertSSLSocketFactory;
-import org.genshin.warehouse.Warehouse;
-
 import android.content.Context;
 import android.os.AsyncTask;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-import android.net.http.AndroidHttpClient;
 
 public class NetworkTask extends AsyncTask<String, Void, HttpResponse>{
 	protected boolean usePresets;

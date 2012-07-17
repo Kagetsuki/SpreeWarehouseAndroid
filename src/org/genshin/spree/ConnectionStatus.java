@@ -40,8 +40,7 @@ public class ConnectionStatus extends SpreeConnector {
 		HttpGet getter = getGetter("");
 		
 		try {
-			HttpResponse response;
-			response = getHttpClient().execute(getter);
+			HttpResponse response = getHttpClient().execute(getter);
 			StatusLine statusLine = response.getStatusLine();
 			statusCode = statusLine.getStatusCode();
 			response.getStatusLine();

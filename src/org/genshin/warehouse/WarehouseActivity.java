@@ -1,6 +1,5 @@
 package org.genshin.warehouse;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import android.app.Activity;
 import android.content.Context;
@@ -14,11 +13,6 @@ import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.StatusLine;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.methods.HttpGet;
-import org.genshin.gsa.Dialogs;
 import org.genshin.gsa.ScanSystem;
 import org.genshin.gsa.ThumbListAdapter;
 import org.genshin.gsa.ThumbListItem;
@@ -140,9 +134,9 @@ public class WarehouseActivity extends Activity {
 	}
 	
 	private void checkConnection() {
-		Dialogs.showConnecting(this);
+		//Dialogs.showConnecting(this);
 		new ConnectionStatusIndicator(this).execute();
-		Dialogs.dismiss();
+		//Dialogs.dismiss();
 	}
 	
     @Override
@@ -208,6 +202,7 @@ public class WarehouseActivity extends Activity {
 			ProductsMenuActivity.showProductDetails(this, Warehouse.Products().selected());
         } else if (resultCode == ResultCodes.SETTINGS.ordinal()) {
         	loadProfiles();
+        	checkConnection();
         }
     }
 
