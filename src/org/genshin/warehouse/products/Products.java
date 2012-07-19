@@ -80,14 +80,10 @@ public class Products {
 	}
 
 	
-	public ArrayList<Product> getNewestProducts(int limit) {
-		Dialogs.showLoading(ctx);
-		
+	public ArrayList<Product> getNewestProducts(int limit) {		
 		ArrayList<Product> collection = new ArrayList<Product>();
 		JSONObject productContainer = Warehouse.Spree().connector.getJSONObject("api/products.json?page=1");
 		collection = processProductContainer(productContainer);
-		
-		Dialogs.dismiss();
 		
 		return collection;
 	}
@@ -105,8 +101,6 @@ public class Products {
 	}
 
 	public ArrayList<Product> textSearch(String query) {
-		Dialogs.showSearching(ctx);
-
 		ArrayList<Product> collection = new ArrayList<Product>();
 		String escapedQuery = query;
 		try {
@@ -117,8 +111,6 @@ public class Products {
 		}
 		JSONObject productContainer = Warehouse.Spree().connector.getJSONObject("api/products/search.json?q[name_cont]=" + escapedQuery);
 		collection = processProductContainer(productContainer);
-		
-		Dialogs.dismiss();
 		
 		return collection;
 	}

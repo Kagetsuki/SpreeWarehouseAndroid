@@ -163,9 +163,8 @@ public class UpdateActivity extends Activity {
 		}
 		
 		@Override
-		protected HttpResponse doInBackground(String... params) {
+		protected void process() {
 			getVersionInfo();
-			return null;
 		}
 		
 		@Override
