@@ -1,24 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/warehouse_settings_layout"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="match_parent"
     android:layout_gravity="bottom"
     android:orientation="vertical" >
 
     <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <Spinner
+            android:id="@+id/warehouse_profile_spinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
+        <ImageView
+            android:id="@+id/connection_status_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="0.73"
+            android:src="@android:drawable/presence_offline" />
+    </LinearLayout>
+
+    <LinearLayout
         android:id="@+id/linearLayout2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentRight="true"
-        android:layout_below="@+id/warehouse_profile_spinner" >
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
 
         <ListView
             android:id="@+id/main_menu_actions_list"
             android:layout_width="204dp"
-            android:layout_height="wrap_content" >
+            android:layout_height="match_parent" >
         </ListView>
 
         <LinearLayout
@@ -44,21 +58,4 @@
         </LinearLayout>
     </LinearLayout>
 
-    <Spinner
-        android:id="@+id/warehouse_profile_spinner"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_toLeftOf="@+id/connection_status_icon"
-        android:layout_weight="1" />
-
-    <ImageView
-        android:id="@+id/connection_status_icon"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/warehouse_profile_spinner"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentTop="true"
-        android:src="@android:drawable/presence_offline" />
-
-</RelativeLayout>
+</LinearLayout>

@@ -3,6 +3,7 @@ package org.genshin.warehouse.products;
 import java.util.ArrayList;
 
 import org.genshin.gsa.ScanSystem;
+import org.genshin.gsa.network.NetworkTask;
 import org.genshin.warehouse.R;
 import org.genshin.warehouse.Warehouse;
 import org.genshin.warehouse.WarehouseActivity;
@@ -72,8 +73,7 @@ public class ProductsMenuActivity extends Activity {
 		searchButton = (Button) findViewById(R.id.products_menu_search_button);
 		searchButton.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
-				Warehouse.Products().textSearch(searchBar.getText().toString());
-				refreshProductMenu();
+				new SearchProductsRefresh(v.getContext(), searchBar.getText().toString()).execute();
 				clearImage();
 				orderSpinner.setSelection(0);
 			}
@@ -113,8 +113,7 @@ public class ProductsMenuActivity extends Activity {
                 	case 0:		// 未選択
                 		break;
                 	case 1:		// 初期値に戻す
-                		Warehouse.Products().textSearch(searchBar.getText().toString());
-        				refreshProductMenu();
+                		new SearchProductsRefresh(view.getContext(), searchBar.getText().toString()).execute();
                 		clearImage();
                 		break;
                 	case 2:		// 名前順
@@ -177,10 +176,70 @@ public class ProductsMenuActivity extends Activity {
 				Toast.makeText(this, getString(R.string.select_a_product), Toast.LENGTH_LONG).show();
 			}
 		} else if (Warehouse.Products().list.size() == 0)
-        	Warehouse.Products().getNewestProducts(10);
-        
-        refreshProductMenu();
-        
+			new NewProductsRefresh(this, 10).execute();
+	}
+	
+	class ProductsListRefresh extends NetworkTask {
+
+		public ProductsListRefresh(Context ctx) {
+			super(ctx);
+		}
+		
+		@Override
+		protected void complete() {
+			ListView productList = (ListView) findViewById(R.id.product_menu_list);
+			//refreshProductMenu();
+			ProductListItem[] productListItems = new ProductListItem[Warehouse.Products().list.size()];
+			
+			for (int i = 0; i < Warehouse.Products().list.size(); i++) {
+				Product p = Warehouse.Products().list.get(i);
+				Drawable thumb = null;
+				if (p.thumbnail != null)
+					thumb = p.thumbnail.data;
+				
+				productListItems[i] = new ProductListItem(thumb, p.name, p.sku, p.countOnHand, p.permalink, p.price, p.id);
+			}
+			
+			statusText.setText(Warehouse.Products().count + Warehouse.getContext().getString(R.string.products_counter) );
+			
+			productsAdapter = new ProductListAdapter(Warehouse.getContext(), productListItems);
+			productList.setAdapter(productsAdapter);
+			productList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+				public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+					productListClickHandler(parent, view, position);
+				}
+			});
+		}
+		
+	}
+	
+	class NewProductsRefresh extends ProductsListRefresh {
+		private int count;
+		
+		public NewProductsRefresh(Context ctx, int count) {
+			super(ctx);
+			this.count = count;
+		}
+
+		@Override
+		protected void process() {
+			Warehouse.Products().getNewestProducts(count);
+		}
+	}
+	
+	class SearchProductsRefresh extends ProductsListRefresh {
+		String query;
+		
+		public SearchProductsRefresh(Context ctx, String query) {
+			super(ctx);
+			this.query = query;
+		}
+		
+		@Override
+		protected void process() {
+			Warehouse.Products().textSearch(query);
+		}
+		
 	}
 
 	public static enum menuCodes { registerProduct };

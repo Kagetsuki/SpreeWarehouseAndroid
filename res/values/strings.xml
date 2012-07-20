@@ -95,6 +95,11 @@
 	<string name="scan_cancelled">Scan Cancelled</string>
 	<string name="select_a_product">Please Select A Product</string>
 	<string name="build">Build</string>
+	<string name="no_profiles">No Profiles Found</string>
+	<string name="please_register_profile">Please register a profile.</string>
+	<string name="register">Register</string>
+	<string name="force_https">HTTPS?</string>
+	<string name="blank"></string>
 
 	<!-- alert content -->
 	<string name="unregistered_barcode_title">Unregistered Barcode</string>
@@ -110,6 +115,7 @@
 	<string name="ordernumber_dummy">R000000000</string>
 	<string name="customer_name_dummy">Spree Customer</string>
 	<string name="three_zero">000</string>
+	
 	
 	
 </resources>

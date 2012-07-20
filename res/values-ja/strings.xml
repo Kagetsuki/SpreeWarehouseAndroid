@@ -94,6 +94,9 @@
 	<string name="scan_cancelled">スキャンが中止されました</string>
 	<string name="select_a_product">目的商品を選択して下さい</string>
 	<string name="build">ビルド</string>
+	<string name="no_profiles">プロフィールが登録されていない</string>
+	<string name="please_register_profile">一つ以上のプロフィールを登録して下さい</string>
+	<string name="register">登録</string>
 	
 	<!-- alert content -->
 	<string name="unregistered_barcode_title">未登録バーコード</string>

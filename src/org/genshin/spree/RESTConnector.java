@@ -2,12 +2,8 @@ package org.genshin.spree;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.net.Socket;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.net.URLEncoder;
+
 import java.net.UnknownHostException;
 import java.security.KeyManagementException;
 import java.security.KeyStore;
@@ -55,13 +51,11 @@ import org.json.JSONObject;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 
-import android.app.Activity;
 import android.content.Context;
-import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
-public class RESTConnector extends Activity {
+public class RESTConnector {
 	private Context ctx;
 	private Boolean initialized;
 	private HttpClient client;
@@ -88,12 +82,6 @@ public class RESTConnector extends Activity {
 
 	public String baseURL() {
 		return protocolHeader() + server + ":" + port + "/";
-	}
-	
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		initialized = false;
 	}
 
 	private HttpClient getHttpClient() {
@@ -167,6 +155,7 @@ public class RESTConnector extends Activity {
 	
 	public String test() {
 		int statusCode = 0;
+		
 		
 		HttpGet getter = getGetter("");
 		

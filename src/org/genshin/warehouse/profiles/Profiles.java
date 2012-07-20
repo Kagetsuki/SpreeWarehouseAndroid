@@ -10,9 +10,17 @@
 package org.genshin.warehouse.profiles;
 
 import java.util.ArrayList;
-import org.genshin.warehouse.settings.WarehousePreferences;
 
+import org.genshin.warehouse.R;
+import org.genshin.warehouse.Warehouse;
+import org.genshin.warehouse.products.ProductEditActivity;
+import org.genshin.warehouse.settings.WarehousePreferences;
+import org.genshin.warehouse.settings.WarehouseSettingsActivity;
+
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -43,8 +51,8 @@ public class Profiles {
 	}
 
 	//Create a new profile
-	public Profile createProfile(String server, long port, String profileName, String apiKey) {
-		return helper.createProfile(server, port, profileName, apiKey);
+	public Profile createProfile(String server, long port, String profileName, String apiKey, boolean useHTTPS, boolean allowUnsigned) {
+		return helper.createProfile(server, port, profileName, apiKey, useHTTPS, allowUnsigned);
 	}
 
 	private int getProfileListPosition(Profile profile) {
@@ -154,5 +162,28 @@ public class Profiles {
 		}
 		
 		return createDummyProfile();
+	}
+	
+	public static void noRegisteredProfiles() {
+		Context ctx = Warehouse.getContext();
+		AlertDialog.Builder question = new AlertDialog.Builder(ctx);
+
+		question.setTitle(ctx.getString(R.string.no_profiles));
+		question.setMessage(ctx.getString(R.string.please_register_profile));
+		//question.setIcon(R.drawable.newproduct);
+		question.setPositiveButton(ctx.getString(R.string.register), new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface arg0, int arg1) {
+				Intent intent = new Intent(Warehouse.getContext(), ProfileSettingsActivity.class);
+	            Warehouse.getContext().startActivity(intent);
+			}
+		});
+		
+		question.setNegativeButton(ctx.getString(R.string.cancel), new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface arg0, int arg1) {
+			}
+		});
+
+		question.show();	
+	
 	}
 }

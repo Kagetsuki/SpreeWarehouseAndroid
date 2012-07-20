@@ -4,6 +4,7 @@ import org.genshin.gsa.VisualCode;
 import org.genshin.spree.SpreeConnector;
 import org.genshin.warehouse.products.Product;
 import org.genshin.warehouse.products.Products;
+import org.genshin.warehouse.profiles.Profiles;
 import org.genshin.warehouse.racks.ContainerTaxon;
 import org.genshin.warehouse.racks.WarehouseDivision;
 import org.genshin.warehouse.racks.WarehouseDivisions;
@@ -28,6 +29,7 @@ public class Warehouse {
 	private static VisualCode code;
 
 	private static Products products;
+	private static Profiles profiles;
 	
 	private static WarehouseDivisions warehouses;
 	
@@ -44,6 +46,13 @@ public class Warehouse {
 	
 	public static Products Products() {
 		return Warehouse.products;
+	}
+
+	public static Profiles Profiles() {
+		if (Warehouse.profiles == null)
+			Warehouse.profiles = new Profiles(ctx);
+
+		return profiles;
 	}
 	
 	public static WarehouseDivisions Warehouses() {

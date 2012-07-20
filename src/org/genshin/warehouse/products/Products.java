@@ -80,14 +80,10 @@ public class Products {
 	}
 
 	
-	public ArrayList<Product> getNewestProducts(int limit) {
-		Dialogs.showLoading(ctx);
-		
+	public ArrayList<Product> getNewestProducts(int limit) {		
 		ArrayList<Product> collection = new ArrayList<Product>();
 		JSONObject productContainer = Warehouse.Spree().connector.getJSONObject("api/products.json?page=1");
 		collection = processProductContainer(productContainer);
-		
-		Dialogs.dismiss();
 		
 		return collection;
 	}
@@ -105,8 +101,6 @@ public class Products {
 	}
 
 	public ArrayList<Product> textSearch(String query) {
-		Dialogs.showSearching(ctx);
-
 		ArrayList<Product> collection = new ArrayList<Product>();
 		String escapedQuery = query;
 		try {
@@ -118,16 +112,14 @@ public class Products {
 		JSONObject productContainer = Warehouse.Spree().connector.getJSONObject("api/products/search.json?q[name_cont]=" + escapedQuery);
 		collection = processProductContainer(productContainer);
 		
-		Dialogs.dismiss();
-		
 		return collection;
 	}
 	
 	 public void unregisteredBarcode(final String code) {
 		AlertDialog.Builder question = new AlertDialog.Builder(ctx);
 
-		question.setMessage(ctx.getString(R.string.unregistered_barcode_new_product));
 		question.setTitle(ctx.getString(R.string.unregistered_barcode_title));
+		question.setMessage(ctx.getString(R.string.unregistered_barcode_new_product));
 		question.setIcon(R.drawable.newproduct);
 		question.setPositiveButton(ctx.getString(R.string.register_to_new_product), new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface arg0, int arg1) {

@@ -2,6 +2,7 @@ package org.genshin.warehouse;
 
 import java.util.ArrayList;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -12,10 +13,11 @@ import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-import org.genshin.gsa.Dialogs;
 import org.genshin.gsa.ScanSystem;
 import org.genshin.gsa.ThumbListAdapter;
 import org.genshin.gsa.ThumbListItem;
+import org.genshin.gsa.network.NetworkTask;
+import org.genshin.spree.ConnectionStatus;
 import org.genshin.warehouse.Warehouse.ResultCodes;
 import org.genshin.warehouse.orders.OrdersMenuActivity;
 import org.genshin.warehouse.packing.PackingMenuActivity;
@@ -35,13 +37,18 @@ public class WarehouseActivity extends Activity {
 	//Interface objects
 	private Button scanButton;
 	private ListView menuList;
-	private ImageView connectionStatusIcon;
+	
 	private Spinner profileSpinner; 
 	private Profiles profiles;
 
 	ThumbListItem[] menuListItems;
 	
 	private void createMainMenu() {
+		if (profiles.list.size() <= 0) {
+			Profiles.noRegisteredProfiles();
+			return;
+		}
+		
 		//Create main menu list items
 		menuListItems  = new ThumbListItem[] { 
 				new ThumbListItem(R.drawable.products, getString(R.string.products), "", ProductsMenuActivity.class),
@@ -52,6 +59,17 @@ public class WarehouseActivity extends Activity {
 				new ThumbListItem(R.drawable.packing, getString(R.string.packing), "", PackingMenuActivity.class),
 				new ThumbListItem(R.drawable.shipping, getString(R.string.shipping), "", ShippingMenuActivity.class)
 			};
+		
+		//Menu List
+        menuList = (ListView) findViewById(R.id.main_menu_actions_list);
+        ThumbListAdapter menuAdapter = new ThumbListAdapter(this, menuListItems);
+		menuList.setAdapter(menuAdapter);
+        menuList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            public void onItemClick(AdapterView<?> parent, View view,
+                    int position, long id) {
+            	menuListClickHandler(parent, view, position);
+            }
+        });
 	}
 	
 	private void loadProfiles() {
@@ -81,38 +99,44 @@ public class WarehouseActivity extends Activity {
         		ScanSystem.initiateScan(v.getContext());
             }
 		});
-        
-        //Menu List
-        menuList = (ListView) findViewById(R.id.main_menu_actions_list);
-        ThumbListAdapter menuAdapter = new ThumbListAdapter(this, menuListItems);
-		menuList.setAdapter(menuAdapter);
-        menuList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            public void onItemClick(AdapterView<?> parent, View view,
-                    int position, long id) {
-            	menuListClickHandler(parent, view, position);
-            }
-        });
-        
+             
       //Profile Spinner
       profileSpinner = (Spinner) findViewById(R.id.warehouse_profile_spinner);
       //Profile Spinner contents loaded and spinner refreshsed in loadProfiles
       loadProfiles();
       
-      connectionStatusIcon = (ImageView) findViewById(R.id.connection_status_icon);
+      createMainMenu();
+      
+      
+	}
+	
+	private class ConnectionStatusIndicator extends ConnectionStatus {
+		private ImageView connectionStatusIcon;
+		public ConnectionStatusIndicator(Context ctx) {
+			super(ctx);
+		}
+		
+		@Override
+		protected void complete() {
+			connectionStatusIcon = (ImageView) findViewById(R.id.connection_status_icon);
+			if (connected) {
+				connectionStatusIcon.setImageResource(android.R.drawable.presence_away);
+				if (status == "OK") {
+					connectionStatusIcon.setImageResource(android.R.drawable.presence_online);
+				} else if (status == "ERROR"){
+					connectionStatusIcon.setImageResource(android.R.drawable.presence_away);
+				} else {
+					connectionStatusIcon.setImageResource(android.R.drawable.presence_offline);
+				}
+			}
+		}
+		
 	}
 	
 	private void checkConnection() {
-		Dialogs.showConnecting(this);
-		String check = Warehouse.Spree().connector.test();
-		Dialogs.dismiss();
-		
-		if (check == "OK") {
-			connectionStatusIcon.setImageResource(android.R.drawable.presence_online);
-		} else if (check == "ERROR"){
-			connectionStatusIcon.setImageResource(android.R.drawable.presence_away);
-		} else {
-			connectionStatusIcon.setImageResource(android.R.drawable.presence_offline);
-		}
+		//Dialogs.showConnecting(this);
+		new ConnectionStatusIndicator(this).execute();
+		//Dialogs.dismiss();
 	}
 	
     @Override
@@ -122,21 +146,20 @@ public class WarehouseActivity extends Activity {
         
         warehouse = new Warehouse(this); 
         
-        createMainMenu();
         hookupInterface();
-        
+        NetworkTask.Setup(warehouse.Profiles().selected.server,
+        		warehouse.Profiles().selected.port,
+        		warehouse.Profiles().selected.apiKey,
+        		warehouse.Profiles().selected.useHTTPS);
         checkConnection();
     }
     
-    public void settingsClickHandler(View view)
-	{
+    public void settingsClickHandler(View view) {
 		Intent settingsIntent = new Intent(this, WarehouseSettingsActivity.class);
     	startActivityForResult(settingsIntent, ResultCodes.SETTINGS.ordinal());
 	}
     
-    private void menuListClickHandler(AdapterView<?> parent, View view,
-            int position)
-    {
+    private void menuListClickHandler(AdapterView<?> parent, View view, int position) {
         Intent menuItemIntent = new Intent(parent.getContext(), menuListItems[position].cls);
     	startActivity(menuItemIntent);
     }
@@ -179,6 +202,7 @@ public class WarehouseActivity extends Activity {
 			ProductsMenuActivity.showProductDetails(this, Warehouse.Products().selected());
         } else if (resultCode == ResultCodes.SETTINGS.ordinal()) {
         	loadProfiles();
+        	checkConnection();
         }
     }
 

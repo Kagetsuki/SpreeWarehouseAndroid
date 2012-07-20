@@ -17,6 +17,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
+import org.genshin.gsa.network.NetworkTask;
 import org.genshin.warehouse.R;
 import org.genshin.warehouse.Warehouse;
 import org.xmlpull.v1.XmlPullParser;
@@ -25,6 +26,7 @@ import org.xmlpull.v1.XmlPullParserException;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -37,10 +39,8 @@ import android.widget.TextView;
 public class UpdateActivity extends Activity {
 	private Button updateButton;
 	private TextView installedVersionText;
-	private TextView developmentVersionText;
 	
 	private BuildInfo installedInfo;
-	private BuildInfo developmentInfo;
 
 	private String apkUri = "http://files.genshin.org/warehouse/warehouse-latest.apk";
 	private String buildInfoUri = "http://files.genshin.org/warehouse/buildinfo.xml";
@@ -61,9 +61,7 @@ public class UpdateActivity extends Activity {
         
         installedVersionText = (TextView) findViewById(R.id.installed_version_text);
         installedVersionText.setText(installedInfo.getBuildInfoLine());
-        
-        developmentVersionText = (TextView) findViewById(R.id.development_version_text);
-        developmentVersionText.setText(developmentInfo.getBuildInfoLine());
+
 	}
 	
 	private void getVersions() {
@@ -72,83 +70,112 @@ public class UpdateActivity extends Activity {
 				getString(R.string.version_code),
 				Integer.parseInt(getString(R.integer.last_build)));
 		
+		developmentVersion = new DevelopmentVersionInfo(this);
+		developmentVersion.execute();
+				
 		
-		String content = null;
 		
-		try {
-		    DefaultHttpClient httpClient = new DefaultHttpClient();
-		    HttpPost httpPost = new HttpPost(buildInfoUri);
+	}
+	
+	class DevelopmentVersionInfo extends NetworkTask {
+		public BuildInfo developmentInfo;
+		private TextView developmentVersionText;
 		
-		    HttpResponse httpResponse = httpClient.execute(httpPost);
-		    HttpEntity httpEntity = httpResponse.getEntity();
-		    content = EntityUtils.toString(httpEntity);
-		
-		} catch (UnsupportedEncodingException e) {
-		    
-		} catch (MalformedURLException e) {
-		    
-		} catch (IOException e) {
-		    
+		public DevelopmentVersionInfo(Context ctx) {
+			super(ctx);	
 		}
 		
-		XmlPullParser xpp = Xml.newPullParser();
-		try {
-			xpp.setInput(new StringReader(content));
-		} catch (XmlPullParserException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		int evt = XmlPullParser.END_DOCUMENT;
-		try {
-			evt = xpp.getEventType();
-		} catch (XmlPullParserException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		
-		developmentInfo = new BuildInfo();
-		
-		String name = "";
-		String type = "";
-		String text = "";
-		while (evt != XmlPullParser.END_DOCUMENT) {
-			if (evt == XmlPullParser.START_DOCUMENT) {
-			} else if(evt == XmlPullParser.START_TAG) {
-				name = xpp.getName();
-				type = xpp.getAttributeValue(null, "name");
-			} else if(evt == XmlPullParser.TEXT) {
-				text = xpp.getText();
-			} else if(evt == XmlPullParser.END_TAG) {
-				System.out.println(name + ":" + type + ":"+ text);
-				if (name.equals("integer")) {
-					if (type.equals("version_major")) {
-						developmentInfo.majorVersion = Integer.parseInt(text);
-					} else if (type.equals("version_minor")) {
-						developmentInfo.minorVersion = Integer.parseInt(text);
-					} else if (type.equals("last_build")) {
-						developmentInfo.lastBuild = Integer.parseInt(text);
-					}
-				} else if (name.equals("string")) {
-					if (type.equals("version_code")) {
-						developmentInfo.versionCode = text;
-					}
-				}
-				name = type = text = "";
-			}
-
+		private void getVersionInfo() {
+			String content = null;
 			try {
-				evt = xpp.next();
+			    DefaultHttpClient httpClient = new DefaultHttpClient();
+			    HttpPost httpPost = new HttpPost(buildInfoUri);
+			
+			    HttpResponse httpResponse = httpClient.execute(httpPost);
+			    HttpEntity httpEntity = httpResponse.getEntity();
+			    content = EntityUtils.toString(httpEntity);
+			
+			} catch (UnsupportedEncodingException e) {
+			    
+			} catch (MalformedURLException e) {
+			    
+			} catch (IOException e) {
+			    
+			}
+			
+			XmlPullParser xpp = Xml.newPullParser();
+			try {
+				xpp.setInput(new StringReader(content));
 			} catch (XmlPullParserException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-			} catch (IOException e) {
+			}
+			
+			int evt = XmlPullParser.END_DOCUMENT;
+			try {
+				evt = xpp.getEventType();
+			} catch (XmlPullParserException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+			
+			
+			developmentInfo = new BuildInfo();
+			
+			String name = "";
+			String type = "";
+			String text = "";
+			while (evt != XmlPullParser.END_DOCUMENT) {
+				if (evt == XmlPullParser.START_DOCUMENT) {
+				} else if(evt == XmlPullParser.START_TAG) {
+					name = xpp.getName();
+					type = xpp.getAttributeValue(null, "name");
+				} else if(evt == XmlPullParser.TEXT) {
+					text = xpp.getText();
+				} else if(evt == XmlPullParser.END_TAG) {
+					System.out.println(name + ":" + type + ":"+ text);
+					if (name.equals("integer")) {
+						if (type.equals("version_major")) {
+							developmentInfo.majorVersion = Integer.parseInt(text);
+						} else if (type.equals("version_minor")) {
+							developmentInfo.minorVersion = Integer.parseInt(text);
+						} else if (type.equals("last_build")) {
+							developmentInfo.lastBuild = Integer.parseInt(text);
+						}
+					} else if (name.equals("string")) {
+						if (type.equals("version_code")) {
+							developmentInfo.versionCode = text;
+						}
+					}
+					name = type = text = "";
+				}
+
+				try {
+					evt = xpp.next();
+				} catch (XmlPullParserException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
+		
+		@Override
+		protected void process() {
+			getVersionInfo();
+		}
+		
+		@Override
+		protected void complete() {
+			developmentVersionText = (TextView) findViewById(R.id.development_version_text);
+			developmentVersionText.setText(developmentInfo.getBuildInfoLine());
 		}
 	}
+	
+	DevelopmentVersionInfo developmentVersion;
+
 
 	@Override
     public void onCreate(Bundle savedInstanceState) {
@@ -250,7 +277,6 @@ public class UpdateActivity extends Activity {
 	                e.printStackTrace();
 
 	            }
-
 	        }
 	    }).start();
 	}
