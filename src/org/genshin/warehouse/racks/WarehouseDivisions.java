@@ -14,12 +14,11 @@ public class WarehouseDivisions {
 	public ArrayList<WarehouseDivision> divisions;
 	
 	public WarehouseDivisions() {
-		divisions = new ArrayList<WarehouseDivision>();
-		
-		getWarehouses();
+		divisions = new ArrayList<WarehouseDivision>();	
+		//getWarehouses();
 	}
 	
-	private void getWarehouses() {
+	public void getWarehouses() {
 		JSONObject warehousesJSONContainer = Warehouse.Spree().connector.getJSONObject("/api/warehouses.json");
 		
 		try {

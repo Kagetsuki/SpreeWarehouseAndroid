@@ -1,7 +1,10 @@
 package org.genshin.warehouse.orders;
 
+import org.genshin.gsa.network.NetworkTask;
 import org.genshin.spree.SpreeConnector;
 import org.genshin.warehouse.R;
+import org.genshin.warehouse.Warehouse;
+import org.genshin.warehouse.WarehouseActivity;
 import org.genshin.warehouse.Warehouse.ResultCodes;
 import org.genshin.warehouse.products.Product;
 import org.genshin.warehouse.products.ProductDetailsActivity;
@@ -20,6 +23,7 @@ import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -57,7 +61,7 @@ public class OrderDetailsActivity extends TabActivity {
 	private TextView email;
 	private Button accountEditButton;
 	
-	Order order;
+	private Order order;
 	private JSONObject container;
 	
 	private static OrderDetails orderDetails;
@@ -74,6 +78,9 @@ public class OrderDetailsActivity extends TabActivity {
 	private OrderDetailsShipmentAdapter shipmentAdapter;
 	private Button shipmentNewButton;
 
+	private void getOrderInfo() {
+		order = OrdersMenuActivity.getSelectedOrder();
+	}
 	
 	private void initViewElements() {
 		number = (TextView) findViewById(R.id.order_details_number);
@@ -105,63 +112,6 @@ public class OrderDetailsActivity extends TabActivity {
 				(R.id.order_details_shipment).findViewById(R.id.order_details_shipment_list);		
 	}
 	
-	private void getOrderInfo() {
-		order = OrdersMenuActivity.getSelectedOrder();
-	}
-	
-	private void setViewFields() {
-		number.setText(order.number);
-		orderDetails = new OrderDetails(this, spree);
-		orderDetails.processOLIContainer(container);
-		orderDetails.putOrderDetails(container);
-		
-		statement.setText(orderDetails.statement);
-		mainTotal.setText("" + orderDetails.mainTotal);
-		paymentAddress.setText(orderDetails.paymentAddress);
-		shipmentAddress.setText(orderDetails.shipmentAddress);
-		email.setText(orderDetails.email);
-
-		OrderLineItem[] orderLineItem = new OrderLineItem[orderDetails.list.size()];		
-		for (int i = 0; i < orderDetails.list.size(); i++) {
-			OrderLineItem p = orderDetails.list.get(i);
-			
-			orderLineItem[i] = new OrderLineItem(p.name, p.price, p.quantity, p.total);
-		}
-		adapter = new OrderDetailsAdapter(this, orderLineItem);
-		listView.setAdapter(adapter);
-		setListViewHeightBasedOnChildren(listView);
-		
-		orderDetails.getPayment(container);
-		OrderDetailsPayment[] orderDetailsPayment = 
-				new OrderDetailsPayment[orderDetails.paymentList.size()];		
-		for (int i = 0; i < orderDetails.paymentList.size(); i++) {
-			OrderDetailsPayment p = orderDetails.paymentList.get(i);
-			
-			orderDetailsPayment[i] = new OrderDetailsPayment(p.date, 
-					p.amount, p.paymentMethod, p.paymentState, p.action);
-		}
-		paymentAdapter = new OrderDetailsPaymentAdapter(this, orderDetailsPayment);
-		paymentListView.setAdapter(paymentAdapter);
-		setListViewHeightBasedOnChildren2(paymentListView);
-		
-		orderDetails.getShipment(container);
-		OrderDetailsShipment[] orderDetailsShipment = 
-				new OrderDetailsShipment[orderDetails.shipmentList.size()];		
-		for (int i = 0; i < orderDetails.shipmentList.size(); i++) {
-			OrderDetailsShipment p = orderDetails.shipmentList.get(i);
-			
-			orderDetailsShipment[i] = new OrderDetailsShipment
-					(p.number, p.shippingMethod, p.tracking, p.cost, p.state, p.date, p.action);
-		}
-		shipmentAdapter = new OrderDetailsShipmentAdapter(this, orderDetailsShipment);
-		shipmentListView.setAdapter(shipmentAdapter);
-		setListViewHeightBasedOnChildren3(shipmentListView);
-		
-		itemTotal.setText("" + orderDetails.itemTotal);
-		cost.setText("" + orderDetails.cost);
-		lastTotal.setText("" + orderDetails.lastTotal);
-	}
-	
 	private void hookupInterface() {
 		pickingButton = (Button) findViewById
 				(R.id.order_details_main).findViewById(R.id.order_details_picking_button);
@@ -182,6 +132,8 @@ public class OrderDetailsActivity extends TabActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.order_details);
+        
+        Warehouse.setContext(this);
         
         TabHost tabHost = getTabHost();
         
@@ -220,10 +172,9 @@ public class OrderDetailsActivity extends TabActivity {
         spree = new SpreeConnector(this);
 
 		getOrderInfo();
-		getOrderJson(order.number);
 		initViewElements();
-		setViewFields();
 		hookupInterface();
+		new getOrderDetails(this, order.number).execute();
 	}
 	
 	//public static enum menuCodes { stock, destock, registerVisualCode, addOrderImage, editOrderDetails };
@@ -285,13 +236,110 @@ public class OrderDetailsActivity extends TabActivity {
     }
     */
 	
-	public void getOrderJson(String number) {		
+	public void getOrderJson(String number) {	
 		try {
 			JSONObject tmp = spree.connector.getJSONObject("api/orders/" + number + ".json");
 			container = tmp.getJSONObject("order");
 		} catch (JSONException e) {
 			// TODO 自動生成された catch ブロック
 			e.printStackTrace();
+			container = null;
+		}
+	}
+	
+	class getOrderDetails extends NetworkTask {
+		private String number;
+
+		public getOrderDetails(Context ctx, String number) {
+			super(ctx);
+			this.number = number;
+		}	
+		
+		@Override
+		protected void process() {
+			getOrderJson(number);
+		}
+		
+		@Override
+		protected void complete() {
+			new setOrderDetails(Warehouse.getContext(), container).execute();
+		}
+	}
+	
+	class setOrderDetails extends NetworkTask {
+		private JSONObject container;
+		OrderDetails orderDetails = new OrderDetails(Warehouse.getContext(), spree);
+
+		public setOrderDetails(Context ctx, JSONObject container) {
+			super(ctx);
+			this.container = container;
+		}	
+		
+		@Override
+		protected void process() {
+			orderDetails.processOLIContainer(container);
+			orderDetails.putOrderDetails(container);
+			orderDetails.getPayment(container);
+			orderDetails.getShipment(container);
+		}
+		
+		@Override
+		protected void complete() {
+			listView = (ListView) findViewById
+					(R.id.order_details_main).findViewById(R.id.order_details_menu_list);
+			paymentListView = (ListView) findViewById
+					(R.id.order_details_payment).findViewById(R.id.order_details_payment_list);
+			shipmentListView = (ListView) findViewById
+					(R.id.order_details_shipment).findViewById(R.id.order_details_shipment_list);
+			
+			number.setText(order.number);
+			statement.setText(orderDetails.statement);
+			mainTotal.setText("" + orderDetails.mainTotal);
+			paymentAddress.setText(orderDetails.paymentAddress);
+			shipmentAddress.setText(orderDetails.shipmentAddress);
+			email.setText(orderDetails.email);
+
+			// 注文した商品
+			OrderLineItem[] orderLineItem = new OrderLineItem[orderDetails.list.size()];		
+			for (int i = 0; i < orderDetails.list.size(); i++) {
+				OrderLineItem p = orderDetails.list.get(i);
+				
+				orderLineItem[i] = new OrderLineItem(p.name, p.price, p.quantity, p.total);
+			}
+			adapter = new OrderDetailsAdapter(Warehouse.getContext(), orderLineItem);
+			listView.setAdapter(adapter);
+			setListViewHeightBasedOnChildren(listView);
+			
+			// 請求先住所
+			OrderDetailsPayment[] orderDetailsPayment = 
+					new OrderDetailsPayment[orderDetails.paymentList.size()];		
+			for (int i = 0; i < orderDetails.paymentList.size(); i++) {
+				OrderDetailsPayment p = orderDetails.paymentList.get(i);
+				
+				orderDetailsPayment[i] = new OrderDetailsPayment(p.date, 
+						p.amount, p.paymentMethod, p.paymentState, p.action);
+			}
+			paymentAdapter = new OrderDetailsPaymentAdapter(Warehouse.getContext(), orderDetailsPayment);
+			paymentListView.setAdapter(paymentAdapter);
+			setListViewHeightBasedOnChildren2(paymentListView);
+			
+			// 配送先住所
+			OrderDetailsShipment[] orderDetailsShipment = 
+					new OrderDetailsShipment[orderDetails.shipmentList.size()];		
+			for (int i = 0; i < orderDetails.shipmentList.size(); i++) {
+				OrderDetailsShipment p = orderDetails.shipmentList.get(i);
+				
+				orderDetailsShipment[i] = new OrderDetailsShipment
+						(p.number, p.shippingMethod, p.tracking, p.cost, p.state, p.date, p.action);
+			}
+			shipmentAdapter = new OrderDetailsShipmentAdapter(Warehouse.getContext(), orderDetailsShipment);
+			shipmentListView.setAdapter(shipmentAdapter);
+			setListViewHeightBasedOnChildren3(shipmentListView);
+			
+			// 計
+			itemTotal.setText("" + orderDetails.itemTotal);
+			cost.setText("" + orderDetails.cost);
+			lastTotal.setText("" + orderDetails.lastTotal);
 		}
 	}
 	
@@ -361,5 +409,17 @@ public class OrderDetailsActivity extends TabActivity {
 		params.height = height + (listView.getDividerHeight() * (adapter.getCount() - 1));
 		listView.setLayoutParams(params);
 		listView.requestLayout();
+	}
+	
+	
+	// 長押しで最初の画面へ
+	@Override
+	public boolean onKeyLongPress(int keyCode, KeyEvent event) {
+	    if (keyCode == KeyEvent.KEYCODE_BACK) 
+	    {
+	    	startActivity(new Intent(this, WarehouseActivity.class));
+	        return true;
+	    }
+	    return super.onKeyLongPress(keyCode, event);
 	}
 }

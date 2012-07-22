@@ -96,7 +96,10 @@
         <activity 
             android:name=".racks.RacksMenuActivity"
             android:label="@string/racks" >
-            
+        </activity>
+        <activity 
+            android:name=".racks.RackDetailsActivity"
+            android:label="@string/racks" >
         </activity>
         <activity 
             android:name=".packing.PackingMenuActivity"

@@ -193,6 +193,7 @@ public class ProductDetailsActivity extends Activity {
         }
     }
 	
+	// 長押しで最初の画面へ
 	@Override
 	public boolean onKeyLongPress(int keyCode, KeyEvent event) {
 	    if (keyCode == KeyEvent.KEYCODE_BACK) 

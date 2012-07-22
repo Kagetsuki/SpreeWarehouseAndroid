@@ -2,6 +2,7 @@ package org.genshin.warehouse.orders;
 
 import java.util.ArrayList;
 
+import org.genshin.gsa.network.NetworkTask;
 import org.genshin.spree.SpreeConnector;
 import org.genshin.warehouse.R;
 import org.genshin.warehouse.Warehouse;
@@ -17,6 +18,8 @@ import org.genshin.warehouse.orders.OrdersMenuActivity;
 import org.genshin.warehouse.orders.OrdersMenuActivity.menuCodes;
 import org.genshin.warehouse.products.Product;
 import org.genshin.warehouse.products.ProductDetailsActivity;
+import org.genshin.warehouse.products.ProductListAdapter;
+import org.genshin.warehouse.products.ProductListItem;
 import org.genshin.warehouse.products.ProductsMenuActivity;
 
 import android.app.Activity;
@@ -66,8 +69,7 @@ public class OrdersMenuActivity extends Activity {
 		searchButton = (Button) findViewById(R.id.order_menu_search_button);
 		searchButton.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
-				orders.textSearch(searchBar.getText().toString());
-				refreshOrderMenu();
+				new SearchOrdersRefresh(v.getContext(), searchBar.getText().toString()).execute();
 				clearImage();
 				orderSpinner.setSelection(0);
 			}
@@ -95,8 +97,8 @@ public class OrdersMenuActivity extends Activity {
                 	case 0:		// 未選択
                 		break;
                 	case 1:		// 初期値に戻す
-                		orders.textSearch(searchBar.getText().toString());
-        				refreshOrderMenu();
+                		//new SearchOrdersRefresh(view.getContext(), searchBar.getText().toString()).execute();
+                		new NewOrdersRefresh(Warehouse.getContext(), 10).execute();
                 		clearImage();
                 		break;
                 	case 2:		// 名前順
@@ -147,10 +149,10 @@ public class OrdersMenuActivity extends Activity {
         spree = new SpreeConnector(this);
         if (orders == null) {
         	orders = new Orders(this, spree);
-        	orders.getNewestOrders(10);
+        	new NewOrdersRefresh(Warehouse.getContext(), 10).execute();
         }
         
-        refreshOrderMenu();
+        new OrdersListRefresh(Warehouse.getContext()).execute();
         
 	}
 
@@ -181,27 +183,6 @@ public class OrdersMenuActivity extends Activity {
         return false;
     }
     */
-	
-	private void refreshOrderMenu() {		
-		OrderListItem[] orderListItems = new OrderListItem[orders.list.size()];
-		
-		for (int i = 0; i < orders.list.size(); i++) {
-			Order p = orders.list.get(i);
-			orderListItems[i] = new OrderListItem(p.number, p.date, p.name, p.count, p.price, 
-					p.division, p.paymentState, p.pickingState, p.packingState, p.shipmentState);
-		}
-		
-		//statusText.setText(orders.count + this.getString(R.string.orders_counter) );
-		
-		ordersAdapter = new OrderListAdapter(this, orderListItems);
-		orderList.setAdapter(ordersAdapter);
-        orderList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            	orderListClickHandler(parent, view, position);
-            }
-        });
-        
-	}
 	
 	public static void showOrderDetails(Context ctx, Order order) {
 		OrdersMenuActivity.setSelectedOrder(order);
@@ -247,20 +228,69 @@ public class OrdersMenuActivity extends Activity {
 
 	public static void setSelectedOrder(Order selectedOrder) {
 		if (selectedOrder == null) {
-			orders.getNewestOrders(10);
+			//new NewOrdersRefresh(Warehouse.getContext(), 10).execute();
 		}
 		
 		OrdersMenuActivity.selectedOrder = selectedOrder;
 	}
 	
-	@Override
-	public boolean onKeyLongPress(int keyCode, KeyEvent event) {
-	    if (keyCode == KeyEvent.KEYCODE_BACK) 
-	    {
-	    	startActivity(new Intent(this, WarehouseActivity.class));
-	        return true;
-	    }
-	    return super.onKeyLongPress(keyCode, event);
+	class OrdersListRefresh extends NetworkTask {
+
+		public OrdersListRefresh(Context ctx) {
+			super(ctx);
+		}
+		
+		@Override
+		protected void complete() {
+			orderList = (ListView) findViewById(R.id.order_menu_list);
+
+			OrderListItem[] orderListItems = new OrderListItem[orders.list.size()];
+			
+			for (int i = 0; i < orders.list.size(); i++) {
+				Order p = orders.list.get(i);
+				orderListItems[i] = new OrderListItem(p.number, p.date, p.name, p.count, p.price, 
+						p.division, p.paymentState, p.pickingState, p.packingState, p.shipmentState);
+			}
+			
+			//statusText.setText(orders.count + this.getString(R.string.orders_counter) );
+			
+			ordersAdapter = new OrderListAdapter(Warehouse.getContext(), orderListItems);
+			orderList.setAdapter(ordersAdapter);
+	        orderList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+	            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+	            	orderListClickHandler(parent, view, position);
+	            }
+	        });
+		}	
+	}
+	
+	class NewOrdersRefresh extends OrdersListRefresh {
+		private int count;
+		
+		public NewOrdersRefresh(Context ctx, int count) {
+			super(ctx);
+			this.count = count;
+		}
+
+		@Override
+		protected void process() {
+			orders.getNewestOrders(count);
+		}
+		
+	}
+	
+	class SearchOrdersRefresh extends OrdersListRefresh {
+		String query;
+		
+		public SearchOrdersRefresh(Context ctx, String query) {
+			super(ctx);
+			this.query = query;
+		}
+		
+		@Override
+		protected void process() {
+			//orders.textSearch(query);
+		}	
 	}
 	
 	
@@ -287,7 +317,7 @@ public class OrdersMenuActivity extends Activity {
 		}
 		
 		orders.list = sortedList;
-		refreshOrderMenu();
+		new OrdersListRefresh(Warehouse.getContext());
 	}
 	
 	/*
@@ -361,49 +391,14 @@ public class OrdersMenuActivity extends Activity {
 	}
 	*/
 	
-	/*
-	// 名前順
-	public void sortName(){
-		ArrayList<Order> sortedList = new ArrayList<Order>();
-		String[][] sort = new String[orders.list.size()][2];
-		
-		for (int i = 0; i < orders.list.size(); i++) {
-				sort[i][0] = orders.list.get(i).name;
-				sort[i][1] = String.valueOf(orders.list.get(i).id);
-		}
-		
-		Arrays.sort(sort, new nameComparator());
-		
-		for (int i = 0; i <orders.list.size(); i++) {
-			for (int j = 0; j < orders.list.size(); j++)
-				if (sort[i][0].equals(orders.list.get(j).name) &&
-					sort[i][1] == String.valueOf(orders.list.get(j).id)) {
-					sortedList.add(orders.list.get(j));
-				}
-		}
-		
-		orders.list = sortedList;
-		refreshOrderMenu();
-	}		
-	// 比較用
-	public class nameComparator implements Comparator<Object> {
-		private int index;
-
-		public int compare(Object Obj1, Object Obj2) {
-			index = 0;
-
-			String[] str1 = (String[])Obj1;
-			String[] str2 = (String[])Obj2;
-			
-			if ((str1[index].compareTo(str2[index])) == 0) {
-				index = 1;
-			}
-			
-			return (str1[index].compareTo(str2[index]));
-		}
-		
+	// 長押しで最初の画面へ
+	@Override
+	public boolean onKeyLongPress(int keyCode, KeyEvent event) {
+	    if (keyCode == KeyEvent.KEYCODE_BACK) 
+	    {
+	    	startActivity(new Intent(this, WarehouseActivity.class));
+	        return true;
+	    }
+	    return super.onKeyLongPress(keyCode, event);
 	}
-	*/
-
-
 }

@@ -62,19 +62,15 @@ public class Orders {
 	}
 
 	public ArrayList<Order> getNewestOrders(int limit) {
-		Dialogs.showLoading(ctx);
 		
 		ArrayList<Order> collection = new ArrayList<Order>();
 		JSONObject orderContainer = spree.connector.getJSONObject("api/orders.json");
 		collection = processOrderContainer(orderContainer);
 		
-		Dialogs.dismiss();
-		
 		return collection;
 	}
 
 	public ArrayList<Order> textSearch(String query) {
-		Dialogs.showSearching(ctx);
 
 		ArrayList<Order> collection = new ArrayList<Order>();
 		/*
@@ -89,8 +85,6 @@ public class Orders {
 		//JSONObject orderContainer = Warehouse.Spree().connector.getJSONObject("api/orders/search.json?q[name_cont]=" + escapedQuery);
 		JSONObject orderContainer = spree.connector.getJSONObject("api/orders/search.json?q[name_cont]=" + query);
 		collection = processOrderContainer(orderContainer);
-		
-		Dialogs.dismiss();
 		
 		return collection;
 

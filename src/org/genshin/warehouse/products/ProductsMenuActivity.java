@@ -238,8 +238,7 @@ public class ProductsMenuActivity extends Activity {
 		@Override
 		protected void process() {
 			Warehouse.Products().textSearch(query);
-		}
-		
+		}	
 	}
 
 	public static enum menuCodes { registerProduct };
@@ -371,7 +370,6 @@ public class ProductsMenuActivity extends Activity {
 	/////////////////////////////////////////////////////////////////////////////////////
 
 	// ▽ボタンを初期に
-	
 	public void clearImage() {
 		if (updown) {
 			backwardButton.setImageResource(android.R.drawable.arrow_down_float);
@@ -460,51 +458,7 @@ public class ProductsMenuActivity extends Activity {
 		refreshProductMenu();
 	}
 	
-	
-	/*
-	// 名前順
-	public void sortName(){
-		ArrayList<Product> sortedList = new ArrayList<Product>();
-		String[][] sort = new String[products.list.size()][2];
-		
-		for (int i = 0; i < products.list.size(); i++) {
-				sort[i][0] = products.list.get(i).name;
-				sort[i][1] = String.valueOf(products.list.get(i).id);
-		}
-		
-		Arrays.sort(sort, new nameComparator());
-		
-		for (int i = 0; i <products.list.size(); i++) {
-			for (int j = 0; j < products.list.size(); j++)
-				if (sort[i][0].equals(products.list.get(j).name) &&
-					sort[i][1] == String.valueOf(products.list.get(j).id)) {
-					sortedList.add(products.list.get(j));
-				}
-		}
-		
-		products.list = sortedList;
-		refreshProductMenu();
-	}		
-	// 比較用
-	public class nameComparator implements Comparator<Object> {
-		private int index;
-
-		public int compare(Object Obj1, Object Obj2) {
-			index = 0;
-
-			String[] str1 = (String[])Obj1;
-			String[] str2 = (String[])Obj2;
-			
-			if ((str1[index].compareTo(str2[index])) == 0) {
-				index = 1;
-			}
-			
-			return (str1[index].compareTo(str2[index]));
-		}
-		
-	}
-	*/
-	
+	// 長押しで最初の画面へ
 	@Override
 	public boolean onKeyLongPress(int keyCode, KeyEvent event) {
 	    if (keyCode == KeyEvent.KEYCODE_BACK) 
