@@ -1,6 +1,5 @@
 package org.genshin.warehouse;
 
-import java.util.ArrayList;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -21,7 +20,7 @@ import org.genshin.spree.ConnectionStatus;
 import org.genshin.warehouse.Warehouse.ResultCodes;
 import org.genshin.warehouse.orders.OrdersMenuActivity;
 import org.genshin.warehouse.packing.PackingMenuActivity;
-import org.genshin.warehouse.products.Product;
+import org.genshin.warehouse.products.ProductSearcher;
 import org.genshin.warehouse.products.ProductsMenuActivity;
 import org.genshin.warehouse.profiles.Profiles;
 import org.genshin.warehouse.racks.RacksMenuActivity;
@@ -180,8 +179,10 @@ public class WarehouseActivity extends Activity {
 
 				} else if (ScanSystem.isProductCode(format)) {
 					// if it's a Barcode it's a product
+					
+					new ProductSearcher(this, format, contents).execute();
                 	
-                	ArrayList<Product> foundProducts = Warehouse.Products().findByBarcode(contents);
+                	/*ArrayList<Product> foundProducts = Warehouse.Products().findByBarcode(contents);
                 	//one result means forward to that product
                 	if (foundProducts.size() == 1) {
                 		ProductsMenuActivity.showProductDetails(this, foundProducts.get(0));
@@ -190,7 +191,7 @@ public class WarehouseActivity extends Activity {
                 		Warehouse.Products().unregisteredBarcode(contents);
                 	} else if (foundProducts.size() > 1) {
 						ProductsMenuActivity.selectProductActivity(this, format, contents);
-                	}
+                	}*/
                 } else {
                 	// not a hadled code type
                 }
@@ -205,5 +206,4 @@ public class WarehouseActivity extends Activity {
         	checkConnection();
         }
     }
-
 }

@@ -12,6 +12,7 @@ import org.genshin.warehouse.R;
 import org.genshin.warehouse.Warehouse;
 import org.genshin.warehouse.Warehouse.ResultCodes;
 import org.genshin.warehouse.products.Product;
+import org.genshin.warehouse.products.ProductSearcher;
 import org.genshin.warehouse.products.Products;
 import org.genshin.warehouse.products.ProductsMenuActivity;
 import org.genshin.warehouse.racks.ContainerTaxon;
@@ -21,6 +22,7 @@ import org.json.JSONObject;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -79,7 +81,9 @@ public class StockingRepetitiveScanner extends RepetitiveScanner {
 			
 			
 		} else if (ScanSystem.isProductCode(format)) {
-			ArrayList<Product> found = Warehouse.Products().findByBarcode(contents);
+        	Warehouse.setContext(this);
+        	new ProductSearcher(Warehouse.getContext(), format, contents, "SELECT").execute();
+		/*	ArrayList<Product> found = Warehouse.Products().findByBarcode(contents);
 			
 			if (found.size() == 1) {
 				Warehouse.Products().select(found.get(0));
@@ -91,7 +95,7 @@ public class StockingRepetitiveScanner extends RepetitiveScanner {
 				status = RepetitiveScanCodes.FINISH.ordinal();
 				// not found, register new?
 				Warehouse.Products().unregisteredBarcode(contents);
-			}
+			}*/
 			
 			
 		}

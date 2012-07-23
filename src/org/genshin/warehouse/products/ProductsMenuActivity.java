@@ -168,9 +168,10 @@ public class ProductsMenuActivity extends Activity {
 		if (modeString != null) {
 			if (modeString.equals("PRODUCT_SELECT")) {
 				mode = Warehouse.ResultCodes.PRODUCT_SELECT.ordinal();
+				refreshProductMenu();
 				Toast.makeText(this, getString(R.string.select_a_product), Toast.LENGTH_LONG).show();
 			} else if (modeString.equals("PRODUCT_LIST")) {
-				
+				refreshProductMenu();
 			} else if (modeString.equals("UPDATE_PRODUCT_BARCODE")) {
 				mode = Warehouse.ResultCodes.UPDATE_PRODUCT_BARCODE.ordinal();
 				Toast.makeText(this, getString(R.string.select_a_product), Toast.LENGTH_LONG).show();
@@ -278,7 +279,7 @@ public class ProductsMenuActivity extends Activity {
 			productListItems[i] = new ProductListItem(thumb, p.name, p.sku, p.countOnHand, p.permalink, p.price, p.id);
 		}
 		
-		statusText.setText(Warehouse.Products().count + this.getString(R.string.products_counter) );
+		statusText.setText(Warehouse.Products().list.size() + this.getString(R.string.products_counter) );
 		
 		productsAdapter = new ProductListAdapter(this, productListItems);
 		productList.setAdapter(productsAdapter);
@@ -335,11 +336,8 @@ public class ProductsMenuActivity extends Activity {
                 if (format != "QR_CODE") {
                 	//Assume barcode, and barcodes correlate to products
                 	//Toast.makeText(this, "[" + format + "]: " + contents + "\nSearching!", Toast.LENGTH_LONG).show();
-                	Warehouse.Products().findByBarcode(contents);
-                	//if we have one hit that's the product we want, so go to it
-                	refreshProductMenu();
-                	if (Warehouse.Products().list.size() == 1)
-                		showProductDetails(this, Warehouse.Products().list.get(0));
+                	Warehouse.setContext(this);
+                	new ProductSearcher(Warehouse.getContext(), format, contents).execute();
                     
                 	//Toast.makeText(this, "Results:" + products.count, Toast.LENGTH_LONG).show();
                 }
@@ -350,7 +348,32 @@ public class ProductsMenuActivity extends Activity {
             }
         }
     }
+	
+	/*
+	public class BarcodeSearchRefresh extends Products.BarcodeSearcher {
+		//Context ctx;
+		
+		public BarcodeSearchRefresh(Products products, Context ctx, String code) {
+			products.super(ctx, code);
+			this.ctx = ctx;
+			// TODO Auto-generated constructor stub
+		}
 
+		@Override
+		protected void complete() {
+			//if we have one hit that's the product we want, so go to it
+        	if (Warehouse.Products().list.size() == 1) {
+        		ProductsMenuActivity.showProductDetails(ctx, Warehouse.Products().list.get(0));
+        	} else if (Warehouse.Products().list.size() == 0) {
+        		//New product?
+        		Warehouse.Products().unregisteredBarcode(ctx, code);
+        	} else {
+        		ProductsMenuActivity.listProductsActivity(this.ctx);
+        	}
+		}
+		
+	}*/
+	
 	public static Product getSelectedProduct() {
 		return Warehouse.Products().selected();
 	}

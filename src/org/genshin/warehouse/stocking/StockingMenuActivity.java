@@ -9,12 +9,14 @@ import org.genshin.warehouse.R;
 import org.genshin.warehouse.Warehouse;
 import org.genshin.warehouse.Warehouse.ResultCodes;
 import org.genshin.warehouse.products.Product;
+import org.genshin.warehouse.products.ProductSearcher;
 import org.genshin.warehouse.products.Products;
 import org.genshin.warehouse.racks.ContainerTaxonomies;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -59,20 +61,23 @@ public class StockingMenuActivity extends Activity {
 	}
 	
 	public void onActivityResult(int requestCode, int resultCode, Intent intent) {
-        /*if (requestCode == ResultCodes.SCAN.ordinal()) {
+        if (requestCode == ResultCodes.SCAN.ordinal()) {
             if (resultCode == RESULT_OK) {
                 String contents = intent.getStringExtra("SCAN_RESULT");
                 String format = intent.getStringExtra("SCAN_RESULT_FORMAT");
                 // Handle successful scan
                 //if it's a Barcode it's a product
                 if (ScanSystem.isProductCode(format)) {
+                	Warehouse.setContext(this);
+                	new ProductSearcher(Warehouse.getContext(), format, contents, "SELECT").execute();
+                	/*
                 	ArrayList<Product> foundProducts = Warehouse.Products().findByBarcode(contents);
                 	//one result means forward to that product
                 	if (foundProducts.size() == 1) {
 						//found exact product, stock it
 						Toast.makeText(this, "found product", Toast.LENGTH_LONG).show();
                 	}
-                	
+                	*/
                 } else {
 					//QR code
 					Toast.makeText(this, "processing QR", Toast.LENGTH_LONG).show();
@@ -82,7 +87,7 @@ public class StockingMenuActivity extends Activity {
                 // Handle cancel
             	Toast.makeText(this, "Scan Cancelled", Toast.LENGTH_LONG).show();
             }
-        }*/
+        }
 	}
 	
 }

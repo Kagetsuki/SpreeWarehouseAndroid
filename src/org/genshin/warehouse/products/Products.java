@@ -5,6 +5,7 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 
 import org.genshin.gsa.Dialogs;
+import org.genshin.spree.SpreeConnector;
 import org.genshin.warehouse.R;
 import org.genshin.warehouse.Warehouse;
 import org.json.JSONArray;
@@ -16,12 +17,16 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.util.Log;
 
 public class Products {
 	private Context ctx;
 	private Product selected;
 	ArrayList<Product> list;
 	public int count;
+	
+	private JSONObject productContainer;
+	private ArrayList<Product> collection;
 	
 	public Products(Context ctx) {
 		this.ctx = ctx;
@@ -88,17 +93,18 @@ public class Products {
 		return collection;
 	}
 	
-	public ArrayList<Product> findByBarcode(String code) {
+	/*public ArrayList<Product> findByBarcode(String code) {
 		//Dialogs.showSearching(ctx);
 		
 		ArrayList<Product> collection = new ArrayList<Product>();
-		JSONObject productContainer = Warehouse.Spree().connector.getJSONObject("api/products/search.json?q[variants_including_master_visual_code_eq]=" + code);
+		//JSONObject productContainer = Warehouse.Spree().connector.getJSONObject("api/products/search.json?q[variants_including_master_visual_code_eq]=" + code);
+		new FindBarcodeRefresh(ctx, code);
 		collection = processProductContainer(productContainer);
 		
 		//Dialogs.dismiss();
 		
 		return collection;
-	}
+	}*/
 
 	public ArrayList<Product> textSearch(String query) {
 		ArrayList<Product> collection = new ArrayList<Product>();
@@ -115,7 +121,8 @@ public class Products {
 		return collection;
 	}
 	
-	 public void unregisteredBarcode(final String code) {
+	 public static void unregisteredBarcode(Context ctxt, final String code) {
+		final Context ctx = ctxt;
 		AlertDialog.Builder question = new AlertDialog.Builder(ctx);
 
 		question.setTitle(ctx.getString(R.string.unregistered_barcode_title));

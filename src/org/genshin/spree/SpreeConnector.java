@@ -1,8 +1,15 @@
 package org.genshin.spree;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.ParseException;
+import org.apache.http.StatusLine;
+import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.util.EntityUtils;
 import org.genshin.gsa.network.NetworkTask;
 import org.genshin.warehouse.Warehouse;
 import org.genshin.warehouse.profiles.Profile;
@@ -14,9 +21,10 @@ import org.json.JSONObject;
 
 import android.content.Context;
 import android.util.Log;
+import android.widget.Toast;
 
 public class SpreeConnector extends NetworkTask{
-	Context ctx;
+	protected Context ctx;
 	public RESTConnector connector;
 	private Profile profile;
 
@@ -41,6 +49,57 @@ public class SpreeConnector extends NetworkTask{
 		ArrayList<String> collection = new ArrayList<String>();
 		
 		return collection;
+	}
+	
+	public JSONObject getJSONObject(String targetURL) {
+		JSONObject data = new JSONObject();
+		
+		HttpResponse response = this.getResponse(getGetter(targetURL));
+		
+		if (response == null)
+			return null;
+
+		HttpEntity entity = response.getEntity();
+		String content;
+		try {
+			content = EntityUtils.toString(entity);
+			data = new JSONObject(content);
+		} catch (ParseException e) {
+			Toast.makeText(ctx, "ParseException: " + e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
+		} catch (IOException e) {
+			Toast.makeText(ctx, "IOException: " + e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
+		} catch (JSONException e) {
+			Toast.makeText(ctx, "JSON parse error: " + e.getMessage(), Toast.LENGTH_LONG).show();
+		}
+
+		return data;
+	}
+	
+	// Process the Getter and handle response exceptions
+	private HttpResponse getResponse(HttpGet getter) {
+		if (getter == null)
+			return null;
+		
+		try {
+			HttpResponse response = getHttpClient().execute(getter);
+			StatusLine statusLine = response.getStatusLine();
+			int statusCode = statusLine.getStatusCode();
+			if (statusCode == 200) {
+				return response;
+			} else {
+				Toast.makeText(ctx, getter.getURI() + "\nResponse not 200, Status: " + statusCode, Toast.LENGTH_LONG).show();
+				Log.e("getHttpResponse", statusLine.toString());
+			}
+		} catch (ClientProtocolException e) {
+			Toast.makeText(ctx, "ClientProtocolException: " + e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
+		} catch (IOException e) {
+			Toast.makeText(ctx, "IOException: " + e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
+		}
+
+		
+		// Something went wrong!
+		//Toast.makeText(ctx, "Server did not respond", Toast.LENGTH_LONG).show();
+		return null;
 	}
 
 }
