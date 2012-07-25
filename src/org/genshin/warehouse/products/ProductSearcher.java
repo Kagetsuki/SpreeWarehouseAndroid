@@ -63,9 +63,7 @@ public class ProductSearcher extends SpreeConnector {
 				
 				Product product = new Product(productJSON);
 				
-				collection.add(product);
-				
-				
+				collection.add(product);				
 			}
 		} catch (JSONException e) {
 			e.printStackTrace();

@@ -4,14 +4,16 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 
-import org.genshin.gsa.Dialogs;
 import org.genshin.spree.SpreeConnector;
+import org.genshin.warehouse.Warehouse;
+import org.genshin.warehouse.products.Product;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.content.Context;
+import android.util.Log;
 
 public class Orders {
 	
@@ -22,6 +24,7 @@ public class Orders {
 	
 	ArrayList tmpList;
 	
+	// ４項目取り出すから
 	public final static int DATACOUNT = 4;
 
 	public Orders(Context ctx, SpreeConnector spree) {	
@@ -30,7 +33,7 @@ public class Orders {
 		this.spree = spree;
 	}
 	
-	private ArrayList<Order> processOrderContainer(JSONObject orderContainer) {
+	public ArrayList<Order> processOrderContainer(JSONObject orderContainer) {
 		ArrayList<Order> collection = new ArrayList<Order>();
 		
 		//Pick apart JSON object
@@ -67,13 +70,12 @@ public class Orders {
 		JSONObject orderContainer = spree.connector.getJSONObject("api/orders.json");
 		collection = processOrderContainer(orderContainer);
 		
+		list = collection;
 		return collection;
 	}
 
 	public ArrayList<Order> textSearch(String query) {
-
 		ArrayList<Order> collection = new ArrayList<Order>();
-		/*
 		String escapedQuery = query;
 		try {
 			escapedQuery = URLEncoder.encode(query, "UTF-8");
@@ -81,13 +83,12 @@ public class Orders {
 			// WTF unsupported encoding? fine, just take it raw
 			escapedQuery = query;
 		}
-		*/
-		//JSONObject orderContainer = Warehouse.Spree().connector.getJSONObject("api/orders/search.json?q[name_cont]=" + escapedQuery);
-		JSONObject orderContainer = spree.connector.getJSONObject("api/orders/search.json?q[name_cont]=" + query);
-		collection = processOrderContainer(orderContainer);
-		
-		return collection;
 
+		JSONObject orderContainer = spree.connector.getJSONObject("api/products/search.json?q[name_cont]=" + escapedQuery);
+		collection = processOrderContainer(orderContainer);
+
+		list = collection;
+		return collection;
 	}
 	
 	public ArrayList putData(String number) {

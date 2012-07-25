@@ -7,6 +7,7 @@ import org.genshin.gsa.ScanSystem;
 import org.genshin.spree.SpreeConnector;
 import org.genshin.warehouse.R;
 import org.genshin.warehouse.Warehouse;
+import org.genshin.warehouse.WarehouseActivity;
 import org.genshin.warehouse.Warehouse.ResultCodes;
 import org.genshin.warehouse.products.Product;
 import org.genshin.warehouse.products.ProductSearcher;
@@ -17,6 +18,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -88,6 +90,17 @@ public class StockingMenuActivity extends Activity {
             	Toast.makeText(this, "Scan Cancelled", Toast.LENGTH_LONG).show();
             }
         }
+	}
+	
+	// 長押しで最初の画面へ
+	@Override
+	public boolean onKeyLongPress(int keyCode, KeyEvent event) {
+	    if (keyCode == KeyEvent.KEYCODE_BACK) 
+	    {
+	    	startActivity(new Intent(this, WarehouseActivity.class));
+	        return true;
+	    }
+	    return super.onKeyLongPress(keyCode, event);
 	}
 	
 }

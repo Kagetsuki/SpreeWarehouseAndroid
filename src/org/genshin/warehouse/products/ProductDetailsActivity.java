@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 import org.genshin.gsa.ScanSystem;
+import org.genshin.gsa.network.NetworkTask;
 import org.genshin.spree.SpreeConnector;
 import org.genshin.warehouse.R;
 import org.genshin.warehouse.WarehouseActivity;
@@ -15,10 +16,12 @@ import org.genshin.warehouse.stocking.StockingMenuActivity;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -82,15 +85,7 @@ public class ProductDetailsActivity extends Activity {
 				question.setTitle("この商品に登録しますか？");
 				question.setPositiveButton("OK", new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface arg0, int arg1) {
-						ArrayList<NameValuePair> pairs = new ArrayList<NameValuePair>();
-						pairs.add(new BasicNameValuePair("product[visual_code]", barcodeString));
-						spree.connector.putWithArgs("api/products/" + product.id + ".json", pairs);
-						
-						Toast.makeText(getApplicationContext(), R.string.register_barcode, Toast.LENGTH_LONG).show();
-						modeString = null;
-						Intent intent = new Intent(getApplicationContext(), StockingMenuActivity.class);
-						startActivity(intent);
-	
+						new registrationBarcode(getApplicationContext(), barcodeString).execute();
 					}
 				});
 				question.setNegativeButton("NO", new DialogInterface.OnClickListener() {
@@ -101,7 +96,6 @@ public class ProductDetailsActivity extends Activity {
 				question.show();
 	        }
         }
-
 	}
 
 	private void getProductInfo() {
@@ -122,7 +116,6 @@ public class ProductDetailsActivity extends Activity {
 		description.setText(product.description);
 		permalink.setText(product.permalink);
 		visualCode.setText(product.visualCode);
-
 	}
 
 	@Override
@@ -146,7 +139,7 @@ public class ProductDetailsActivity extends Activity {
         // メニューアイテムを追加します
         menu.add(Menu.NONE, menuCodes.stock.ordinal(), Menu.NONE, res.getString(R.string.stock_in));
         menu.add(Menu.NONE, menuCodes.destock.ordinal(), Menu.NONE, res.getString(R.string.destock));
-        if (visualCode == null)
+        if (visualCode.getText() == null || visualCode.getText().equals("") || visualCode.getText().equals("null"))
         	menu.add(Menu.NONE, menuCodes.registerVisualCode.ordinal(), Menu.NONE, res.getString(R.string.register_barcode));
         menu.add(Menu.NONE, menuCodes.addProductImage.ordinal(), Menu.NONE, res.getString(R.string.add_product_image));
         menu.add(Menu.NONE, menuCodes.editProductDetails.ordinal(), Menu.NONE, res.getString(R.string.edit_product_details));
@@ -185,7 +178,7 @@ public class ProductDetailsActivity extends Activity {
                 String format = intent.getStringExtra("SCAN_RESULT_FORMAT");
                 //TODO limit this to bar code types?
                 if (ScanSystem.isProductCode(format)) {
-                	spree.connector.genericPut("api/products/" + product.permalink + "?product[visual_code]=" + contents);
+                	new Result(getApplicationContext(), contents).execute();
                 }
             } else if (resultCode == RESULT_CANCELED) {
                 // Handle cancel
@@ -193,6 +186,53 @@ public class ProductDetailsActivity extends Activity {
             }
         }
     }
+	
+	// onActivityResult
+	class Result extends NetworkTask {
+		String contents;
+
+		public Result(Context ctx, String contents) {
+			super(ctx);
+			this.contents = contents;
+		}
+		
+		@Override
+		protected void process() {
+			spree.connector.genericPut("api/products/" + product.permalink + "?product[visual_code]=" + contents);
+		}
+		
+		@Override
+		protected void complete() {
+			Toast.makeText(getApplicationContext(), R.string.register_barcode, Toast.LENGTH_LONG).show();
+			finish();
+		}
+	}
+
+	// バーコードを商品に登録
+	class registrationBarcode extends NetworkTask {
+		ArrayList<NameValuePair> pairs;
+		String code;
+
+		public registrationBarcode(Context ctx, String code) {
+			super(ctx);
+			this.code = code;
+			this.pairs = new ArrayList<NameValuePair>();
+			pairs.add(new BasicNameValuePair("product[visual_code]", code));
+		}
+		
+		@Override
+		protected void process() {
+			spree.connector.putWithArgs("api/products/" + product.id + ".json", pairs);
+		}
+		
+		@Override
+		protected void complete() {
+			modeString = null;
+			Toast.makeText(getApplicationContext(), R.string.register_barcode, Toast.LENGTH_LONG).show();
+			Intent intent = new Intent(getApplicationContext(), StockingMenuActivity.class);
+			startActivity(intent);
+		}		
+	}
 	
 	// 長押しで最初の画面へ
 	@Override

@@ -97,7 +97,7 @@ public class ProductsMenuActivity extends Activity {
 	    sadapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 	    // アイテムを追加します
 	    sadapter.add("未選択");
-	    sadapter.add("初期値に戻す");
+	    sadapter.add("初期状態に戻す");
 	    sadapter.add("名前順");
 	    sadapter.add("値段順");
 	    sadapter.add("在庫数順");
@@ -112,8 +112,8 @@ public class ProductsMenuActivity extends Activity {
                 switch(position) {
                 	case 0:		// 未選択
                 		break;
-                	case 1:		// 初期値に戻す
-                		new SearchProductsRefresh(view.getContext(), searchBar.getText().toString()).execute();
+                	case 1:		// 初期状態に戻す
+                		new NewProductsRefresh(view.getContext(), 10).execute();
                 		clearImage();
                 		break;
                 	case 2:		// 名前順
@@ -189,27 +189,7 @@ public class ProductsMenuActivity extends Activity {
 		@Override
 		protected void complete() {
 			ListView productList = (ListView) findViewById(R.id.product_menu_list);
-			//refreshProductMenu();
-			ProductListItem[] productListItems = new ProductListItem[Warehouse.Products().list.size()];
-			
-			for (int i = 0; i < Warehouse.Products().list.size(); i++) {
-				Product p = Warehouse.Products().list.get(i);
-				Drawable thumb = null;
-				if (p.thumbnail != null)
-					thumb = p.thumbnail.data;
-				
-				productListItems[i] = new ProductListItem(thumb, p.name, p.sku, p.countOnHand, p.permalink, p.price, p.id);
-			}
-			
-			statusText.setText(Warehouse.Products().count + Warehouse.getContext().getString(R.string.products_counter) );
-			
-			productsAdapter = new ProductListAdapter(Warehouse.getContext(), productListItems);
-			productList.setAdapter(productsAdapter);
-			productList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-				public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-					productListClickHandler(parent, view, position);
-				}
-			});
+			refreshProductMenu();
 		}
 		
 	}
@@ -348,31 +328,6 @@ public class ProductsMenuActivity extends Activity {
             }
         }
     }
-	
-	/*
-	public class BarcodeSearchRefresh extends Products.BarcodeSearcher {
-		//Context ctx;
-		
-		public BarcodeSearchRefresh(Products products, Context ctx, String code) {
-			products.super(ctx, code);
-			this.ctx = ctx;
-			// TODO Auto-generated constructor stub
-		}
-
-		@Override
-		protected void complete() {
-			//if we have one hit that's the product we want, so go to it
-        	if (Warehouse.Products().list.size() == 1) {
-        		ProductsMenuActivity.showProductDetails(ctx, Warehouse.Products().list.get(0));
-        	} else if (Warehouse.Products().list.size() == 0) {
-        		//New product?
-        		Warehouse.Products().unregisteredBarcode(ctx, code);
-        	} else {
-        		ProductsMenuActivity.listProductsActivity(this.ctx);
-        	}
-		}
-		
-	}*/
 	
 	public static Product getSelectedProduct() {
 		return Warehouse.Products().selected();

@@ -5,6 +5,7 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -19,6 +20,7 @@ import android.widget.ToggleButton;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 import org.genshin.gsa.ScanSystem;
+import org.genshin.gsa.network.NetworkTask;
 import org.genshin.spree.SpreeConnector;
 import org.genshin.warehouse.R;
 import org.genshin.warehouse.WarehouseActivity;
@@ -26,6 +28,8 @@ import org.genshin.warehouse.Warehouse.ResultCodes;
 import org.genshin.warehouse.products.Product;
 
 public class ProductEditActivity extends Activity {
+	private SpreeConnector spree;
+	
 	boolean isNew;
 	private Product product;
 
@@ -82,7 +86,7 @@ public class ProductEditActivity extends Activity {
         saveButton = (Button) findViewById(R.id.save_button);
 		saveButton.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
-				saveProduct();
+				new saveProduct(getApplicationContext()).execute();
 			}
 		});
 		
@@ -108,32 +112,6 @@ public class ProductEditActivity extends Activity {
         if (barcode != "")
         	barcodeEdit.setText(barcode);
 	}
-
-	private void saveProduct() {
-		SpreeConnector spree = new SpreeConnector(this);
-		ArrayList<NameValuePair> pairs = new ArrayList<NameValuePair>();
-		if (nameEdit.getText().toString() != "")
-			pairs.add(new BasicNameValuePair("product[name]", nameEdit.getText().toString()));
-		if (priceEdit.getText().toString() != "")
-			pairs.add(new BasicNameValuePair("product[price]", priceEdit.getText().toString()));
-		if (permalinkEdit.getText().toString() != "")
-			pairs.add(new BasicNameValuePair("product[permalink]", permalinkEdit.getText().toString()));
-		if (barcodeEdit.getText().toString() != "")
-			pairs.add(new BasicNameValuePair("product[visual_code]", barcodeEdit.getText().toString()));
-		if (descriptionEdit.getText().toString() != "")
-			pairs.add(new BasicNameValuePair("product[description]", descriptionEdit.getText().toString()));
-		
-		//TODO add SKU etc.
-		
-		if (isNew) {
-			spree.connector.postWithArgs("api/products#create", pairs);
-			isNew = false;
-		} else
-			spree.connector.putWithArgs("api/products/" + product.id + ".json", pairs);
-
-		
-        Toast.makeText(this, getString(R.string.saved), Toast.LENGTH_LONG).show();
-	}
 	
 	public void onActivityResult(int requestCode, int resultCode, Intent intent) {
         if (requestCode == ResultCodes.SCAN.ordinal()) {
@@ -155,4 +133,40 @@ public class ProductEditActivity extends Activity {
             }
         }
     }
+	
+	// 保存
+	class saveProduct extends NetworkTask {
+
+		public saveProduct(Context ctx) {
+			super(ctx);
+		}
+		
+		@Override
+		protected void process() {
+			spree = new SpreeConnector(getApplicationContext());
+			ArrayList<NameValuePair> pairs = new ArrayList<NameValuePair>();
+			if (nameEdit.getText().toString() != "")
+				pairs.add(new BasicNameValuePair("product[name]", nameEdit.getText().toString()));
+			if (priceEdit.getText().toString() != "")
+				pairs.add(new BasicNameValuePair("product[price]", priceEdit.getText().toString()));
+			if (permalinkEdit.getText().toString() != "")
+				pairs.add(new BasicNameValuePair("product[permalink]", permalinkEdit.getText().toString()));
+			if (barcodeEdit.getText().toString() != "")
+				pairs.add(new BasicNameValuePair("product[visual_code]", barcodeEdit.getText().toString()));
+			if (descriptionEdit.getText().toString() != "")
+				pairs.add(new BasicNameValuePair("product[description]", descriptionEdit.getText().toString()));
+			
+			if (isNew) {
+				spree.connector.postWithArgs("api/products#create", pairs);
+				isNew = false;
+			} else
+				spree.connector.putWithArgs("api/products/" + product.id + ".json", pairs);
+		}
+		
+		@Override
+		protected void complete() {
+	        Toast.makeText(getApplicationContext(), getString(R.string.saved), Toast.LENGTH_LONG).show();
+	        finish();
+		}
+	}
 }

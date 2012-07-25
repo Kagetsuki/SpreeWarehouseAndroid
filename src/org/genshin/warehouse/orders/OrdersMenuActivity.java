@@ -9,24 +9,17 @@ import org.genshin.warehouse.Warehouse;
 import org.genshin.warehouse.WarehouseActivity;
 import org.genshin.warehouse.Warehouse.ResultCodes;
 import org.genshin.warehouse.orders.Order;
-//import org.genshin.warehouse.orders.OrderDetailsActivity;
-//import org.genshin.warehouse.orders.OrderEditActivity;
 import org.genshin.warehouse.orders.OrderListAdapter;
 import org.genshin.warehouse.orders.OrderListItem;
 import org.genshin.warehouse.orders.Orders;
 import org.genshin.warehouse.orders.OrdersMenuActivity;
 import org.genshin.warehouse.orders.OrdersMenuActivity.menuCodes;
-import org.genshin.warehouse.products.Product;
-import org.genshin.warehouse.products.ProductDetailsActivity;
-import org.genshin.warehouse.products.ProductListAdapter;
-import org.genshin.warehouse.products.ProductListItem;
-import org.genshin.warehouse.products.ProductsMenuActivity;
+import org.json.JSONObject;
 
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -40,18 +33,18 @@ import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.MultiAutoCompleteTextView;
 import android.widget.Spinner;
-import android.widget.TextView;
-import android.widget.Toast;
 
 public class OrdersMenuActivity extends Activity {
 	private static Orders orders;
 	private static Order selectedOrder;
+	private ArrayList<Order> list;
 	private SpreeConnector spree;
 	
 	private OrderListAdapter ordersAdapter;
 	
 	private ListView orderList;
 	private MultiAutoCompleteTextView searchBar;
+	private Button clearButton;
 	private Button searchButton;
 	
 	private Spinner orderSpinner;
@@ -64,6 +57,17 @@ public class OrdersMenuActivity extends Activity {
 		orderList = (ListView) findViewById(R.id.order_menu_list);
         
         searchBar = (MultiAutoCompleteTextView) findViewById(R.id.order_menu_searchbox);
+        
+        clearButton = (Button) findViewById(R.id.order_menu_clear_button);
+        clearButton.setOnClickListener(new View.OnClickListener() {
+			public void onClick(View v) {
+				orders.clear();
+				searchBar.setText("");
+				refreshOrderMenu();
+				clearImage();
+				orderSpinner.setSelection(0);
+			}
+		});
 		
 		//Standard text search hookup
 		searchButton = (Button) findViewById(R.id.order_menu_search_button);
@@ -81,7 +85,7 @@ public class OrdersMenuActivity extends Activity {
 	    sadapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 	    // アイテムを追加します
 	    sadapter.add("未選択");
-	    sadapter.add("初期値に戻す");
+	    sadapter.add("初期状態に戻す");
 	    sadapter.add("名前順");
 	    sadapter.add("値段順");
 	    sadapter.add("在庫数順");
@@ -96,8 +100,7 @@ public class OrdersMenuActivity extends Activity {
                 switch(position) {
                 	case 0:		// 未選択
                 		break;
-                	case 1:		// 初期値に戻す
-                		//new SearchOrdersRefresh(view.getContext(), searchBar.getText().toString()).execute();
+                	case 1:		// 初期状態に戻す
                 		new NewOrdersRefresh(Warehouse.getContext(), 10).execute();
                 		clearImage();
                 		break;
@@ -158,20 +161,22 @@ public class OrdersMenuActivity extends Activity {
 
 	public static enum menuCodes { registerOrder };
 
-	/*
+	// メニュー追加
 	@Override
     public boolean onCreateOptionsMenu(Menu menu) {
 		Resources res = getResources();
         // メニューアイテムを追加する
-        menu.add(Menu.NONE, menuCodes.registerOrder.ordinal(), Menu.NONE, res.getString(R.string.register_order));
+        menu.add(Menu.NONE, menuCodes.registerOrder.ordinal(), Menu.NONE, "新規注文");
         return super.onCreateOptionsMenu(menu);
     }
-
+	
+	// メニュー実装
 	@Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
 		int id = item.getItemId();
 
+		/*
 		if (id == menuCodes.registerOrder.ordinal()) {
 			Intent intent = new Intent(this, OrderEditActivity.class);
 			intent.putExtra("IS_NEW", true);
@@ -179,10 +184,10 @@ public class OrdersMenuActivity extends Activity {
         	
 			return true;
 		}
+		*/
         
         return false;
     }
-    */
 	
 	public static void showOrderDetails(Context ctx, Order order) {
 		OrdersMenuActivity.setSelectedOrder(order);
@@ -228,10 +233,27 @@ public class OrdersMenuActivity extends Activity {
 
 	public static void setSelectedOrder(Order selectedOrder) {
 		if (selectedOrder == null) {
-			//new NewOrdersRefresh(Warehouse.getContext(), 10).execute();
 		}
 		
 		OrdersMenuActivity.selectedOrder = selectedOrder;
+	}
+	
+	private void refreshOrderMenu() {	
+		OrderListItem[] orderListItems = new OrderListItem[orders.list.size()];
+		
+		for (int i = 0; i < orders.list.size(); i++) {
+			Order p = orders.list.get(i);
+			orderListItems[i] = new OrderListItem(p.number, p.date, p.name, p.count, p.price, 
+					p.division, p.paymentState, p.pickingState, p.packingState, p.shipmentState);
+		}
+		
+		ordersAdapter = new OrderListAdapter(Warehouse.getContext(), orderListItems);
+		orderList.setAdapter(ordersAdapter);
+        orderList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            	orderListClickHandler(parent, view, position);
+            }
+        });
 	}
 	
 	class OrdersListRefresh extends NetworkTask {
@@ -243,24 +265,7 @@ public class OrdersMenuActivity extends Activity {
 		@Override
 		protected void complete() {
 			orderList = (ListView) findViewById(R.id.order_menu_list);
-
-			OrderListItem[] orderListItems = new OrderListItem[orders.list.size()];
-			
-			for (int i = 0; i < orders.list.size(); i++) {
-				Order p = orders.list.get(i);
-				orderListItems[i] = new OrderListItem(p.number, p.date, p.name, p.count, p.price, 
-						p.division, p.paymentState, p.pickingState, p.packingState, p.shipmentState);
-			}
-			
-			//statusText.setText(orders.count + this.getString(R.string.orders_counter) );
-			
-			ordersAdapter = new OrderListAdapter(Warehouse.getContext(), orderListItems);
-			orderList.setAdapter(ordersAdapter);
-	        orderList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-	            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-	            	orderListClickHandler(parent, view, position);
-	            }
-	        });
+			refreshOrderMenu();
 		}	
 	}
 	
@@ -280,19 +285,21 @@ public class OrdersMenuActivity extends Activity {
 	}
 	
 	class SearchOrdersRefresh extends OrdersListRefresh {
+		Context ctx;
 		String query;
+		String escapedQuery;
 		
 		public SearchOrdersRefresh(Context ctx, String query) {
 			super(ctx);
+			this.ctx = ctx;
 			this.query = query;
 		}
 		
 		@Override
 		protected void process() {
-			//orders.textSearch(query);
-		}	
-	}
-	
+			orders.textSearch(query);
+		}
+	}	
 	
 	/////////////////////////////////////////////////////////////////////////////////////
 	//
