@@ -55,37 +55,54 @@ public class OrderListAdapter extends ArrayAdapter<OrderListItem> {
 		paymentMethod.setText(data[position].paymentMethod);
 		*/
 		
+		// 状態が　完了の時：1　一部完了の時：2　未の時：3　許可待ちの時：4　手渡しの時：5　不明の時：6 
 		ImageView paymentState = 
 					(ImageView) convertView.findViewById(R.id.payment_status_icon);
-		if (data[position].paymentState.equals("paid"))
+		if (data[position].paymentState.equals("1"))
 			paymentState.setImageResource(android.R.drawable.presence_online);
-		else if (data[position].paymentState.equals("balance_due"))
-			paymentState.setImageResource(android.R.drawable.presence_busy);
-		//else if (data[position].paymentState.equals("balance_due"))
+		//else if (data[position].paymentState.equals("2"))
 		//	paymentState.setImageResource(android.R.drawable.presence_away);
+		else if (data[position].paymentState.equals("3"))
+			paymentState.setImageResource(android.R.drawable.presence_busy);
 		else
 			paymentState.setImageResource(android.R.drawable.presence_invisible);
 			
 		ImageView pickingState = 
 					(ImageView) convertView.findViewById(R.id.picking_status_icon);
-		//if (data[position].pickingState == "completed")
+		//if (data[position].pickingState.equals("1"))
 		//	pickingSState.setImageResource(android.R.drawable.presence_online);
+		//else if (data[position].pickingState.equals("2"))
+		//	pickingSState.setImageResource(android.R.drawable.presence_away);
+		//else if (data[position].pickingState.equals("3"))
+		//	pickingSState.setImageResource(android.R.drawable.presence_busy);
 		//else
 			pickingState.setImageResource(android.R.drawable.presence_invisible);
 				
 		ImageView packingState = 
 					(ImageView) convertView.findViewById(R.id.packing_status_icon);
-		//if (data[position].packingState == "completed")
+		//if (data[position].packingState.equals("1"))
 		//	packingState.setImageResource(android.R.drawable.presence_online);
+		//else if (data[position].packingState.equals("2"))
+		//	packingState.setImageResource(android.R.drawable.presence_away);
+		//else if (data[position].packingState.equals("3"))
+		//	packingState.setImageResource(android.R.drawable.presence_busy);
 		//else
 			packingState.setImageResource(android.R.drawable.presence_invisible);
 
 		ImageView shipmentState = 
 					(ImageView) convertView.findViewById(R.id.shipment_status_icon);
-		if (data[position].shipmentState == "completed")
-			shipmentState.setImageResource(android.R.drawable.presence_online);
-		else
-			shipmentState.setImageResource(android.R.drawable.presence_busy);
+		//if (data[position].shipmentState.equals("1"))
+		//	shipmentState.setImageResource(android.R.drawable.presence_online);
+		//else if (data[position].shipmentState.equals("2"))
+		//	shipmentState.setImageResource(android.R.drawable.presence_away);
+		//else if (data[position].shipmentState.equals("3"))
+		//	shipmentState.setImageResource(android.R.drawable.presence_busy);
+		//else if (data[position].shipmentState.equals("4"))
+		//	shipmentState.setImageResource(android.R.drawable.presence_offline);
+		//else if (data[position].shipmentState.equals("5"))
+		//	shipmentState.setImageResource(R.drawable.hand);
+		//else
+			shipmentState.setImageResource(android.R.drawable.presence_invisible);
 
 		return convertView;
 	}

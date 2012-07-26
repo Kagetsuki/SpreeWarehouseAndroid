@@ -2,6 +2,7 @@ package org.genshin.warehouse;
 
 import org.genshin.gsa.VisualCode;
 import org.genshin.spree.SpreeConnector;
+import org.genshin.warehouse.orders.Orders;
 import org.genshin.warehouse.products.Product;
 import org.genshin.warehouse.products.Products;
 import org.genshin.warehouse.profiles.Profiles;
@@ -29,6 +30,7 @@ public class Warehouse {
 	private static VisualCode code;
 
 	private static Products products;
+	private static Orders orders;
 	private static Profiles profiles;
 	
 	private static WarehouseDivisions warehouses;
@@ -38,6 +40,7 @@ public class Warehouse {
 		Warehouse.container = null;
 		spree = new SpreeConnector(Warehouse.ctx);
 		products = new Products(homeContext);
+		orders = new Orders(homeContext);
 	}
 	
 	public static SpreeConnector Spree() {
@@ -46,6 +49,10 @@ public class Warehouse {
 	
 	public static Products Products() {
 		return Warehouse.products;
+	}
+	
+	public static Orders Orders() {
+		return Warehouse.orders;
 	}
 
 	public static Profiles Profiles() {

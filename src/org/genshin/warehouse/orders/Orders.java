@@ -1,40 +1,47 @@
 package org.genshin.warehouse.orders;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 
-import org.genshin.spree.SpreeConnector;
 import org.genshin.warehouse.Warehouse;
-import org.genshin.warehouse.products.Product;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.content.Context;
-import android.util.Log;
 
 public class Orders {
 	
-	Context ctx;
-	SpreeConnector spree;
+	private Context ctx;
+	private Order selected;
 	ArrayList<Order> list;
 	public int count;
 	
 	ArrayList tmpList;
 	
-	// ４項目取り出すから
-	public final static int DATACOUNT = 4;
+	// 2項目取り出すから
+	public final static int DATACOUNT = 2;
 
-	public Orders(Context ctx, SpreeConnector spree) {	
-		this.ctx = ctx;		
-		this.list = new ArrayList<Order>();	
-		this.spree = spree;
+	public Orders(Context ctx) {
+		this.ctx = ctx;
+		this.selected = null;
+		this.list = new ArrayList<Order>();
+		count = 0;
+	}
+	
+	public void select (Order order) {
+		selected = order;
+	}
+	
+	public Order selected() {
+		return selected;
 	}
 	
 	public ArrayList<Order> processOrderContainer(JSONObject orderContainer) {
 		ArrayList<Order> collection = new ArrayList<Order>();
+		
+		if (orderContainer == null)
+			return null;
 		
 		//Pick apart JSON object
 		try {
@@ -67,27 +74,9 @@ public class Orders {
 	public ArrayList<Order> getNewestOrders(int limit) {
 		
 		ArrayList<Order> collection = new ArrayList<Order>();
-		JSONObject orderContainer = spree.connector.getJSONObject("api/orders.json");
-		collection = processOrderContainer(orderContainer);
-		
-		list = collection;
-		return collection;
-	}
-
-	public ArrayList<Order> textSearch(String query) {
-		ArrayList<Order> collection = new ArrayList<Order>();
-		String escapedQuery = query;
-		try {
-			escapedQuery = URLEncoder.encode(query, "UTF-8");
-		} catch (UnsupportedEncodingException e) {
-			// WTF unsupported encoding? fine, just take it raw
-			escapedQuery = query;
-		}
-
-		JSONObject orderContainer = spree.connector.getJSONObject("api/products/search.json?q[name_cont]=" + escapedQuery);
+		JSONObject orderContainer = Warehouse.Spree().connector.getJSONObject("api/orders.json");
 		collection = processOrderContainer(orderContainer);
 
-		list = collection;
 		return collection;
 	}
 	
@@ -98,11 +87,12 @@ public class Orders {
 		int cnt = 0;
 		
 		// orders.json にないデータを　orders/number.json から取り出す
-		JSONObject container = spree.connector.getJSONObject("api/orders/" + number + ".json");
+		JSONObject container = Warehouse.Spree().connector.getJSONObject("api/orders/" + number + ".json");
 
 		try {
 			JSONObject orderStr = container.getJSONObject("order");
 
+			// 個数
 			JSONArray items = orderStr.getJSONArray("line_items");
 			for (int i = 0; i < items.length(); i++) {
 				JSONObject itemJSON = items.getJSONObject(i).getJSONObject("line_item");
@@ -112,6 +102,7 @@ public class Orders {
 			tmpList.add(num);
 			cnt++;
 			
+			// 名前
 			JSONObject tmpStr = orderStr.getJSONObject("bill_address");
 			StringBuilder sb = new StringBuilder(tmpStr.getString("firstname"));
 			sb.append(" ");
@@ -119,29 +110,6 @@ public class Orders {
 			tmp = new String(sb);
 			tmpList.add(tmp);
 			cnt++;
-	
-			
-			// 支払い方法は２つ以上になることもある？　その場合の処理は？
-			/*
-			items = orderStr.getJSONArray("payments");			
-			tmpStr = items.getJSONObject(0).getJSONObject("payment");
-			tmpStr = tmpStr.getJSONObject("payment_method");		
-			sb = new StringBuilder(tmpStr.getString("name"));			
-			tmp = new String(sb);
-			tmpList.add(tmp);
-			cnt++;
-			*/
-			
-			// 配送方法は２つ以上になることもある？　その場合の処理は？
-			/*
-			items = orderStr.getJSONArray("shipments");			
-			tmpStr = items.getJSONObject(0).getJSONObject("shipment");
-			tmpStr = tmpStr.getJSONObject("shipping_method");		
-			sb = new StringBuilder(tmpStr.getString("name"));
-			tmp = new String(sb);	
-			tmpList.add(tmp);
-			cnt++;
-			*/
 			
 		} catch (JSONException e) {
 			e.printStackTrace();

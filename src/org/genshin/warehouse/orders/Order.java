@@ -36,10 +36,13 @@ public class Order {
 		this.count = 0;
 		this.price = 0;
 		this.division = "";
-		this.paymentState = "";
-		this.pickingState = "";
-		this.packingState = "";
-		this.shipmentState = "";
+		
+		// ソート用に各種ステータスを数字に変換
+		// 状態が　完了の時：1　一部完了の時：2　未の時：3　許可待ちの時：4　手渡しの時：5　不明の時：6
+		this.paymentState = "6";
+		this.pickingState = "6";
+		this.packingState = "6";
+		this.shipmentState = "6";
 	}
 	
 	public Variant variant() {
@@ -74,8 +77,23 @@ public class Order {
 				this.date = null;
 			
 			this.price = orderJSON.getDouble("total");
-			this.paymentState = orderJSON.getString("payment_state");
+			this.paymentState = orderJSON.getString("payment_state");		
 			this.division = "";
+			
+			// ソート用に各種ステータスを数字に変換
+			// 状態が　完了の時：1　一部完了の時：2　未の時：3　許可待ちの時：4　手渡しの時：5　不明の時：6
+			if (paymentState.equals("paid"))
+				paymentState = "1";
+			//else if (paymentState.equals("paid"))
+			//	paymentState = "2";
+			else if (paymentState.equals("balance_due"))
+				paymentState = "3";
+			else
+				paymentState = "6";
+			// nullPointerException対策に仮代入
+			this.pickingState = "6";
+			this.packingState = "6";
+			this.shipmentState = "6";
 
 		} catch (JSONException e) {
 			e.printStackTrace();
