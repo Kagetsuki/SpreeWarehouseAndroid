@@ -27,7 +27,7 @@
         
         <Button
             android:id="@+id/order_details_adjustment_new_button"
-            android:text="new"
+            android:text="@string/register_new"
             android:layout_width="100dp"
             android:layout_height="wrap_content" />
         <Button

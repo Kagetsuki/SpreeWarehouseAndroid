@@ -37,7 +37,6 @@ public class OrderDetailsShipment {
 	}
 	
 	public OrderDetailsShipment(JSONObject jsonObject) {	
-
 		this.date = null;
 		this.action = null;
 		
@@ -51,8 +50,6 @@ public class OrderDetailsShipment {
 		} catch (JSONException e) {
 			// TODO 自動生成された catch ブロック
 			e.printStackTrace();
-		}
-		
+		}		
 	};
-
 }

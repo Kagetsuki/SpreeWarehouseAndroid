@@ -48,7 +48,6 @@ public class StockingRepetitiveScanner extends RepetitiveScanner {
         hookupInterface();
 	}
 
-
 	@Override
 	public void onScanResult(Intent intent, String format, String contents) {
 		if (ScanSystem.isQRCode(format)) {
@@ -77,29 +76,11 @@ public class StockingRepetitiveScanner extends RepetitiveScanner {
 				
 				status = RepetitiveScanCodes.FINISH.ordinal(); 
 				return;
-			} 
-			
-			
+			} 		
 		} else if (ScanSystem.isProductCode(format)) {
         	Warehouse.setContext(this);
-        	new ProductSearcher(Warehouse.getContext(), format, contents, "SELECT").execute();
-		/*	ArrayList<Product> found = Warehouse.Products().findByBarcode(contents);
-			
-			if (found.size() == 1) {
-				Warehouse.Products().select(found.get(0));
-				stockProductToContainer(Warehouse.Products().selected(), 1, Warehouse.getContainer());
-			} else if (found.size() > 1) {
-				// found multiple - select
-				ProductsMenuActivity.selectProductActivity(this, format, contents);
-			} else { 
-				status = RepetitiveScanCodes.FINISH.ordinal();
-				// not found, register new?
-				Warehouse.Products().unregisteredBarcode(contents);
-			}*/
-			
-			
+        	new ProductSearcher(Warehouse.getContext(), format, contents, "SELECT").execute();			
 		}
-		
 	}
 	
 	@Override
@@ -125,7 +106,6 @@ public class StockingRepetitiveScanner extends RepetitiveScanner {
 
 	@Override
 	protected void finishScanning() {
-		// TODO Auto-generated method stub
-		
+		// TODO Auto-generated method stub	
 	}
 }

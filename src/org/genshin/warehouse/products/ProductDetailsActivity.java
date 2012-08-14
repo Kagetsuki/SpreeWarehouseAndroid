@@ -23,10 +23,12 @@ import android.content.res.Resources;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.AnimationUtils;
+import android.widget.EditText;
 import android.widget.ImageSwitcher;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -82,18 +84,41 @@ public class ProductDetailsActivity extends Activity {
         if (modeString != null) {
 	        if (modeString.equals("UPDATE_PRODUCT_BARCODE")) {
 	        	AlertDialog.Builder question = new AlertDialog.Builder(this);
-				question.setTitle("この商品に登録しますか？");
-				question.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+				question.setTitle(getString(R.string.register_this_product));
+				question.setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface arg0, int arg1) {
-						new registrationBarcode(getApplicationContext(), barcodeString).execute();
+						new registrationNewData(getApplicationContext(), barcodeString).execute();
 					}
 				});
-				question.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+				question.setNegativeButton(getString(R.string.no), new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface arg0, int arg1) {
 						finish();
 					}
 				});
 				question.show();
+			/*
+	        } else if (modeString.equals("STOCK_PRODUCT")) {
+	        	AlertDialog.Builder question = new AlertDialog.Builder(this);
+	        	final EditText edit = new EditText(this);
+				question.setTitle(getString(R.string.stock_number));
+				question.setView(edit);
+				question.setPositiveButton(getString(R.string.stock),
+										new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface arg0, int arg1) {
+						String count = edit.getText().toString();
+						int tmp = Integer.parseInt(count);
+						int totalCount = tmp + product.countOnHand;
+						new registrationNewData(getApplicationContext(), totalCount).execute();
+					}
+				});
+				question.setNegativeButton(getString(R.string.cancel),
+										new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface arg0, int arg1) {
+						finish();
+					}
+				});
+				question.show();
+			*/
 	        }
         }
 	}
@@ -111,8 +136,8 @@ public class ProductDetailsActivity extends Activity {
 		} else
 			sku.setText(product.sku);
 		
-		price.setText("" + product.price);
-		countOnHand.setText("" + product.countOnHand);
+		price.setText(product.price + getString(R.string.currency_unit));
+		countOnHand.setText(product.countOnHand + getString(R.string.units_counter));
 		description.setText(product.description);
 		permalink.setText(product.permalink);
 		visualCode.setText(product.visualCode);
@@ -209,16 +234,29 @@ public class ProductDetailsActivity extends Activity {
 	}
 
 	// バーコードを商品に登録
-	class registrationBarcode extends NetworkTask {
+	class registrationNewData extends NetworkTask {
 		ArrayList<NameValuePair> pairs;
 		String code;
+		int num;
+		String mode = "";
 
-		public registrationBarcode(Context ctx, String code) {
+		public registrationNewData(Context ctx, String code) {
 			super(ctx);
+			this.mode = "UPDATE_PRODUCT_BARCODE";
 			this.code = code;
 			this.pairs = new ArrayList<NameValuePair>();
 			pairs.add(new BasicNameValuePair("product[visual_code]", code));
 		}
+		
+		/*
+		public registrationNewData(Context ctx, int num) {
+			super(ctx);
+			this.mode = "STOCK_PRODUCT";
+			this.num = num;
+			this.pairs = new ArrayList<NameValuePair>();
+			pairs.add(new BasicNameValuePair("product[count_on_hand]", String.valueOf(num)));
+		}
+		*/
 		
 		@Override
 		protected void process() {
@@ -228,7 +266,10 @@ public class ProductDetailsActivity extends Activity {
 		@Override
 		protected void complete() {
 			modeString = null;
-			Toast.makeText(getApplicationContext(), R.string.register_barcode, Toast.LENGTH_LONG).show();
+			//if (mode.equals("UPDATE_PRUDUCT_BARCODE"))
+				Toast.makeText(getApplicationContext(), R.string.register_barcode, Toast.LENGTH_LONG).show();
+			//else if (mode.equals("STOCK_PRODUCT"))
+			//	Toast.makeText(getApplicationContext(), R.string.stock_in, Toast.LENGTH_LONG).show();
 			Intent intent = new Intent(getApplicationContext(), StockingMenuActivity.class);
 			startActivity(intent);
 		}		

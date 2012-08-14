@@ -2,7 +2,6 @@ package org.genshin.warehouse.racks;
 
 import java.util.ArrayList;
 
-import org.genshin.warehouse.Warehouse;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;

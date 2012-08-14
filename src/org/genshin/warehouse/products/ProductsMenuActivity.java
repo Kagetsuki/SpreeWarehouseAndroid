@@ -11,7 +11,6 @@ import org.genshin.warehouse.Warehouse.ResultCodes;
 import org.genshin.warehouse.products.ProductDetailsActivity;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -96,12 +95,12 @@ public class ProductsMenuActivity extends Activity {
 		sadapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item);
 	    sadapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 	    // アイテムを追加します
-	    sadapter.add("未選択");
-	    sadapter.add("初期状態に戻す");
-	    sadapter.add("名前順");
-	    sadapter.add("値段順");
-	    sadapter.add("在庫数順");
-	    orderSpinner.setPrompt("ソート");
+	    sadapter.add(getString(R.string.no_select));
+	    sadapter.add(getString(R.string.return_default));
+	    sadapter.add(getString(R.string.name));
+	    sadapter.add(getString(R.string.price));
+	    sadapter.add(getString(R.string.stock));
+	    orderSpinner.setPrompt(getString(R.string.sort));
 	    orderSpinner.setAdapter(sadapter);
 	    
 	    orderSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -271,7 +270,7 @@ public class ProductsMenuActivity extends Activity {
         
 	}
 	
-	public static void showProductDetails(Context ctx, Product product) {
+	public static void showProductDetails(Context ctx, Product product, int selectMode) {
 		ProductsMenuActivity.setSelectedProduct(product);
 		Intent productDetailsIntent = new Intent(ctx, ProductDetailsActivity.class);
 		if (mode == Warehouse.ResultCodes.UPDATE_PRODUCT_BARCODE.ordinal()) {
@@ -279,6 +278,8 @@ public class ProductsMenuActivity extends Activity {
 			String barcodeString = intent.getStringExtra("BARCODE");
 			productDetailsIntent.putExtra("MODE", modeString);
 			productDetailsIntent.putExtra("BARCODE", barcodeString);
+		//} else if (selectMode == Warehouse.ResultCodes.STOCK_PRODUCT.ordinal()) {
+		//	productDetailsIntent.putExtra("MODE", "STOCK_PRODUCT");
 		}
     	ctx.startActivity(productDetailsIntent);
 	}
@@ -303,7 +304,7 @@ public class ProductsMenuActivity extends Activity {
 			setResult(ResultCodes.PRODUCT_SELECT.ordinal());
 			finish();
 		} else {
-			ProductsMenuActivity.showProductDetails(this, Warehouse.Products().list.get(position));
+			ProductsMenuActivity.showProductDetails(this, Warehouse.Products().list.get(position), mode);
 		}
 	}
 	

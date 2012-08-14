@@ -34,9 +34,8 @@ public class OrderDetailsAdapter extends ArrayAdapter<OrderLineItem>{
 		TextView quantity = (TextView) convertView.findViewById(R.id.order_details_quantity);
 		quantity.setText("" + data[position].quantity);
 		TextView total = (TextView) convertView.findViewById(R.id.order_details_total);
-		total.setText("" + data[position].total );
+		total.setText("" + data[position].total);
 	
 		return convertView;
 	}
-
 }

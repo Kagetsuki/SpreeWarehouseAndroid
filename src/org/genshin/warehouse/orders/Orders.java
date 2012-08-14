@@ -37,6 +37,12 @@ public class Orders {
 		return selected;
 	}
 	
+	public void clear() {
+		this.list = new ArrayList<Order>();
+		count = 0;
+	}
+	
+	// JSONデータ取得
 	public ArrayList<Order> processOrderContainer(JSONObject orderContainer) {
 		ArrayList<Order> collection = new ArrayList<Order>();
 		
@@ -66,15 +72,12 @@ public class Orders {
 		return collection;
 	}
 
-	public void clear() {
-		this.list = new ArrayList<Order>();
-		count = 0;
-	}
-
+	// 最新の（limit）件数を取得…現在は１ページ表示
 	public ArrayList<Order> getNewestOrders(int limit) {
 		
 		ArrayList<Order> collection = new ArrayList<Order>();
-		JSONObject orderContainer = Warehouse.Spree().connector.getJSONObject("api/orders.json");
+		JSONObject orderContainer = 
+				Warehouse.Spree().connector.getJSONObject("api/orders.json?page=1");
 		collection = processOrderContainer(orderContainer);
 
 		return collection;
@@ -87,7 +90,8 @@ public class Orders {
 		int cnt = 0;
 		
 		// orders.json にないデータを　orders/number.json から取り出す
-		JSONObject container = Warehouse.Spree().connector.getJSONObject("api/orders/" + number + ".json");
+		JSONObject container = 
+				Warehouse.Spree().connector.getJSONObject("api/orders/" + number + ".json");
 
 		try {
 			JSONObject orderStr = container.getJSONObject("order");

@@ -11,7 +11,6 @@ import org.genshin.warehouse.WarehouseActivity;
 import org.genshin.warehouse.Warehouse.ResultCodes;
 import org.genshin.warehouse.products.Product;
 import org.genshin.warehouse.products.ProductSearcher;
-import org.genshin.warehouse.products.Products;
 import org.genshin.warehouse.racks.ContainerTaxonomies;
 
 import android.app.Activity;
@@ -48,7 +47,6 @@ public class StockingMenuActivity extends Activity {
 		
 		targetContainerSpinner = (Spinner) findViewById(R.id.target_container_spinner);
 		//TODO fill
-
 	}
 
 	@Override
@@ -72,18 +70,9 @@ public class StockingMenuActivity extends Activity {
                 if (ScanSystem.isProductCode(format)) {
                 	Warehouse.setContext(this);
                 	new ProductSearcher(Warehouse.getContext(), format, contents, "SELECT").execute();
-                	/*
-                	ArrayList<Product> foundProducts = Warehouse.Products().findByBarcode(contents);
-                	//one result means forward to that product
-                	if (foundProducts.size() == 1) {
-						//found exact product, stock it
-						Toast.makeText(this, "found product", Toast.LENGTH_LONG).show();
-                	}
-                	*/
                 } else {
 					//QR code
 					Toast.makeText(this, "processing QR", Toast.LENGTH_LONG).show();
-
 				}
             } else if (resultCode == RESULT_CANCELED) {
                 // Handle cancel
@@ -102,5 +91,4 @@ public class StockingMenuActivity extends Activity {
 	    }
 	    return super.onKeyLongPress(keyCode, event);
 	}
-	
 }

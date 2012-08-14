@@ -3,8 +3,10 @@ package org.genshin.warehouse.orders;
 import org.genshin.warehouse.R;
 import org.genshin.warehouse.Warehouse;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -43,17 +45,11 @@ public class OrderListAdapter extends ArrayAdapter<OrderListItem> {
 		name.setText(data[position].name);
 		
 		TextView count = (TextView) convertView.findViewById(R.id.orders_list_item_count);
-		count.setText(data[position].count + " 個");
+		count.setText(data[position].count + context.getString(R.string.units_counter));
 		TextView price = (TextView) convertView.findViewById(R.id.orders_list_item_price);
-		price.setText(data[position].price + " 円");
+		price.setText(data[position].price + context.getString(R.string.currency_unit));
 		TextView division = (TextView) convertView.findViewById(R.id.orders_list_item_division);
 		division.setText(data[position].division);
-		
-		/*
-		TextView paymentMethod = 
-				(TextView) convertView.findViewById(R.id.orders_list_item_payment_method);
-		paymentMethod.setText(data[position].paymentMethod);
-		*/
 		
 		// 状態が　完了の時：1　一部完了の時：2　未の時：3　許可待ちの時：4　手渡しの時：5　不明の時：6 
 		ImageView paymentState = 
@@ -106,5 +102,4 @@ public class OrderListAdapter extends ArrayAdapter<OrderListItem> {
 
 		return convertView;
 	}
-
 }

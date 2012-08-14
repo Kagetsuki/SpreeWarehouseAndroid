@@ -6,7 +6,7 @@
     android:gravity="center_horizontal" >
     
     <TextView 
-        android:text="請求先住所"
+        android:text="@string/bill_address"
         android:layout_width="300dp"
         android:layout_height="wrap_content"
         android:textColor="@color/black"
@@ -21,7 +21,7 @@
         android:layout_marginBottom="10dp" />
     
     <TextView 
-        android:text="配送先住所"
+        android:text="@string/ship_address"
         android:layout_width="300dp"
         android:layout_height="wrap_content"
         android:textColor="@color/black"
@@ -36,7 +36,7 @@
         android:layout_marginBottom="10dp" />
         
 	<TextView 
-        android:text="E-mail"
+        android:text="@string/email"
         android:layout_width="300dp"
         android:layout_height="wrap_content"
         android:textColor="@color/black"
@@ -51,7 +51,7 @@
         android:layout_marginBottom="10dp" />
    	
    	<TextView 
-        android:text="ゲスト注文"
+        android:text="@string/guest_order"
         android:layout_width="300dp"
         android:layout_height="wrap_content"
         android:textColor="@color/black"

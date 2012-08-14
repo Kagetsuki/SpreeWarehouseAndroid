@@ -5,22 +5,12 @@ import org.genshin.spree.SpreeConnector;
 import org.genshin.warehouse.R;
 import org.genshin.warehouse.Warehouse;
 import org.genshin.warehouse.WarehouseActivity;
-import org.genshin.warehouse.Warehouse.ResultCodes;
-import org.genshin.warehouse.products.Product;
-import org.genshin.warehouse.products.ProductDetailsActivity;
-import org.genshin.warehouse.products.ProductListAdapter;
-import org.genshin.warehouse.products.ProductListItem;
-import org.genshin.warehouse.products.Products;
-import org.genshin.warehouse.products.ProductsMenuActivity;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.app.Activity;
 import android.app.TabActivity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Resources;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -29,15 +19,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.MeasureSpec;
 import android.view.ViewGroup;
-import android.view.animation.AnimationUtils;
-import android.widget.AdapterView;
 import android.widget.Button;
-import android.widget.ImageSwitcher;
 import android.widget.ListView;
 import android.widget.TabHost;
 import android.widget.TabHost.TabSpec;
 import android.widget.TextView;
-import android.widget.Toast;
 
 public class OrderDetailsActivity extends TabActivity {
 	SpreeConnector spree;
@@ -64,16 +50,13 @@ public class OrderDetailsActivity extends TabActivity {
 	private Order order;
 	private JSONObject container;
 	
-	private static OrderDetails orderDetails;
 	private ListView listView;
 	private OrderDetailsAdapter adapter;
 	
-	private static OrderDetailsPayment orderDetailsPaymentItem;
 	private ListView paymentListView;
 	private OrderDetailsPaymentAdapter paymentAdapter;
 	private Button paymentNewButton;
 	
-	private static OrderDetailsShipment orderDetailsShipmentItem;
 	private ListView shipmentListView;
 	private OrderDetailsShipmentAdapter shipmentAdapter;
 	private Button shipmentNewButton;
@@ -126,51 +109,52 @@ public class OrderDetailsActivity extends TabActivity {
 		shipmentNewButton = (Button) findViewById
 				(R.id.order_details_shipment).findViewById(R.id.order_details_shipment_new_button);
 	}
-
-	@Override
-    public void onCreate(Bundle savedInstanceState) {
-
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.order_details);
-        
-        Warehouse.setContext(this);
-        
-        TabHost tabHost = getTabHost();
+	
+	private void createTab() {
+		TabHost tabHost = getTabHost();
         
         TabSpec tab1 = tabHost.newTabSpec("tab1");
-        tab1.setIndicator("注文詳細");
+        tab1.setIndicator(getString(R.string.order_details));
         tab1.setContent(R.id.order_details_main);
         tabHost.addTab(tab1);
         
         TabSpec tab2 = tabHost.newTabSpec("tab2");
-        tab2.setIndicator("お客様情報");
+        tab2.setIndicator(getString(R.string.customer_info));
         tab2.setContent(R.id.order_details_account);
         tabHost.addTab(tab2);
         
         TabSpec tab3 = tabHost.newTabSpec("tab3");
-        tab3.setIndicator("調整(値引き・追加料金)");
+        tab3.setIndicator(getString(R.string.adjustment));
         tab3.setContent(R.id.order_details_adjustment);
         tabHost.addTab(tab3);
         
         TabSpec tab4 = tabHost.newTabSpec("tab4");
-        tab4.setIndicator("支払い方法");
+        tab4.setIndicator(getString(R.string.payment_method));
         tab4.setContent(R.id.order_details_payment);
         tabHost.addTab(tab4);
         
         TabSpec tab5 = tabHost.newTabSpec("tab5");
-        tab5.setIndicator("配送");
+        tab5.setIndicator(getString(R.string.shipping));
         tab5.setContent(R.id.order_details_shipment);
         tabHost.addTab(tab5);
         
         TabSpec tab6 = tabHost.newTabSpec("tab6");
-        tab6.setIndicator("返品承認");
+        tab6.setIndicator(getString(R.string.returned_goods));
         tab6.setContent(R.id.order_details_return);
         tabHost.addTab(tab6);
         
         tabHost.setCurrentTab(0);
+	}
+
+	@Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.order_details); 
+        Warehouse.setContext(this);
         
         spree = new SpreeConnector(this);
 
+        createTab();
 		getOrderInfo();
 		initViewElements();
 		hookupInterface();
@@ -294,7 +278,7 @@ public class OrderDetailsActivity extends TabActivity {
 			
 			number.setText(order.number);
 			statement.setText(orderDetails.statement);
-			mainTotal.setText("" + orderDetails.mainTotal);
+			mainTotal.setText(orderDetails.mainTotal + getString(R.string.currency_unit));
 			paymentAddress.setText(orderDetails.paymentAddress);
 			shipmentAddress.setText(orderDetails.shipmentAddress);
 			email.setText(orderDetails.email);
@@ -308,7 +292,7 @@ public class OrderDetailsActivity extends TabActivity {
 			}
 			adapter = new OrderDetailsAdapter(Warehouse.getContext(), orderLineItem);
 			listView.setAdapter(adapter);
-			setListViewHeightBasedOnChildren(listView);
+			setListViewHeightBasedOnChildren(listView, 0);
 			
 			// 請求先住所
 			OrderDetailsPayment[] orderDetailsPayment = 
@@ -321,7 +305,7 @@ public class OrderDetailsActivity extends TabActivity {
 			}
 			paymentAdapter = new OrderDetailsPaymentAdapter(Warehouse.getContext(), orderDetailsPayment);
 			paymentListView.setAdapter(paymentAdapter);
-			setListViewHeightBasedOnChildren2(paymentListView);
+			setListViewHeightBasedOnChildren(paymentListView, 1);
 			
 			// 配送先住所
 			OrderDetailsShipment[] orderDetailsShipment = 
@@ -334,7 +318,7 @@ public class OrderDetailsActivity extends TabActivity {
 			}
 			shipmentAdapter = new OrderDetailsShipmentAdapter(Warehouse.getContext(), orderDetailsShipment);
 			shipmentListView.setAdapter(shipmentAdapter);
-			setListViewHeightBasedOnChildren3(shipmentListView);
+			setListViewHeightBasedOnChildren(shipmentListView, 2);
 			
 			// 計
 			itemTotal.setText("" + orderDetails.itemTotal);
@@ -344,74 +328,55 @@ public class OrderDetailsActivity extends TabActivity {
 	}
 	
 	// ListViewの高さを動的に取得
-	public void setListViewHeightBasedOnChildren(ListView listView) {
+	public void setListViewHeightBasedOnChildren(ListView listView, int type) {
+		OrderDetailsAdapter adapter = null;
+		OrderDetailsPaymentAdapter pAdapter = null;
+		OrderDetailsShipmentAdapter sAdapter = null;
+
 		// 設定するListViewからアダプタを取得する
-		OrderDetailsAdapter adapter = (OrderDetailsAdapter) listView.getAdapter();
+		if (type == 0)
+			adapter = (OrderDetailsAdapter) listView.getAdapter();
+		else if (type == 1)
+			pAdapter = (OrderDetailsPaymentAdapter) listView.getAdapter();
+		else if (type == 2)
+			sAdapter = (OrderDetailsShipmentAdapter) listView.getAdapter();
 
 		int height = 0;
 		int width = MeasureSpec.makeMeasureSpec(listView.getWidth(), MeasureSpec.AT_MOST);
 
 		// アダプタのデータ分ループして、高さなどを設定
-		for (int i = 0; i < adapter.getCount(); i++) {
-			View view = adapter.getView(i, null, listView);
-			view.measure(width, MeasureSpec.UNSPECIFIED);
-			height += view.getMeasuredHeight();
+		if (type == 0) {
+			for (int i = 0; i < adapter.getCount(); i++) {
+				View view = adapter.getView(i, null, listView);
+				view.measure(width, MeasureSpec.UNSPECIFIED);
+				height += view.getMeasuredHeight();
+			}
+		} else if (type == 1) {
+			for (int i = 0; i < pAdapter.getCount(); i++) {
+				View view = pAdapter.getView(i, null, listView);
+				view.measure(width, MeasureSpec.UNSPECIFIED);
+				height += view.getMeasuredHeight();
+			}
+		} else if (type == 2) {
+			for (int i = 0; i < sAdapter.getCount(); i++) {
+				View view = sAdapter.getView(i, null, listView);
+				view.measure(width, MeasureSpec.UNSPECIFIED);
+				height += view.getMeasuredHeight();
+			}
 		}
 
 		// 実際のListViewに反映する
 		ViewGroup.LayoutParams params = listView.getLayoutParams();
-		params.height = height + (listView.getDividerHeight() * (adapter.getCount() - 1));
+		if (type == 0)
+			params.height = height + (listView.getDividerHeight() * (adapter.getCount() - 1));
+		else if (type == 1)
+			params.height = height + (listView.getDividerHeight() * (pAdapter.getCount() - 1));
+		else if (type == 2)
+			params.height = height + (listView.getDividerHeight() * (sAdapter.getCount() - 1));
 		listView.setLayoutParams(params);
 		listView.requestLayout();
 	}
-	
-	////////////////////////////////////////////////////////////////////////////
-	//
-	//　　↓　解決策が思い浮かばないのでとりあえず流用・・・
-	//
-	////////////////////////////////////////////////////////////////////////////
-	public void setListViewHeightBasedOnChildren2(ListView listView) {
-		// 設定するListViewからアダプタを取得する
-		OrderDetailsPaymentAdapter adapter = (OrderDetailsPaymentAdapter) listView.getAdapter();
 
-		int height = 0;
-		int width = MeasureSpec.makeMeasureSpec(listView.getWidth(), MeasureSpec.AT_MOST);
-
-		// アダプタのデータ分ループして、高さなどを設定
-		for (int i = 0; i < adapter.getCount(); i++) {
-			View view = adapter.getView(i, null, listView);
-			view.measure(width, MeasureSpec.UNSPECIFIED);
-			height += view.getMeasuredHeight();
-		}
-
-		// 実際のListViewに反映する
-		ViewGroup.LayoutParams params = listView.getLayoutParams();
-		params.height = height + (listView.getDividerHeight() * (adapter.getCount() - 1));
-		listView.setLayoutParams(params);
-		listView.requestLayout();
-	}
-	public void setListViewHeightBasedOnChildren3(ListView listView) {
-		// 設定するListViewからアダプタを取得する
-		OrderDetailsShipmentAdapter adapter = (OrderDetailsShipmentAdapter) listView.getAdapter();
-
-		int height = 0;
-		int width = MeasureSpec.makeMeasureSpec(listView.getWidth(), MeasureSpec.AT_MOST);
-
-		// アダプタのデータ分ループして、高さなどを設定
-		for (int i = 0; i < adapter.getCount(); i++) {
-			View view = adapter.getView(i, null, listView);
-			view.measure(width, MeasureSpec.UNSPECIFIED);
-			height += view.getMeasuredHeight();
-		}
-
-		// 実際のListViewに反映する
-		ViewGroup.LayoutParams params = listView.getLayoutParams();
-		params.height = height + (listView.getDividerHeight() * (adapter.getCount() - 1));
-		listView.setLayoutParams(params);
-		listView.requestLayout();
-	}
-	
-	
 	// 長押しで最初の画面へ
 	@Override
 	public boolean onKeyLongPress(int keyCode, KeyEvent event) {

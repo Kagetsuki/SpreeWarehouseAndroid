@@ -27,7 +27,7 @@
         android:gravity="center_horizontal" >
         
         <TextView 
-            android:text="状況"
+            android:text="@string/state"
             android:layout_width="75dp"
             android:layout_height="match_parent"
             android:textColor="@color/black"
@@ -41,7 +41,7 @@
             android:background="@color/white"
             android:layout_marginBottom="1dp" />   
         <TextView 
-            android:text="合計"
+            android:text="@string/total"
             android:layout_width="75dp"
             android:layout_height="match_parent"
             android:textColor="@color/black"
@@ -64,7 +64,7 @@
         android:layout_marginBottom="10dp" >
         
         <TextView 
-            android:text="発送"
+            android:text="@string/shipping"
             android:layout_width="75dp"
             android:layout_height="match_parent"
             android:textColor="@color/black"
@@ -78,7 +78,7 @@
             android:background="@color/white"
             android:layout_marginBottom="1dp" />   
         <TextView 
-            android:text="支払い方法"
+            android:text="@string/payment_method"
             android:layout_width="75dp"
             android:layout_height="match_parent"
             android:textColor="@color/black"

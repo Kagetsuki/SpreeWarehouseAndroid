@@ -1,20 +1,15 @@
 package org.genshin.warehouse.racks;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import org.genshin.warehouse.R;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 public class RacksMenuAdapter extends BaseExpandableListAdapter {
@@ -55,6 +50,7 @@ public class RacksMenuAdapter extends BaseExpandableListAdapter {
 		group.setText(childData.get(groupPosition).get(childPosition).group);
 		
 		ImageView icon = (ImageView) convertView.findViewById(R.id.childview_icon);
+		// クリックした後に次を表示するか詳細を表示するかでアイコンが変化
 		if (childData.get(groupPosition).get(childPosition).icon)
 			icon.setImageResource(android.R.drawable.ic_input_add);
 		else
@@ -115,5 +111,4 @@ public class RacksMenuAdapter extends BaseExpandableListAdapter {
 	public boolean isChildSelectable(int groupPosition, int childPosition) {
 		return true;
 	}
-
 }

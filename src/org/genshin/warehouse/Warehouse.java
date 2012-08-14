@@ -21,7 +21,7 @@ import java.util.Date;
 
 public class Warehouse {
 	//Result codes from other Activities
-	public static enum ResultCodes { NORMAL, SCAN, SETTINGS, PRODUCT_SELECT, PRODUCT_LIST, CONTAINER_SELECT, UPDATE_PRODUCT_BARCODE };
+	public static enum ResultCodes { NORMAL, SCAN, SETTINGS, PRODUCT_SELECT, PRODUCT_LIST, CONTAINER_SELECT, UPDATE_PRODUCT_BARCODE, STOCK_PRODUCT };
 	
 	private static Context ctx;
 	private static SpreeConnector spree;

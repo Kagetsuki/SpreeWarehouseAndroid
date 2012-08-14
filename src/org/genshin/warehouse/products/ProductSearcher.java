@@ -9,6 +9,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 
 public class ProductSearcher extends SpreeConnector {
@@ -61,8 +62,7 @@ public class ProductSearcher extends SpreeConnector {
 					sku = "";
 				}
 				
-				Product product = new Product(productJSON);
-				
+				Product product = new Product(productJSON);		
 				collection.add(product);				
 			}
 		} catch (JSONException e) {
@@ -86,9 +86,11 @@ public class ProductSearcher extends SpreeConnector {
 		//if we have one hit that's the product we want, so go to it
     	if (Warehouse.Products().list.size() == 1) {
     		if (mode.equals("SELECT")) {
-    			//TODO 商品を選択して(Warehouse.selectProduct)戻る
+    			//int selectMode = Warehouse.ResultCodes.STOCK_PRODUCT.ordinal();
+    			//ProductsMenuActivity.showProductDetails(context, Warehouse.Products().list.get(0), selectMode);
     		} else if (mode.equals("LIST")) {
-    			ProductsMenuActivity.showProductDetails(context, Warehouse.Products().list.get(0));
+    			int selectMode = Warehouse.ResultCodes.NORMAL.ordinal();
+    			ProductsMenuActivity.showProductDetails(context, Warehouse.Products().list.get(0), selectMode);
     		}
     	} else if (Warehouse.Products().list.size() == 0) {
     		//New product?

@@ -31,7 +31,6 @@ public class OrderDetailsPayment {
 	}
 	
 	public OrderDetailsPayment(JSONObject jsonObject) {	
-
 		this.date = null;
 		this.action = null;
 		
@@ -43,7 +42,6 @@ public class OrderDetailsPayment {
 		} catch (JSONException e) {
 			// TODO 自動生成された catch ブロック
 			e.printStackTrace();
-		}
-		
+		}		
 	};
 }

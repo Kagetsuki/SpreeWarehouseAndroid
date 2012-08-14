@@ -3,7 +3,6 @@ package org.genshin.warehouse.orders;
 import org.genshin.warehouse.R;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,7 +32,7 @@ public class OrderDetailsShipmentAdapter extends ArrayAdapter<OrderDetailsShipme
 		TextView method = (TextView) convertView.findViewById(R.id.order_details_shipment_method);
 		method.setText(data[position].shippingMethod);
 		TextView cost = (TextView) convertView.findViewById(R.id.order_details_shipment_cost);
-		cost.setText(data[position].cost + " 円");
+		cost.setText(data[position].cost + context.getString(R.string.currency_unit));
 		TextView tracking = 
 				(TextView) convertView.findViewById(R.id.order_details_shipment_tracking);
 		tracking.setText(data[position].tracking);

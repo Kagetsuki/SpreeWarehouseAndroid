@@ -51,15 +51,15 @@ public class RackDetailsActivity extends Activity {
 		final String name = selectName;
 		
 		AlertDialog.Builder question = new AlertDialog.Builder(this);
-		question.setTitle("このコンテナに登録しますか？");
-		question.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+		question.setTitle(getString(R.string.register_this_container));
+		question.setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface arg0, int arg1) {
 				Intent intent = new Intent(getApplicationContext(), StockingMenuActivity.class);
 				intent.putExtra("CONTAINER_NAME", name);
 				startActivity(intent);
 			}
 		});
-		question.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+		question.setNegativeButton(getString(R.string.no), new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface arg0, int arg1) {
 				finish();
 			}

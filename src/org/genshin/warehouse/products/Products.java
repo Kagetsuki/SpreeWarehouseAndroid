@@ -4,14 +4,11 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 
-import org.genshin.gsa.Dialogs;
-import org.genshin.spree.SpreeConnector;
 import org.genshin.warehouse.R;
 import org.genshin.warehouse.Warehouse;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -24,9 +21,6 @@ public class Products {
 	private Product selected;
 	ArrayList<Product> list;
 	public int count;
-	
-	private JSONObject productContainer;
-	private ArrayList<Product> collection;
 	
 	public Products(Context ctx) {
 		this.ctx = ctx;
@@ -43,6 +37,12 @@ public class Products {
 		return selected;
 	}
 	
+	public void clear() {
+		this.list = new ArrayList<Product>();
+		count = 0;
+	}
+	
+	// JSONデータを取得
 	private ArrayList<Product> processProductContainer(JSONObject productContainer) {
 		ArrayList<Product> collection = new ArrayList<Product>();
 		
@@ -53,6 +53,7 @@ public class Products {
 		try {
 			this.count = productContainer.getInt("count");
 			JSONArray products = productContainer.getJSONArray("products");
+			
 			for (int i = 0; i < products.length(); i++) {
 				JSONObject productJSON = products.getJSONObject(i).getJSONObject("product");
 				
@@ -65,11 +66,8 @@ public class Products {
 					sku = "";
 				}
 				
-				Product product = new Product(productJSON);
-				
-				collection.add(product);
-				
-				
+				Product product = new Product(productJSON);	
+				collection.add(product);				
 			}
 		} catch (JSONException e) {
 			e.printStackTrace();
@@ -78,34 +76,18 @@ public class Products {
 		list = collection;
 		return collection;
 	}
-
-	public void clear() {
-		this.list = new ArrayList<Product>();
-		count = 0;
-	}
-
 	
+	// 最新の（limit）件数を取得…現在は１ページ表示
 	public ArrayList<Product> getNewestProducts(int limit) {		
 		ArrayList<Product> collection = new ArrayList<Product>();
-		JSONObject productContainer = Warehouse.Spree().connector.getJSONObject("api/products.json?page=1");
+		JSONObject productContainer = 
+				Warehouse.Spree().connector.getJSONObject("api/products.json?page=1");
 		collection = processProductContainer(productContainer);
 		
 		return collection;
 	}
-	
-	/*public ArrayList<Product> findByBarcode(String code) {
-		//Dialogs.showSearching(ctx);
-		
-		ArrayList<Product> collection = new ArrayList<Product>();
-		//JSONObject productContainer = Warehouse.Spree().connector.getJSONObject("api/products/search.json?q[variants_including_master_visual_code_eq]=" + code);
-		new FindBarcodeRefresh(ctx, code);
-		collection = processProductContainer(productContainer);
-		
-		//Dialogs.dismiss();
-		
-		return collection;
-	}*/
 
+	// テキスト検索
 	public ArrayList<Product> textSearch(String query) {
 		ArrayList<Product> collection = new ArrayList<Product>();
 		String escapedQuery = query;
@@ -115,16 +97,19 @@ public class Products {
 			// WTF unsupported encoding? fine, just take it raw
 			escapedQuery = query;
 		}
-		JSONObject productContainer = Warehouse.Spree().connector.getJSONObject("api/products/search.json?q[name_cont]=" + escapedQuery);
+		JSONObject productContainer = 
+				Warehouse.Spree().connector.getJSONObject("api/products/search.json?q[name_cont]=" + escapedQuery);
 		collection = processProductContainer(productContainer);
 		
 		return collection;
 	}
 	
-	 public static void unregisteredBarcode(Context ctxt, final String code) {
+	// バーコードが登録されていない場合
+	public static void unregisteredBarcode(Context ctxt, final String code) {
 		final Context ctx = ctxt;
 		AlertDialog.Builder question = new AlertDialog.Builder(ctx);
 
+		// 新規商品登録
 		question.setTitle(ctx.getString(R.string.unregistered_barcode_title));
 		question.setMessage(ctx.getString(R.string.unregistered_barcode_new_product));
 		question.setIcon(R.drawable.newproduct);
@@ -135,8 +120,8 @@ public class Products {
 				intent.putExtra("BARCODE", code);
 	            ctx.startActivity(intent);
 			}
-		});
-		
+		});	
+		// 登録済商品に追加
 		question.setNeutralButton(ctx.getString(R.string.register_to_existing_product), new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface arg0, int arg1) {
 				Intent intent = new Intent(ctx, ProductsMenuActivity.class);
@@ -148,5 +133,4 @@ public class Products {
 
 		question.show();
 	}
-	
 }

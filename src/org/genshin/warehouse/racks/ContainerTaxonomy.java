@@ -6,7 +6,6 @@ package org.genshin.warehouse.racks;
 import java.util.ArrayList;
 
 import org.genshin.warehouse.Warehouse;
-import org.genshin.warehouse.orders.OrderLineItem;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -66,6 +65,7 @@ public class ContainerTaxonomy {
 			}
 		}
 		
+		// 子要素があるかないか
 		if (items != null){
 			try {			
 				for (int i = 0; i < items.length(); i++) {
@@ -97,7 +97,8 @@ public class ContainerTaxonomy {
 	
 	// overload
 	public ContainerTaxonomy(String selectId) {
-		JSONObject taxonomyJSON = Warehouse.Spree().connector.getJSONObject("/api/container_taxonomies/" + selectId + ".json");
+		JSONObject taxonomyJSON = 
+				Warehouse.Spree().connector.getJSONObject("/api/container_taxonomies/" + selectId + ".json");
 
 		list = new ArrayList<ContainerTaxon>();
 		JSONObject innerTaxonomyJSON = null;
@@ -116,7 +117,6 @@ public class ContainerTaxonomy {
 			try {
 				rootJSON = innerTaxonomyJSON.getJSONObject("root");		
 			} catch (JSONException e) {
-				// TODO 自動生成された catch ブロック
 				e.printStackTrace();
 				rootJSON = null;
 			}
@@ -126,7 +126,6 @@ public class ContainerTaxonomy {
 			try {
 				items = rootJSON.getJSONArray("container_taxons");
 			} catch (JSONException e) {
-				// TODO 自動生成された catch ブロック
 				e.printStackTrace();
 			}
 		}

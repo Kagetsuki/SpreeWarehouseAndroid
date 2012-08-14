@@ -2,9 +2,7 @@ package org.genshin.warehouse.orders;
 
 import java.util.ArrayList;
 
-import org.genshin.gsa.Dialogs;
 import org.genshin.spree.SpreeConnector;
-import org.genshin.warehouse.products.Product;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -41,7 +39,7 @@ public class OrderDetails {
 		this.list = new ArrayList<OrderLineItem>();
 		this.spree = spree;
 	}
-	
+
 	public void putOrderDetails(JSONObject container) {
 		
 		JSONObject str = container;
@@ -109,9 +107,9 @@ public class OrderDetails {
 			// TODO 自動生成された catch ブロック
 			e.printStackTrace();
 		}
-
 	}
 	
+	// 注文詳細取得
 	public void processOLIContainer(JSONObject container) {
 		ArrayList<OrderLineItem> collection = new ArrayList<OrderLineItem>();
 
@@ -123,7 +121,6 @@ public class OrderDetails {
 				OrderLineItem lineItem = new OrderLineItem(item);	
 				collection.add(lineItem);
 			}
-
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
@@ -131,6 +128,7 @@ public class OrderDetails {
 		list = collection;
 	}
 	
+	// 支払い方法取得
 	public void getPayment(JSONObject container) {
 		ArrayList<OrderDetailsPayment> collection = new ArrayList<OrderDetailsPayment>();
 
@@ -142,7 +140,6 @@ public class OrderDetails {
 				OrderDetailsPayment lineItem = new OrderDetailsPayment(item);	
 				collection.add(lineItem);
 			}
-
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
@@ -150,6 +147,7 @@ public class OrderDetails {
 		paymentList = collection;
 	}
 	
+	// 配送取得
 	public void getShipment(JSONObject container) {
 		ArrayList<OrderDetailsShipment> collection = new ArrayList<OrderDetailsShipment>();
 
@@ -161,7 +159,6 @@ public class OrderDetails {
 				OrderDetailsShipment lineItem = new OrderDetailsShipment(item);	
 				collection.add(lineItem);
 			}
-
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}

@@ -116,6 +116,36 @@
 	<string name="customer_name_dummy">Spree Customer</string>
 	<string name="three_zero">000</string>
 	
+	<!-- 追加分 -->
+	<string name="customer_info">Customer Infomation</string>
+	<string name="adjustment">Adjustment</string>
+	<string name="payment_method">Payment Method</string>
+	<string name="returned_goods">Returned Goods</string>
+	<string name="currency_unit">Dollar</string>
+	<string name="no_select">No Selection</string>
+	<string name="return_default">Return Default</string>
+	<string name="order_date">Date of Order</string>
+	<string name="payment_state">State of Payment</string>
+	<string name="picking_state">State of Picking</string>
+	<string name="packing_state">State of Packing</string>
+	<string name="shipment_state">State of Shipment</string>
+	<string name="sort">Sort</string>
+	<string name="new_order">New Order</string>
+	<string name="total">Total</string>
+	<string name="subtotal">Subtotal</string>
+	<string name="number">Num</string>
+	<string name="cost">Shipping Cost</string>
+	<string name="state">State</string>
+	<string name="bill_address">Bill Address</string>
+	<string name="ship_address">Ship Address</string>
+	<string name="guest_order">Guest Order</string>
+	<string name="email">E-mail</string>
 	
+	<string name="register_this_product">Register this product?</string>
+	<string name="yes">Yes</string>
+	<string name="no">No</string>
+	<string name="stock_number">Number of stock?</string>
+	<string name="name">Name</string>
+	<string name="register_this_container">Register this container?</string>
 	
 </resources>

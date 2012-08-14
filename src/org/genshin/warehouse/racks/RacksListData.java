@@ -1,8 +1,5 @@
 package org.genshin.warehouse.racks;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-
 public class RacksListData {
 	
 	String name;
@@ -25,5 +22,4 @@ public class RacksListData {
 		this.id = id;
 		this.permalink = permalink;
 	}
-
 }

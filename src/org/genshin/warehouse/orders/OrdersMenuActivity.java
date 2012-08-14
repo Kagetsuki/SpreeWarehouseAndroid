@@ -46,8 +46,6 @@ public class OrdersMenuActivity extends Activity {
 	private ImageButton backwardButton;
 	private boolean updown = false;		// falseの時は▽、trueの時は△表示
 	
-	private OrderListItem[] orderListItems;
-	
 	private void hookupInterface() {
 		orderList = (ListView) findViewById(R.id.order_menu_list);
 		
@@ -56,21 +54,20 @@ public class OrdersMenuActivity extends Activity {
 		sadapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item);
 	    sadapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 	    // アイテムを追加します
-	    sadapter.add("未選択");
-	    sadapter.add("初期状態に戻す");
-	    sadapter.add("注文日順");
-	    sadapter.add("入金状態");
-	    sadapter.add("ピッキング状態");
-	    sadapter.add("梱包状態");
-	    sadapter.add("発送状態");
-	    orderSpinner.setPrompt("ソート");
+	    sadapter.add(getString(R.string.no_select));
+	    sadapter.add(getString(R.string.return_default));
+	    sadapter.add(getString(R.string.order_date));
+	    sadapter.add(getString(R.string.payment_state));
+	    sadapter.add(getString(R.string.picking_state));
+	    sadapter.add(getString(R.string.packing_state));
+	    sadapter.add(getString(R.string.shipment_state));
+	    orderSpinner.setPrompt(getString(R.string.sort));
 	    orderSpinner.setAdapter(sadapter);
 	    
 	    orderSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             public void onItemSelected(AdapterView<?> parent, View view,
                     int position, long id) {
                 Spinner spinner = (Spinner) parent;
-                //String item = (String) spinner.getSelectedItem();
                 switch(position) {
                 	case 0:		// 未選択
                 		break;
@@ -141,7 +138,7 @@ public class OrdersMenuActivity extends Activity {
     public boolean onCreateOptionsMenu(Menu menu) {
 		Resources res = getResources();
         // メニューアイテムを追加する
-        menu.add(Menu.NONE, menuCodes.registerOrder.ordinal(), Menu.NONE, "新規注文");
+        menu.add(Menu.NONE, menuCodes.registerOrder.ordinal(), Menu.NONE, getString(R.string.new_order));
         return super.onCreateOptionsMenu(menu);
     }
 	
@@ -214,7 +211,7 @@ public class OrdersMenuActivity extends Activity {
 	}
 	
 	private void refreshOrderMenu() {	
-		orderListItems = new OrderListItem[Warehouse.Orders().list.size()];
+		OrderListItem[] orderListItems = new OrderListItem[Warehouse.Orders().list.size()];
 		
 		for (int i = 0; i < Warehouse.Orders().list.size(); i++) {
 			Order p = Warehouse.Orders().list.get(i);

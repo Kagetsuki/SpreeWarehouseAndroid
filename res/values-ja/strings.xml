@@ -6,7 +6,7 @@
     <string name="title">Warehouse</string>
     <string name="products">商品</string>
     <string name="orders">注文</string>
-    <string name="order_details">注文</string>
+    <string name="order_details">注文詳細</string>
     <string name="stocking">入荷</string>
     <string name="racks">棚</string>
     <string name="shipping">発送</string>
@@ -109,4 +109,37 @@
 	<string name="loading">読み込み中</string>
 	<string name="saving">保存中</string>
 	<string name="deleting">削除中</string>
+	
+	<!-- 追加分 -->
+	<string name="customer_info">お客様情報</string>
+	<string name="adjustment">調整（値引き・追加料金）</string>
+	<string name="payment_method">支払い方法</string>
+	<string name="returned_goods">返品承認</string>
+	<string name="currency_unit">円</string>
+	<string name="no_select">未選択</string>
+	<string name="return_default">初期状態に戻す</string>
+	<string name="order_date">注文日時</string>
+	<string name="payment_state">入金状態</string>
+	<string name="picking_state">ピッキング状態</string>
+	<string name="packing_state">梱包状態</string>
+	<string name="shipment_state">発送状態</string>
+	<string name="sort">ソート</string>
+	<string name="new_order">新規注文</string>
+	<string name="total">合計</string>
+	<string name="subtotal">小計</string>
+	<string name="number">数</string>
+	<string name="cost">送料</string>
+	<string name="state">状況</string>
+	<string name="bill_address">請求先住所</string>
+	<string name="ship_address">配送先住所</string>
+	<string name="guest_order">ゲスト注文</string>
+	<string name="email">Eメール</string>
+	
+	<string name="register_this_product">この商品に登録しますか？</string>
+	<string name="yes">はい</string>
+	<string name="no">いいえ</string>
+	<string name="stock_number">いくつ入荷しますか？</string>
+	<string name="name">名前</string>
+	<string name="register_this_container">このコンテナに登録しますか？</string>
+	
 </resources>

@@ -3,7 +3,6 @@ package org.genshin.warehouse.orders;
 import org.genshin.warehouse.R;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,7 +30,7 @@ public class OrderDetailsPaymentAdapter extends ArrayAdapter<OrderDetailsPayment
 		TextView date = (TextView) convertView.findViewById(R.id.order_details_payment_date);
 		date.setText("yyyy/MM/dd");
 		TextView amount = (TextView) convertView.findViewById(R.id.order_details_payment_amount);
-		amount.setText("" + data[position].amount + " 円");
+		amount.setText("" + data[position].amount + context.getString(R.string.currency_unit));
 		TextView method = (TextView) convertView.findViewById(R.id.order_details_payment_method);
 		method.setText("" + data[position].paymentMethod);
 		TextView state = (TextView) convertView.findViewById(R.id.order_details_payment_state);

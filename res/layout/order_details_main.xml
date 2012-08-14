@@ -27,7 +27,7 @@
             android:layout_marginBottom="1dp" />
         
         <TextView 
-            android:text="価格"
+            android:text="@string/price"
             android:layout_width="50dp"
             android:layout_height="wrap_content"
             android:layout_marginRight="1dp"
@@ -36,7 +36,7 @@
             android:layout_marginBottom="1dp" />
         
         <TextView 
-            android:text="個数"
+            android:text="@string/number"
             android:layout_width="40dp"
             android:layout_height="wrap_content"
             android:layout_marginRight="1dp"
@@ -45,7 +45,7 @@
             android:layout_marginBottom="1dp" />
         
         <TextView 
-            android:text="合計"
+            android:text="@string/subtotal"
             android:layout_width="60dp"
             android:layout_height="wrap_content"
             android:textColor="@color/black"
@@ -79,7 +79,7 @@
 	            android:layout_height="match_parent"
 	            android:layout_marginRight="1dp"
 	            android:background="@color/lightblue"
-	            android:text="合計："
+	            android:text="@string/total"
 	            android:textColor="@color/black"
 	            android:layout_marginBottom="1dp" />
 	
@@ -103,7 +103,7 @@
 	            android:layout_height="match_parent"
 	            android:layout_marginRight="1dp"
 	            android:background="@color/lightblue"
-	            android:text="送料："
+	            android:text="@string/cost"
 	            android:textColor="@color/black"
 	            android:layout_marginBottom="1dp" />
 	
@@ -128,7 +128,7 @@
 			    android:layout_height="match_parent"
 			    android:layout_marginRight="1dp"
 			    android:background="@color/lightblue"
-			    android:text="合計："
+			    android:text="@string/total"
 			    android:textColor="@color/black" />
 	
 			<TextView

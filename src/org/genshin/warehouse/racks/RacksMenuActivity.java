@@ -1,39 +1,26 @@
 package org.genshin.warehouse.racks;
 
 import java.util.ArrayList;
-import java.util.Map;
-import java.util.HashMap;
 
-import org.apache.http.NameValuePair;
-import org.apache.http.message.BasicNameValuePair;
 import org.genshin.gsa.network.NetworkTask;
 import org.genshin.warehouse.R;
 import org.genshin.warehouse.Warehouse;
 import org.genshin.warehouse.WarehouseActivity;
-import org.genshin.warehouse.products.ProductDetailsActivity;
-import org.genshin.warehouse.stocking.StockingMenuActivity;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
-import android.widget.ExpandableListAdapter;
 import android.widget.ExpandableListView;
 import android.widget.ExpandableListView.OnChildClickListener;
 import android.widget.ExpandableListView.OnGroupClickListener;
-import android.widget.ImageView;
-import android.widget.SimpleExpandableListAdapter;
 import android.widget.TextView;
-import android.widget.Toast;
 
 public class RacksMenuActivity extends Activity {
 	private ExpandableListView racksRootList;
-
     private RacksMenuAdapter adapter;
     
     private Intent intent;
@@ -43,7 +30,6 @@ public class RacksMenuActivity extends Activity {
     private String selectId;
     
 	private WarehouseDivisions warehouses;
-	
     private ArrayList<RacksListData> warehouseRoots;
     private ArrayList<ArrayList<RacksListData>> containerTaxonomyNodes;
     
@@ -193,6 +179,7 @@ public class RacksMenuActivity extends Activity {
 		}
 	}
 	
+	// 最初の表示データ
 	public void putJsonData(String selectId) {
 		
         warehouseRoots = new ArrayList<RacksListData>();
@@ -220,6 +207,7 @@ public class RacksMenuActivity extends Activity {
 		}
 	}
 	
+	// 次の表示データ
 	public void putJsonDataExpand(String selectId) {
 		
 		warehouseRoots = new ArrayList<RacksListData>();

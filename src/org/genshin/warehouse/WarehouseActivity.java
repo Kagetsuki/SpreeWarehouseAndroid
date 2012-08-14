@@ -200,7 +200,7 @@ public class WarehouseActivity extends Activity {
             	Toast.makeText(WarehouseActivity.this, getString(R.string.scan_cancelled), Toast.LENGTH_LONG).show();
             }
 		} else if (resultCode == ResultCodes.PRODUCT_SELECT.ordinal()) {
-			ProductsMenuActivity.showProductDetails(this, Warehouse.Products().selected());
+			ProductsMenuActivity.showProductDetails(this, Warehouse.Products().selected(), resultCode);
         } else if (resultCode == ResultCodes.SETTINGS.ordinal()) {
         	loadProfiles();
         	checkConnection();
