@@ -140,6 +140,12 @@
 	            
 		</LinearLayout>
 		
+		<Button 
+		    android:id="@+id/order_details_product_add"
+		    android:text="@string/new_product_add"
+		    android:layout_width="200dp"
+		    android:layout_height="wrap_content" />
+		
 		<LinearLayout
 	        android:layout_width="match_parent"
 	        android:layout_height="wrap_content"

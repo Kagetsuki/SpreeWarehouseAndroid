@@ -1,0 +1,254 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView  xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+    
+    <TextView
+        android:background="@color/lightblue"
+        android:textColor="@color/black"
+        android:text="@string/account"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="18dp"
+        android:gravity="center" >
+    </TextView>
+    
+    <TextView
+        android:text="@string/email"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" >
+    </TextView>
+    <EditText 
+        android:id="@+id/edit_email"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/email" />
+    
+    <TextView
+        android:background="@color/lightblue"
+        android:textColor="@color/black"
+        android:text="@string/bill_address"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="18dp"
+        android:gravity="center" >
+    </TextView>
+    
+    <TextView
+        android:text="@string/first_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" >
+    </TextView>
+    <EditText 
+        android:id="@+id/edit_first_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/first_name" />
+    <TextView
+        android:text="@string/last_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" >
+    </TextView>
+    <EditText 
+        android:id="@+id/edit_last_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/last_name" />
+    <TextView
+        android:text="@string/address_1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" >
+    </TextView>
+    <EditText 
+        android:id="@+id/edit_address_1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/address_1" />
+    <TextView
+        android:text="@string/address_2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" >
+    </TextView>
+    <EditText 
+        android:id="@+id/edit_address_2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/address_1" />
+    <TextView
+        android:text="@string/city"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" >
+    </TextView>
+    <EditText 
+        android:id="@+id/edit_city"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/city" />
+    <TextView
+        android:text="@string/states"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" >
+    </TextView>
+    <EditText 
+        android:id="@+id/edit_states"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/states" />
+        <TextView
+        android:text="@string/zip_code"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" >
+    </TextView>
+    <EditText 
+        android:id="@+id/edit_zip_code"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/zip_code" />
+    <TextView
+        android:text="@string/country"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" >
+    </TextView>
+    <EditText 
+        android:id="@+id/edit_country"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/country" />
+    <TextView
+        android:text="@string/phone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" >
+    </TextView>
+    <EditText 
+        android:id="@+id/edit_phone"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/phone" />
+    
+    <Button 
+        android:id="@+id/add_button"
+        android:text="@string/add"
+        android:layout_width="60dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center" />
+    
+    <TextView
+        android:background="@color/lightblue"
+        android:textColor="@color/black"
+        android:text="@string/ship_address"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="18dp"
+        android:gravity="center" >
+    </TextView>
+    
+    <CheckBox
+        android:id="@+id/checkBox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/use_bill_address" />
+    
+    <TextView
+        android:text="@string/first_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" >
+    </TextView>
+    <EditText 
+        android:id="@+id/edit_first_name_ship"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/first_name" />
+    <TextView
+        android:text="@string/last_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" >
+    </TextView>
+    <EditText 
+        android:id="@+id/edit_last_name_ship"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/last_name" />
+    <TextView
+        android:text="@string/address_1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" >
+    </TextView>
+    <EditText 
+        android:id="@+id/edit_address_1_ship"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/address_1" />
+    <TextView
+        android:text="@string/address_2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" >
+    </TextView>
+    <EditText 
+        android:id="@+id/edit_address_2_ship"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/address_1" />
+    <TextView
+        android:text="@string/city"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" >
+    </TextView>
+    <EditText 
+        android:id="@+id/edit_city_ship"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/city" />
+    <TextView
+        android:text="@string/states"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" >
+    </TextView>
+    <EditText 
+        android:id="@+id/edit_states_ship"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/states" />
+        <TextView
+        android:text="@string/zip_code"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" >
+    </TextView>
+    <EditText 
+        android:id="@+id/edit_zip_code_ship"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/zip_code" />
+    <TextView
+        android:text="@string/country"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" >
+    </TextView>
+    <EditText 
+        android:id="@+id/edit_country_ship"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/country" />
+    <TextView
+        android:text="@string/phone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" >
+    </TextView>
+    <EditText 
+        android:id="@+id/edit_phone_ship"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/phone" />
+    
+    <Button 
+        android:id="@+id/add_button2"
+        android:text="@string/add"
+        android:layout_width="60dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center" />
+
+</LinearLayout>
+</ScrollView>

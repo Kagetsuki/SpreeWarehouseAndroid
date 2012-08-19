@@ -43,16 +43,26 @@ public class Orders {
 	}
 	
 	// JSONデータ取得
-	public ArrayList<Order> processOrderContainer(JSONObject orderContainer) {
+	public ArrayList<Order> processOrderContainer(JSONObject orderContainer,
+															int limit, String flag) {
 		ArrayList<Order> collection = new ArrayList<Order>();
+		int first = 0;
 		
 		if (orderContainer == null)
 			return null;
-		
+
 		//Pick apart JSON object
 		try {
+			if (flag.equals("NEW_ORDER")) {
+				this.count = orderContainer.getInt("count");
+				int tmp = count / 25 + 1;
+				orderContainer = 
+						Warehouse.Spree().connector.getJSONObject("api/orders.json?page=" + tmp);
+			}	
 			JSONArray orders = orderContainer.getJSONArray("orders");
-			for (int i = 0; i < orders.length(); i++) {
+			if (flag.equals("NEW_ORDER"))
+				first = orders.length() - 1;
+			for (int i = first; i < orders.length(); i++) {
 				JSONObject orderJSON = orders.getJSONObject(i).getJSONObject("order");
 				Order order = new Order(orderJSON);
 				
@@ -73,12 +83,11 @@ public class Orders {
 	}
 
 	// 最新の（limit）件数を取得…現在は１ページ表示
-	public ArrayList<Order> getNewestOrders(int limit) {
-		
+	public ArrayList<Order> getNewestOrders(int limit, String flag) {
 		ArrayList<Order> collection = new ArrayList<Order>();
 		JSONObject orderContainer = 
-				Warehouse.Spree().connector.getJSONObject("api/orders.json?page=1");
-		collection = processOrderContainer(orderContainer);
+				Warehouse.Spree().connector.getJSONObject("api/orders.json");
+		collection = processOrderContainer(orderContainer, limit, flag);
 
 		return collection;
 	}

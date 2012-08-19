@@ -174,6 +174,9 @@ public class ProductsMenuActivity extends Activity {
 			} else if (modeString.equals("UPDATE_PRODUCT_BARCODE")) {
 				mode = Warehouse.ResultCodes.UPDATE_PRODUCT_BARCODE.ordinal();
 				Toast.makeText(this, getString(R.string.select_a_product), Toast.LENGTH_LONG).show();
+			} else if (modeString.equals("ADD_PRODUCT")) {
+				mode = Warehouse.ResultCodes.ADD_PRODUCT.ordinal();
+				Toast.makeText(this, getString(R.string.select_a_product), Toast.LENGTH_LONG).show();
 			}
 		} else if (Warehouse.Products().list.size() == 0)
 			new NewProductsRefresh(this, 10).execute();
@@ -280,6 +283,9 @@ public class ProductsMenuActivity extends Activity {
 			productDetailsIntent.putExtra("BARCODE", barcodeString);
 		//} else if (selectMode == Warehouse.ResultCodes.STOCK_PRODUCT.ordinal()) {
 		//	productDetailsIntent.putExtra("MODE", "STOCK_PRODUCT");
+		} else if (mode == Warehouse.ResultCodes.ADD_PRODUCT.ordinal()) {
+			String modeString = intent.getStringExtra("MODE");
+			productDetailsIntent.putExtra("MODE", modeString);
 		}
     	ctx.startActivity(productDetailsIntent);
 	}

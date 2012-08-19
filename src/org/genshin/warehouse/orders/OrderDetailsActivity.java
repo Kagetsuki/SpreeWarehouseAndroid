@@ -11,6 +11,7 @@ import org.json.JSONObject;
 import android.app.TabActivity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -18,6 +19,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.MeasureSpec;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ListView;
@@ -38,7 +40,8 @@ public class OrderDetailsActivity extends TabActivity {
 	private TextView itemTotal;
 	private TextView cost;
 	private TextView lastTotal;
-	private Button pickingButton;	
+	private Button pickingButton;
+	private Button addProductButton;
 	private Button canselButton;
 	private Button editButton;
 	
@@ -60,6 +63,13 @@ public class OrderDetailsActivity extends TabActivity {
 	private ListView shipmentListView;
 	private OrderDetailsShipmentAdapter shipmentAdapter;
 	private Button shipmentNewButton;
+	
+	public static OrderDetails orderDetails;
+	
+	public static OrderDetails getOrderDetails() {
+		OrderDetails select = orderDetails;
+		return select;
+	}
 
 	private void getOrderInfo() {
 		order = OrdersMenuActivity.getSelectedOrder();
@@ -98,12 +108,27 @@ public class OrderDetailsActivity extends TabActivity {
 	private void hookupInterface() {
 		pickingButton = (Button) findViewById
 				(R.id.order_details_main).findViewById(R.id.order_details_picking_button);
+		addProductButton = (Button) findViewById
+				(R.id.order_details_main).findViewById(R.id.order_details_product_add);
+		addProductButton.setOnClickListener(new View.OnClickListener() {		
+			public void onClick(View v) {
+				Intent intent = new Intent(getApplicationContext(), EditProductActivity.class);
+	            intent.putExtra("isNew", false);
+	            startActivity(intent); 
+			}
+		});
 		canselButton = (Button) findViewById
 				(R.id.order_details_main).findViewById(R.id.order_details_cansel_button);
 		editButton = (Button) findViewById
 				(R.id.order_details_main).findViewById(R.id.order_details_edit_button);
 		accountEditButton = (Button) findViewById
 				(R.id.order_details_account).findViewById(R.id.order_details_accountedit_button);
+		accountEditButton.setOnClickListener(new View.OnClickListener() {
+			public void onClick(View v) {
+				Intent intent = new Intent(getApplicationContext(), EditAddressActivity.class);
+				startActivity(intent);
+			}	
+		});
 		paymentNewButton = (Button) findViewById
 				(R.id.order_details_payment).findViewById(R.id.order_details_payment_new_button);
 		shipmentNewButton = (Button) findViewById
@@ -161,48 +186,53 @@ public class OrderDetailsActivity extends TabActivity {
 		new getOrderDetails(this, order.number).execute();
 	}
 	
-	//public static enum menuCodes { stock, destock, registerVisualCode, addOrderImage, editOrderDetails };
+	public static enum menuCodes 
+		{ addProduct, editAddress, editPayment, editAdjustment, editShipment };
 	
-	/*
 	@Override
     public boolean onCreateOptionsMenu(Menu menu) {
 		Resources res = getResources();
         // メニューアイテムを追加します
-        menu.add(Menu.NONE, menuCodes.stock.ordinal(), Menu.NONE, res.getString(R.string.stock_in));
-        menu.add(Menu.NONE, menuCodes.destock.ordinal(), Menu.NONE, res.getString(R.string.destock));
-        menu.add(Menu.NONE, menuCodes.registerVisualCode.ordinal(), Menu.NONE, res.getString(R.string.register_barcode));
-        menu.add(Menu.NONE, menuCodes.addOrderImage.ordinal(), Menu.NONE, res.getString(R.string.add_order_image));
-        menu.add(Menu.NONE, menuCodes.editOrderDetails.ordinal(), Menu.NONE, res.getString(R.string.edit_order_details));
+        menu.add(Menu.NONE, menuCodes.addProduct.ordinal(), Menu.NONE, res.getString(R.string.new_product_add));
+        menu.add(Menu.NONE, menuCodes.editAddress.ordinal(), Menu.NONE, res.getString(R.string.edit_address));
+        menu.add(Menu.NONE, menuCodes.editPayment.ordinal(), Menu.NONE, res.getString(R.string.edit_payment));
+        menu.add(Menu.NONE, menuCodes.editAdjustment.ordinal(), Menu.NONE, res.getString(R.string.edit_adjustment));
+        menu.add(Menu.NONE, menuCodes.editShipment.ordinal(), Menu.NONE, res.getString(R.string.edit_shipment));
         return super.onCreateOptionsMenu(menu);
     }
 	
 	@Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-	*/	  
-		//Java can't do this!? WTF!
-        /*switch (item.getItemId()) {
-        	default:
-        		return super.onOptionsItemSelected(item);
-        	case registerVisualCode:
-            
-        		return true;
-        }*//*
+    public boolean onOptionsItemSelected(MenuItem item) {	  
 		int id = item.getItemId();
 
-		if (id == menuCodes.registerVisualCode.ordinal()) {
-			Intent intent = new Intent("com.google.zxing.client.android.SCAN");
-            //intent.putExtra("SCAN_MODE", "BARCODE_MODE");
-            startActivityForResult(intent, ResultCodes.SCAN.ordinal());
-        	
+		if (id == menuCodes.addProduct.ordinal()) {
+			Intent intent = new Intent(this, EditProductActivity.class);
+            intent.putExtra("isNew", false);
+            startActivity(intent);   	
 			return true;
-		} else if (id == menuCodes.editOrderDetails.ordinal()) {
-			Intent intent = new Intent(this, OrderEditActivity.class);
+		} else if (id == menuCodes.editAddress.ordinal()) {
+			Intent intent = new Intent(this, EditAddressActivity.class);
 			startActivity(intent);
+			return true;
+			/*
+		} else if (id == menuCodes.editPayment.ordinal()) {
+			Intent intent = new Intent(this, EditPaymentActivity.class);
+			startActivity(intent);
+			return true;
+		} else if (id == menuCodes.editAdjustment.ordinal()) {
+			Intent intent = new Intent(this, EditAdjustmentActivity.class);
+			startActivity(intent);
+			return true;
+		} else if (id == menuCodes.editShipment.ordinal()) {
+			Intent intent = new Intent(this, EditShipmentActivity.class);
+			startActivity(intent);
+			return true;
+			*/
 		}
         
         return false;
     }
-	*/
+
 	/*
 	public void onActivityResult(int requestCode, int resultCode, Intent intent) {
         if (requestCode == ResultCodes.SCAN.ordinal()) {
@@ -246,13 +276,13 @@ public class OrderDetailsActivity extends TabActivity {
 		
 		@Override
 		protected void complete() {
+			orderDetails = new OrderDetails(Warehouse.getContext(), spree);
 			new setOrderDetails(Warehouse.getContext(), container).execute();
 		}
 	}
 	
 	class setOrderDetails extends NetworkTask {
 		private JSONObject container;
-		OrderDetails orderDetails = new OrderDetails(Warehouse.getContext(), spree);
 
 		public setOrderDetails(Context ctx, JSONObject container) {
 			super(ctx);
@@ -276,7 +306,7 @@ public class OrderDetailsActivity extends TabActivity {
 			shipmentListView = (ListView) findViewById
 					(R.id.order_details_shipment).findViewById(R.id.order_details_shipment_list);
 			
-			number.setText(order.number);
+			number.setText(orderDetails.number);
 			statement.setText(orderDetails.statement);
 			mainTotal.setText(orderDetails.mainTotal + getString(R.string.currency_unit));
 			paymentAddress.setText(orderDetails.paymentAddress);

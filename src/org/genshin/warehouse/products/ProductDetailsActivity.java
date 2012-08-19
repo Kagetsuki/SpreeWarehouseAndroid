@@ -10,6 +10,7 @@ import org.genshin.spree.SpreeConnector;
 import org.genshin.warehouse.R;
 import org.genshin.warehouse.WarehouseActivity;
 import org.genshin.warehouse.Warehouse.ResultCodes;
+import org.genshin.warehouse.orders.EditProductActivity;
 import org.genshin.warehouse.products.ProductEditActivity;
 import org.genshin.warehouse.stocking.StockingMenuActivity;
 
@@ -88,6 +89,22 @@ public class ProductDetailsActivity extends Activity {
 				question.setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface arg0, int arg1) {
 						new registrationNewData(getApplicationContext(), barcodeString).execute();
+					}
+				});
+				question.setNegativeButton(getString(R.string.no), new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface arg0, int arg1) {
+						finish();
+					}
+				});
+				question.show();
+	        } else if (modeString.equals("ADD_PRODUCT")) {
+	        	AlertDialog.Builder question = new AlertDialog.Builder(this);
+				question.setTitle(getString(R.string.add_this_product));
+				question.setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface arg0, int arg1) {
+						Intent intent = new Intent(getApplicationContext(), EditProductActivity.class);
+						intent.putExtra("SELECT", true);
+						startActivity(intent);
 					}
 				});
 				question.setNegativeButton(getString(R.string.no), new DialogInterface.OnClickListener() {

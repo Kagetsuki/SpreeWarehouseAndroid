@@ -20,6 +20,7 @@ import org.genshin.spree.ConnectionStatus;
 import org.genshin.warehouse.Warehouse.ResultCodes;
 import org.genshin.warehouse.orders.OrdersMenuActivity;
 import org.genshin.warehouse.packing.PackingMenuActivity;
+import org.genshin.warehouse.picking.PickingMenuActivity;
 import org.genshin.warehouse.products.ProductSearcher;
 import org.genshin.warehouse.products.ProductsMenuActivity;
 import org.genshin.warehouse.profiles.Profiles;
@@ -54,7 +55,7 @@ public class WarehouseActivity extends Activity {
 				new ThumbListItem(R.drawable.orders, getString(R.string.orders), "", OrdersMenuActivity.class),
 				new ThumbListItem(R.drawable.stocking, getString(R.string.stocking), "", StockingMenuActivity.class),
 				new ThumbListItem(R.drawable.racks, getString(R.string.racks), "", RacksMenuActivity.class),
-				new ThumbListItem(R.drawable.picking, getString(R.string.picking), "", RacksMenuActivity.class),
+				new ThumbListItem(R.drawable.picking, getString(R.string.picking), "", PickingMenuActivity.class),
 				new ThumbListItem(R.drawable.packing, getString(R.string.packing), "", PackingMenuActivity.class),
 				new ThumbListItem(R.drawable.shipping, getString(R.string.shipping), "", ShippingMenuActivity.class)
 			};

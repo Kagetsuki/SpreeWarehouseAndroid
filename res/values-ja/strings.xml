@@ -111,6 +111,8 @@
 	<string name="deleting">削除中</string>
 	
 	<!-- 追加分 -->
+	<string name="edit_order_details">注文編集</string>
+	<string name="order_edit">注文情報編集</string>
 	<string name="customer_info">お客様情報</string>
 	<string name="adjustment">調整（値引き・追加料金）</string>
 	<string name="payment_method">支払い方法</string>
@@ -141,5 +143,27 @@
 	<string name="stock_number">いくつ入荷しますか？</string>
 	<string name="name">名前</string>
 	<string name="register_this_container">このコンテナに登録しますか？</string>
+
+	<string name="new_product_add">商品追加</string>
+	<string name="add">追加</string>
+	<string name="create_new_order">注文を新規作成しますか？</string>
+	<string name="created">作成しました</string>
+	<string name="edit_address">住所編集</string>
+	<string name="edit_payment">支払編集</string>
+	<string name="edit_adjustment">調整編集</string>
+	<string name="edit_shipment">配送編集</string>
+	<string name="account">アカウント</string>
+	<string name="first_name">名</string>
+	<string name="last_name">姓</string>
+	<string name="address_1">住所</string>
+	<string name="address_2">住所の続き</string>
+	<string name="city">市区町村</string>
+	<string name="zip_code">郵便番号</string>
+	<string name="states">都道府県</string>
+	<string name="country">国</string>
+	<string name="phone">電話番号</string>
+	<string name="use_bill_address">請求先住所を使用する</string>
+	<string name="add_this_product">この商品を追加しますか？</string>
+	<string name="fill_blank">空欄を埋めてください</string>
 	
 </resources>

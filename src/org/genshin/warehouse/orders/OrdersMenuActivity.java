@@ -1,10 +1,8 @@
 package org.genshin.warehouse.orders;
 
 import java.util.ArrayList;
-import java.util.Date;
 
 import org.genshin.gsa.network.NetworkTask;
-import org.genshin.spree.SpreeConnector;
 import org.genshin.warehouse.R;
 import org.genshin.warehouse.Warehouse;
 import org.genshin.warehouse.WarehouseActivity;
@@ -12,13 +10,12 @@ import org.genshin.warehouse.Warehouse.ResultCodes;
 import org.genshin.warehouse.orders.Order;
 import org.genshin.warehouse.orders.OrderListAdapter;
 import org.genshin.warehouse.orders.OrderListItem;
-import org.genshin.warehouse.orders.Orders;
 import org.genshin.warehouse.orders.OrdersMenuActivity;
-import org.genshin.warehouse.orders.OrdersMenuActivity.menuCodes;
-import org.json.JSONObject;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
@@ -32,7 +29,6 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ListView;
-import android.widget.MultiAutoCompleteTextView;
 import android.widget.Spinner;
 
 public class OrdersMenuActivity extends Activity {
@@ -72,7 +68,7 @@ public class OrdersMenuActivity extends Activity {
                 	case 0:		// 未選択
                 		break;
                 	case 1:		// 初期状態に戻す
-                		new NewOrdersRefresh(Warehouse.getContext(), 10).execute();
+                		new NewOrdersRefresh(Warehouse.getContext(), 25, "NORMAL").execute();
                 		clearImage();
                 		break;
                 	case 2:		// 注文日順
@@ -128,7 +124,13 @@ public class OrdersMenuActivity extends Activity {
         
         hookupInterface();
 
-        new NewOrdersRefresh(Warehouse.getContext(), 10).execute();   
+        Intent intent = getIntent();
+        String mode = intent.getStringExtra("MODE");
+
+        if (mode != null)
+        	new NewOrdersRefresh(Warehouse.getContext(), 25, "NEW_ORDER").execute();
+        else
+        	new NewOrdersRefresh(Warehouse.getContext(), 25, "NORMAL").execute();   
 	}
 
 	public static enum menuCodes { registerOrder };
@@ -138,26 +140,33 @@ public class OrdersMenuActivity extends Activity {
     public boolean onCreateOptionsMenu(Menu menu) {
 		Resources res = getResources();
         // メニューアイテムを追加する
-        menu.add(Menu.NONE, menuCodes.registerOrder.ordinal(), Menu.NONE, getString(R.string.new_order));
+        menu.add(Menu.NONE, menuCodes.registerOrder.ordinal(), Menu.NONE, res.getString(R.string.new_order));
         return super.onCreateOptionsMenu(menu);
     }
 	
 	// メニュー実装
 	@Override
     public boolean onOptionsItemSelected(MenuItem item) {
-
 		int id = item.getItemId();
 
-		/*
 		if (id == menuCodes.registerOrder.ordinal()) {
-			Intent intent = new Intent(this, OrderEditActivity.class);
-			intent.putExtra("IS_NEW", true);
-            startActivity(intent);
+			AlertDialog.Builder question = new AlertDialog.Builder(this);
+			question.setTitle(getString(R.string.create_new_order));
+			question.setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
+				public void onClick(DialogInterface arg0, int arg1) {
+					Order order = new Order();
+					new SaveOrder(getApplicationContext(), true, order).execute();
+				}
+			});
+			question.setNegativeButton(getString(R.string.no), new DialogInterface.OnClickListener() {
+				public void onClick(DialogInterface arg0, int arg1) {
+				}
+			});
+			question.show();
         	
 			return true;
 		}
-		*/
-        
+
         return false;
     }
 	
@@ -242,16 +251,18 @@ public class OrdersMenuActivity extends Activity {
 	}
 	
 	class NewOrdersRefresh extends OrdersListRefresh {
-		private int count;
+		int count;
+		String mode;
 		
-		public NewOrdersRefresh(Context ctx, int count) {
+		public NewOrdersRefresh(Context ctx, int count, String mode) {
 			super(ctx);
 			this.count = count;
+			this.mode = mode;
 		}
 
 		@Override
 		protected void process() {
-			Warehouse.Orders().getNewestOrders(count);
+			Warehouse.Orders().getNewestOrders(count, mode);
 		}		
 	}	
 	
@@ -370,20 +381,14 @@ public class OrdersMenuActivity extends Activity {
 	// 発送状態
 	public void sortShipment() {
 		Order temp;
-		Log.v("test", "IN");
-		Log.v("test", "aaaa" + Warehouse.Orders().list.get(0).shipmentState);
 		for (int i = 0; i < Warehouse.Orders().list.size() - 1; i++) {
 			for (int j = i + 1; j < Warehouse.Orders().list.size(); j++) {
 				if (Warehouse.Orders().list.get(i).shipmentState.compareTo(Warehouse.Orders().list.get(j).shipmentState) > 0) {
-					Log.v("test", "IN2");
 					temp = Warehouse.Orders().list.get(i);
 					Warehouse.Orders().list.set(i, Warehouse.Orders().list.get(j));
 					Warehouse.Orders().list.set(j, temp);
 				} else if (Warehouse.Orders().list.get(i).shipmentState.equals(Warehouse.Orders().list.get(j).shipmentState)) {
 					if (Warehouse.Orders().list.get(j).date.after(Warehouse.Orders().list.get(i).date)) {
-						Log.v("test", "" + Warehouse.Orders().list.get(i).shipmentState);
-						Log.v("test", "aa   " + Warehouse.Orders().list.get(j).date);
-						Log.v("test", "bb   " + Warehouse.Orders().list.get(i).date);
 						temp = Warehouse.Orders().list.get(i);
 						Warehouse.Orders().list.set(i, Warehouse.Orders().list.get(j));
 						Warehouse.Orders().list.set(j, temp);
