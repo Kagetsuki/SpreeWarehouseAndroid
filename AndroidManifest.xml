@@ -99,6 +99,10 @@
             android:label="@string/racks" >
         </activity>
         <activity 
+            android:name=".racks.RackEditActivity"
+            android:label="@string/racks" >
+        </activity>
+        <activity 
             android:name=".packing.PackingMenuActivity"
             android:label="@string/packing" >
         </activity>

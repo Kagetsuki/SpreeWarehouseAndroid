@@ -91,9 +91,9 @@ public class RacksMenuAdapter extends BaseExpandableListAdapter {
 		name.setText(groupData.get(groupPosition).name);
 		
 		ImageView icon = (ImageView) convertView.findViewById(R.id.group_icon);
-		// 子要素が空の場合はindicator非表示
+		// 子要素が空の場合はindicator非表示(白丸)
 		if (getChild(groupPosition, 0).id == null)
-			icon.setImageDrawable(null);
+			icon.setImageResource(R.drawable.white);
 		else {
 			if (isExpanded)
 				icon.setImageResource(android.R.drawable.arrow_up_float);

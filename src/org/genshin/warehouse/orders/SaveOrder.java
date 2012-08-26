@@ -1,5 +1,7 @@
 package org.genshin.warehouse.orders;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 
 import org.apache.http.NameValuePair;

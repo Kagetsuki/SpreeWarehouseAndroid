@@ -1,14 +1,18 @@
 package org.genshin.warehouse.orders;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 
 import org.genshin.warehouse.Warehouse;
+import org.genshin.warehouse.products.Product;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.content.Context;
+import android.util.Log;
 
 public class Orders {
 	
@@ -77,7 +81,7 @@ public class Orders {
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
-				
+
 		list = collection;
 		return collection;
 	}
@@ -137,5 +141,24 @@ public class Orders {
 			}
 			return tmpList;
 		}
+	}
+	
+	// テキスト検索
+	public ArrayList<Order> textSearch(String query) {
+		ArrayList<Order> collection = new ArrayList<Order>();
+		String escapedQuery = query;
+
+		try {
+			escapedQuery = URLEncoder.encode(query, "UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			// WTF unsupported encoding? fine, just take it raw
+			escapedQuery = query;
+		}
+		Log.v("test", "" + escapedQuery);
+		JSONObject orderContainer = 
+				Warehouse.Spree().connector.getJSONObject("api/orders/search.json?q[number_cont]=" + escapedQuery);
+		collection = processOrderContainer(orderContainer, 10, "SEARCH");
+
+		return collection;
 	}
 }

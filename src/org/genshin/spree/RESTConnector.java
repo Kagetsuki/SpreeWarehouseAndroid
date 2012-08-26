@@ -138,13 +138,16 @@ public class RESTConnector {
 			if (statusCode == 200) {
 				return response;
 			} else {
-				Toast.makeText(ctx, getter.getURI() + "\nResponse not 200, Status: " + statusCode, Toast.LENGTH_LONG).show();
+				//Toast.makeText(ctx, getter.getURI() + "\nResponse not 200, Status: " + statusCode, Toast.LENGTH_LONG).show();
+				Log.v("org.genshin.warehouse (Session Filter)", "getHttpResponse " + getter.getURI() + " Response not 200, Status: " + statusCode);
 				Log.e("getHttpResponse", statusLine.toString());
 			}
 		} catch (ClientProtocolException e) {
-			Toast.makeText(ctx, "ClientProtocolException: " + e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
+			//Toast.makeText(ctx, "ClientProtocolException: " + e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
+			Log.v("org.genshin.warehouse (Session Filter)", "ClientProtocolException: " + e.getLocalizedMessage());
 		} catch (IOException e) {
-			Toast.makeText(ctx, "IOException: " + e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
+			//Toast.makeText(ctx, "IOException: " + e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
+			Log.v("org.genshin.warehouse (Session Filter)", "IOException: " + e.getLocalizedMessage());
 		}
 
 		
@@ -195,11 +198,14 @@ public class RESTConnector {
 			content = EntityUtils.toString(entity);
 			data = new JSONObject(content);
 		} catch (ParseException e) {
-			Toast.makeText(ctx, "ParseException: " + e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
+			//Toast.makeText(ctx, "ParseException: " + e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
+			Log.v("org.genshin.warehouse (Session Filter)", "ParseException: " + e.getLocalizedMessage());
 		} catch (IOException e) {
-			Toast.makeText(ctx, "IOException: " + e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
+			//Toast.makeText(ctx, "IOException: " + e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
+			Log.v("org.genshin.warehouse (Session Filter)", "IOException: " + e.getLocalizedMessage());
 		} catch (JSONException e) {
-			Toast.makeText(ctx, "JSON parse error: " + e.getMessage(), Toast.LENGTH_LONG).show();
+			//Toast.makeText(ctx, "JSON parse error: " + e.getMessage(), Toast.LENGTH_LONG).show();
+			Log.v("org.genshin.warehouse (Session Filter)", "JSON parse error: " + e.getMessage());
 		}
 
 		return data;
@@ -219,11 +225,14 @@ public class RESTConnector {
 			content = EntityUtils.toString(entity);
 			data = new JSONArray(content);
 		} catch (ParseException e) {
-			Toast.makeText(ctx, "ParseException: " + e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
+			//Toast.makeText(ctx, "ParseException: " + e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
+			Log.v("org.genshin.warehouse (Session Filter)", "ParseException: " + e.getLocalizedMessage());
 		} catch (IOException e) {
-			Toast.makeText(ctx, "IOException: " + e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
+			//Toast.makeText(ctx, "IOException: " + e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
+			Log.v("org.genshin.warehouse (Session Filter)", "IOException: " + e.getLocalizedMessage());
 		} catch (JSONException e) {
-			Toast.makeText(ctx, "JSON parse error: " + e.getMessage(), Toast.LENGTH_LONG).show();
+			//Toast.makeText(ctx, "JSON parse error: " + e.getMessage(), Toast.LENGTH_LONG).show();
+			Log.v("org.genshin.warehouse (Session Filter)", "JSON parse error: " + e.getMessage());
 		}
 		
 		return data;
@@ -242,10 +251,12 @@ public class RESTConnector {
 		try {
 			content = EntityUtils.toString(entity);
 		} catch (ParseException e) {
-			Toast.makeText(ctx, "ParseException: " + e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
+			//Toast.makeText(ctx, "ParseException: " + e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
+			Log.v("org.genshin.warehouse (Session Filter)", "ParseException: " + e.getLocalizedMessage());
 			e.printStackTrace();
 		} catch (IOException e) {
-			Toast.makeText(ctx, "IOException: " + e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
+			//Toast.makeText(ctx, "IOException: " + e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
+			Log.v("org.genshin.warehouse (Session Filter)", "IOException: " + e.getLocalizedMessage());
 			e.printStackTrace();
 		}
 		

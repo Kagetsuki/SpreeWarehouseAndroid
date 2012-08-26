@@ -166,4 +166,31 @@
 	<string name="add_this_product">この商品を追加しますか？</string>
 	<string name="fill_blank">空欄を埋めてください</string>
 	
+	<string name="new_register">新規登録</string>
+	<string name="rack_name">倉庫名称</string>
+	<string name="rack_code">倉庫コード</string>
+	<string name="container_component">コンテナ構成</string>
+	<string name="address">住所・場所</string>
+	<string name="note">備考・詳細</string>
+	
+	<string name="date_range">日範囲</string>
+	<string name="start">始まり</string>
+	<string name="end">終わり</string>
+	<string name="firstname_start">名前（名）が次の文字列で始まる</string>
+	<string name="lastname_start">名前（姓）が次の文字列で始まる</string>
+	<string name="treated_order">処理済みの注文のみを表示</string>
+	
+	<string-array name="order_search">
+	    <item>カート</item>
+	    <item>住所</item>
+	    <item>配送</item>
+	    <item>支払い</item>
+	    <item>完了</item>
+	    <item>確認</item>
+	    <item>キャンセル</item>
+	    <item>返品待ち</item>
+	    <item>返品済み</item>
+	    <item>再開</item>
+	</string-array>
+	
 </resources>

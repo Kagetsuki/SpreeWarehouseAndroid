@@ -10,9 +10,12 @@ import org.genshin.warehouse.WarehouseActivity;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ExpandableListView;
 import android.widget.ExpandableListView.OnChildClickListener;
@@ -68,7 +71,7 @@ public class RacksMenuActivity extends Activity {
 		if (expand != null) {
 			new showExpandRacksMenu(this, selectId).execute();
 		} else
-			new showRacksMenuList(this, selectId).execute();
+			new showRacksMenuList(this).execute();
 
         racksRootList.setOnChildClickListener(new OnChildClickListener() {
 			public boolean onChildClick(ExpandableListView parent, View v,
@@ -136,26 +139,25 @@ public class RacksMenuActivity extends Activity {
 	
 	class showRacksMenuList extends NetworkTask {
 		private Context ctx;
-		private String selectId;
 
-		public showRacksMenuList(Context ctx, String selectId) {
+		public showRacksMenuList(Context ctx) {
 			super(ctx);
 			this.ctx = ctx;
-			this.selectId = selectId;
 		}
 
 		@Override
 		protected void process() {
 			warehouses = Warehouse.Warehouses();
 			warehouses.getWarehouses();
-			putJsonData(selectId);
+			putJsonData();
 		}
 		
 		protected void complete() {
 			racksRootList = (ExpandableListView) findViewById(R.id.racks_root_list);
 			adapter = new RacksMenuAdapter(
-					Warehouse.getContext(), warehouseRoots, containerTaxonomyNodes);     
-	        racksRootList.setAdapter(adapter);
+					Warehouse.getContext(), warehouseRoots, containerTaxonomyNodes);
+			Log.v("test", "" + adapter);
+			racksRootList.setAdapter(adapter);
 	        racksRootList.setGroupIndicator(null);
 		}
 	}
@@ -165,7 +167,7 @@ public class RacksMenuActivity extends Activity {
 		private String selectId;
 		
 		public showExpandRacksMenu(Context ctx, String selectId) {
-			super(ctx, selectId);
+			super(ctx);
 			this.ctx = ctx;
 			this.selectId = selectId;
 		}
@@ -180,7 +182,7 @@ public class RacksMenuActivity extends Activity {
 	}
 	
 	// 最初の表示データ
-	public void putJsonData(String selectId) {
+	public void putJsonData() {
 		
         warehouseRoots = new ArrayList<RacksListData>();
         containerTaxonomyNodes = new ArrayList<ArrayList<RacksListData>>();
@@ -191,16 +193,24 @@ public class RacksMenuActivity extends Activity {
 			warehouseDivisionMap.id = ("" + warehouses.divisions.get(i).id);
 
 			ArrayList<RacksListData> taxonomyNodeList = new ArrayList<RacksListData>();
-			for (int j = 0; j < warehouses.divisions.get(i).containers.size(); j++) {
+			if (warehouses.divisions.get(i).containers.size() == 0) {
 				RacksListData taxonomyNode = new RacksListData();
-				taxonomyNode.group = (warehouses.divisions.get(i).name);
-				taxonomyNode.name = (warehouses.divisions.get(i).containers.get(j).name);
-				taxonomyNode.id = ("" + warehouses.divisions.get(i).containers.get(j).id);
-				taxonomyNode.permalink = (warehouses.divisions.get(i).containers.get(j).permalink);
+				taxonomyNode.group = null;
+				taxonomyNode.name = null;
+				taxonomyNode.id = null;
 				taxonomyNodeList.add(taxonomyNode);
-				
-				if(warehouses.divisions.get(i).containers.taxonomies.get(j).child)
-					taxonomyNode.icon = true;
+			} else {
+				for (int j = 0; j < warehouses.divisions.get(i).containers.size(); j++) {
+					RacksListData taxonomyNode = new RacksListData();
+					taxonomyNode.group = (warehouses.divisions.get(i).name);
+					taxonomyNode.name = (warehouses.divisions.get(i).containers.get(j).name);
+					taxonomyNode.id = ("" + warehouses.divisions.get(i).containers.get(j).id);
+					taxonomyNode.permalink = (warehouses.divisions.get(i).containers.get(j).permalink);
+					taxonomyNodeList.add(taxonomyNode);
+					
+					if (warehouses.divisions.get(i).containers.taxonomies.get(j).child)
+						taxonomyNode.icon = true;
+				}
 			}
 			containerTaxonomyNodes.add(taxonomyNodeList);
 			warehouseRoots.add(warehouseDivisionMap);
@@ -231,6 +241,32 @@ public class RacksMenuActivity extends Activity {
 			containerTaxonomyNodes.add(taxonomyNodeList);
 			warehouseRoots.add(warehouseDivisionMap);
 		}
+    }
+
+	public static enum menuCodes { newRegister };
+	
+	// メニュー
+	@Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+		Resources res = getResources();
+        // メニューアイテムを追加する
+        menu.add(Menu.NONE, menuCodes.newRegister.ordinal(), Menu.NONE, res.getString(R.string.new_register));
+        return super.onCreateOptionsMenu(menu);
+    }
+	
+	@Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+		int id = item.getItemId();
+
+		if (id == menuCodes.newRegister.ordinal()) {
+			Intent intent = new Intent(this, RackEditActivity.class);
+			intent.putExtra("IS_NEW", true);
+            startActivity(intent);
+        	
+			return true;
+		}
+        
+        return false;
     }
 	
 	// 長押しで最初の画面へ

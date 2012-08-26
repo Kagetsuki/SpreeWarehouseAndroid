@@ -172,4 +172,31 @@
 	<string name="add_this_product">Add this product?</string>
 	<string name="fill_blank">Fill in blank</string>
 	
+	<string name="new_register">New Register</string>
+	<string name="rack_name">Rack Name</string>
+	<string name="rack_code">Rack Code</string>
+	<string name="container_component">Container Component</string>
+	<string name="address">Address</string>
+	<string name="note">Note</string>
+	
+	<string name="date_range">Date Rande</string>
+	<string name="start">Start</string>
+	<string name="end">End</string>
+	<string name="firstname_start">First Name Start</string>
+	<string name="lastname_start">Last Name Start</string>
+	<string name="treated_order">Show Treated Order</string>
+	
+	<string-array name="order_search">
+	    <item>cart</item>
+	    <item>address</item>
+	    <item>shipment</item>
+	    <item>payment</item>
+	    <item>complete</item>
+	    <item>confirmation</item>
+	    <item>cansel</item>
+	    <item>wait returned goods</item>
+	    <item>done returned goods</item>
+	    <item>restart</item>
+	</string-array>
+	
 </resources>

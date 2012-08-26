@@ -24,6 +24,7 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -36,6 +37,7 @@ public class OrdersMenuActivity extends Activity {
 	private OrderListAdapter ordersAdapter;
 	private ListView orderList;
 	
+	private Button searchButton;
 	private Spinner orderSpinner;
 	private ArrayAdapter<String> sadapter;
 	
@@ -43,6 +45,18 @@ public class OrdersMenuActivity extends Activity {
 	private boolean updown = false;		// falseの時は▽、trueの時は△表示
 	
 	private void hookupInterface() {
+		
+		// 検索
+		searchButton = (Button) findViewById(R.id.order_search);
+		searchButton.setOnClickListener(new OnClickListener() {		
+			public void onClick(View v) {
+				// TODO 自動生成されたメソッド・スタブ
+				new SearchOrdersRefresh(v.getContext(), "R0555").execute();
+				clearImage();
+				orderSpinner.setSelection(0);				
+			}
+		});
+		
 		orderList = (ListView) findViewById(R.id.order_menu_list);
 		
 		// Order spinner
@@ -264,7 +278,21 @@ public class OrdersMenuActivity extends Activity {
 		protected void process() {
 			Warehouse.Orders().getNewestOrders(count, mode);
 		}		
-	}	
+	}
+	
+	class SearchOrdersRefresh extends OrdersListRefresh {
+		String query;
+		
+		public SearchOrdersRefresh(Context ctx, String query) {
+			super(ctx);
+			this.query = query;
+		}
+		
+		@Override
+		protected void process() {
+			Warehouse.Orders().textSearch(query);
+		}
+	}
 	
 	/////////////////////////////////////////////////////////////////////////////////////
 	//
