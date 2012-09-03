@@ -32,9 +32,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class ProductsMenuActivity extends Activity {
-	
+
 	private ProductListAdapter productsAdapter;
-	
+
 	private static int mode;
 	private static Intent intent;
 
@@ -42,21 +42,21 @@ public class ProductsMenuActivity extends Activity {
 	private TextView statusText;
 	private MultiAutoCompleteTextView searchBar;
 	private Button searchButton;
-	
+
 	private Button clearButton;
-	
+
 	private ImageButton scanButton;
 	private Spinner orderSpinner;
 	private ArrayAdapter<String> sadapter;
-	
+
 	private ImageButton backwardButton;
 	private boolean updown = false;		// falseの時は▽、trueの時は△表示
-	
+
 	private void hookupInterface() {
 		productList = (ListView) findViewById(R.id.product_menu_list);
         statusText = (TextView) findViewById(R.id.status_text);
         searchBar = (MultiAutoCompleteTextView) findViewById(R.id.product_menu_searchbox);
-		
+
         //Visual Code Scan hookup
 		scanButton = (ImageButton) findViewById(R.id.products_menu_scan_button);
 		scanButton.setOnClickListener(new View.OnClickListener() {
@@ -67,7 +67,7 @@ public class ProductsMenuActivity extends Activity {
                 ScanSystem.initiateScan(v.getContext());
             }
 		});
-		
+
 		//Standard text search hookup
 		searchButton = (Button) findViewById(R.id.products_menu_search_button);
 		searchButton.setOnClickListener(new View.OnClickListener() {
@@ -77,7 +77,7 @@ public class ProductsMenuActivity extends Activity {
 				orderSpinner.setSelection(0);
 			}
 		});
-		
+
 		//Clear button
 		clearButton = (Button) findViewById(R.id.products_menu_clear_button);
 		clearButton.setOnClickListener(new View.OnClickListener() {
@@ -89,7 +89,7 @@ public class ProductsMenuActivity extends Activity {
 				orderSpinner.setSelection(0);
 			}
 		});
-		
+
 		//Order spinner
 		orderSpinner = (Spinner) findViewById(R.id.order_spinner);
 		sadapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item);
@@ -102,7 +102,7 @@ public class ProductsMenuActivity extends Activity {
 	    sadapter.add(getString(R.string.stock));
 	    orderSpinner.setPrompt(getString(R.string.sort));
 	    orderSpinner.setAdapter(sadapter);
-	    
+
 	    orderSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             public void onItemSelected(AdapterView<?> parent, View view,
                     int position, long id) {
@@ -128,17 +128,17 @@ public class ProductsMenuActivity extends Activity {
 	                	clearImage();
 	                	break;
 	                default :
-	                	break;             
+	                	break;
                 }
             }
 
 			public void onNothingSelected(AdapterView<?> arg0) {
 			}
         });
-	    
+
 	    // backwardButton 並びを逆に
 	    backwardButton = (ImageButton)findViewById(R.id.product_menu_backward_button);
-	    backwardButton.setOnClickListener(new View.OnClickListener() {			
+	    backwardButton.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
 				if (!updown) {
 					backwardButton.setImageResource(android.R.drawable.arrow_up_float);
@@ -151,15 +151,15 @@ public class ProductsMenuActivity extends Activity {
 			}
 		});
 	}
-	
+
 	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.products);
         Warehouse.setContext(this);
-        
+
         hookupInterface();
-        
+
 		intent = getIntent();
 
 		mode = Warehouse.ResultCodes.NORMAL.ordinal();
@@ -178,27 +178,25 @@ public class ProductsMenuActivity extends Activity {
 				mode = Warehouse.ResultCodes.ADD_PRODUCT.ordinal();
 				Toast.makeText(this, getString(R.string.select_a_product), Toast.LENGTH_LONG).show();
 			}
-		} else if (Warehouse.Products().list.size() == 0)
+		} else if (Warehouse.Products().getList().size() == 0)
 			new NewProductsRefresh(this, 10).execute();
 	}
-	
-	class ProductsListRefresh extends NetworkTask {
 
+	class ProductsListRefresh extends NetworkTask {
 		public ProductsListRefresh(Context ctx) {
 			super(ctx);
 		}
-		
+
 		@Override
 		protected void complete() {
 			ListView productList = (ListView) findViewById(R.id.product_menu_list);
 			refreshProductMenu();
 		}
-		
 	}
-	
+
 	class NewProductsRefresh extends ProductsListRefresh {
 		private int count;
-		
+
 		public NewProductsRefresh(Context ctx, int count) {
 			super(ctx);
 			this.count = count;
@@ -209,19 +207,19 @@ public class ProductsMenuActivity extends Activity {
 			Warehouse.Products().getNewestProducts(count);
 		}
 	}
-	
+
 	class SearchProductsRefresh extends ProductsListRefresh {
 		String query;
-		
+
 		public SearchProductsRefresh(Context ctx, String query) {
 			super(ctx);
 			this.query = query;
 		}
-		
+
 		@Override
 		protected void process() {
 			Warehouse.Products().textSearch(query);
-		}	
+		}
 	}
 
 	public static enum menuCodes { registerProduct };
@@ -234,6 +232,7 @@ public class ProductsMenuActivity extends Activity {
         return super.onCreateOptionsMenu(menu);
     }
 
+	// メニュー実装
 	@Override
     public boolean onOptionsItemSelected(MenuItem item) {
 		int id = item.getItemId();
@@ -242,27 +241,29 @@ public class ProductsMenuActivity extends Activity {
 			Intent intent = new Intent(this, ProductEditActivity.class);
 			intent.putExtra("IS_NEW", true);
             startActivity(intent);
-        	
+
 			return true;
 		}
-        
+
         return false;
     }
-	
-	private void refreshProductMenu() {		
-		ProductListItem[] productListItems = new ProductListItem[Warehouse.Products().list.size()];
-		
-		for (int i = 0; i < Warehouse.Products().list.size(); i++) {
-			Product p = Warehouse.Products().list.get(i);
+
+	// リスト再表示
+	private void refreshProductMenu() {
+		ProductListItem[] productListItems = new ProductListItem[Warehouse.Products().getList().size()];
+
+		for (int i = 0; i < Warehouse.Products().getList().size(); i++) {
+			Product p = Warehouse.Products().getList().get(i);
 			Drawable thumb = null;
-			if (p.thumbnail != null)
-				thumb = p.thumbnail.data;
-			
-			productListItems[i] = new ProductListItem(thumb, p.name, p.sku, p.countOnHand, p.permalink, p.price, p.id);
+			if (p.getThumbnail() != null)
+				thumb = p.getThumbnail().data;
+
+			productListItems[i] = new ProductListItem(thumb, p.getName(),
+									p.getSku(), p.getCountOnHand(), p.getPermalink(), p.getPrice(), p.getId());
 		}
-		
-		statusText.setText(Warehouse.Products().list.size() + this.getString(R.string.products_counter) );
-		
+
+		statusText.setText(Warehouse.Products().getList().size() + this.getString(R.string.products_counter) );
+
 		productsAdapter = new ProductListAdapter(this, productListItems);
 		productList.setAdapter(productsAdapter);
 		productList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -270,9 +271,10 @@ public class ProductsMenuActivity extends Activity {
 				productListClickHandler(parent, view, position);
 			}
 		});
-        
+
 	}
-	
+
+	// 商品詳細ページへ
 	public static void showProductDetails(Context ctx, Product product, int selectMode) {
 		ProductsMenuActivity.setSelectedProduct(product);
 		Intent productDetailsIntent = new Intent(ctx, ProductDetailsActivity.class);
@@ -289,7 +291,8 @@ public class ProductsMenuActivity extends Activity {
 		}
     	ctx.startActivity(productDetailsIntent);
 	}
-	
+
+	// どの商品を選択したか
 	public static void selectProductActivity(Context ctx, String format, String contents) {
 		Intent selectOneProduct = new Intent(ctx, ProductsMenuActivity.class);
 		selectOneProduct.putExtra("MODE", "PRODUCT_SELECT");
@@ -297,23 +300,25 @@ public class ProductsMenuActivity extends Activity {
 		selectOneProduct.putExtra("CONTENTS", contents);
 		((Activity)ctx).startActivityForResult(selectOneProduct, Warehouse.ResultCodes.PRODUCT_SELECT.ordinal());
 	}
-	
+
+	//
 	public static void listProductsActivity(Context ctx) {
 		Intent listProducts = new Intent(ctx, ProductsMenuActivity.class);
 		listProducts.putExtra("MODE", "PRODUCT_LIST");
 		((Activity)ctx).startActivityForResult(listProducts, Warehouse.ResultCodes.PRODUCT_LIST.ordinal());
 	}
-	
+
+	// リストアイテムをクリックした時
 	private void productListClickHandler(AdapterView<?> parent, View view, int position) {
 		if (mode == Warehouse.ResultCodes.PRODUCT_SELECT.ordinal()) {
-			Warehouse.Products().select(Warehouse.Products().list.get(position));
+			Warehouse.Products().setSelect(Warehouse.Products().getList().get(position));
 			setResult(ResultCodes.PRODUCT_SELECT.ordinal());
 			finish();
 		} else {
-			ProductsMenuActivity.showProductDetails(this, Warehouse.Products().list.get(position), mode);
+			ProductsMenuActivity.showProductDetails(this, Warehouse.Products().getList().get(position), mode);
 		}
 	}
-	
+
 	public void onActivityResult(int requestCode, int resultCode, Intent intent) {
         if (requestCode == Warehouse.ResultCodes.SCAN.ordinal()) {
             if (resultCode == RESULT_OK) {
@@ -325,7 +330,7 @@ public class ProductsMenuActivity extends Activity {
                 	//Toast.makeText(this, "[" + format + "]: " + contents + "\nSearching!", Toast.LENGTH_LONG).show();
                 	Warehouse.setContext(this);
                 	new ProductSearcher(Warehouse.getContext(), format, contents).execute();
-                    
+
                 	//Toast.makeText(this, "Results:" + products.count, Toast.LENGTH_LONG).show();
                 }
                 // Handle successful scan
@@ -335,19 +340,19 @@ public class ProductsMenuActivity extends Activity {
             }
         }
     }
-	
-	public static Product getSelectedProduct() {
-		return Warehouse.Products().selected();
-	}
 
+	// ゲッター、セッター
+	public static Product getSelectedProduct() {
+		return Warehouse.Products().getSelected();
+	}
 	public static void setSelectedProduct(Product selectedProduct) {
 		if (selectedProduct == null)
 			selectedProduct = new Product(0, "", "", 0, 0, "", "");
-		
-		Warehouse.Products().select(selectedProduct);
+
+		Warehouse.Products().setSelect(selectedProduct);
 	}
-	
-	
+
+
 	/////////////////////////////////////////////////////////////////////////////////////
 	//
 	// 各種ソート
@@ -361,34 +366,37 @@ public class ProductsMenuActivity extends Activity {
 			updown = false;
 		}
 	}
-	
+
 	// 並びを逆にする
 	public void switchOrder() {
 		ArrayList<Product> sortedList = new ArrayList<Product>();
-		
-		for (int i = Warehouse.Products().list.size() - 1; i >= 0; i--) {
-			sortedList.add(Warehouse.Products().list.get(i));
+
+		for (int i = Warehouse.Products().getList().size() - 1; i >= 0; i--) {
+			sortedList.add(Warehouse.Products().getList().get(i));
 		}
-		
-		Warehouse.Products().list = sortedList;
+
+		Warehouse.Products().setList(sortedList);
 		refreshProductMenu();
 	}
-	
+
 	// 値段順
 	public void sortPrice() {
 		Product temp;
 
-		for (int i = 0; i < Warehouse.Products().list.size() - 1; i++) {
-			for (int j = i + 1; j < Warehouse.Products().list.size(); j++) {
-				if (Warehouse.Products().list.get(i).price < Warehouse.Products().list.get(j).price) {
-					temp = Warehouse.Products().list.get(i);
-					Warehouse.Products().list.set(i, Warehouse.Products().list.get(j));
-					Warehouse.Products().list.set(j, temp);
-				} else if (Warehouse.Products().list.get(i).price == Warehouse.Products().list.get(j).price) {
-					if (Warehouse.Products().list.get(i).id > Warehouse.Products().list.get(j).id) {
-						temp = Warehouse.Products().list.get(i);
-						Warehouse.Products().list.set(i, Warehouse.Products().list.get(j));
-						Warehouse.Products().list.set(j, temp);
+		for (int i = 0; i < Warehouse.Products().getList().size() - 1; i++) {
+			for (int j = i + 1; j < Warehouse.Products().getList().size(); j++) {
+				if (Warehouse.Products().getList().get(i).getPrice() <
+															Warehouse.Products().getList().get(j).getPrice()) {
+					temp = Warehouse.Products().getList().get(i);
+					Warehouse.Products().getList().set(i, Warehouse.Products().getList().get(j));
+					Warehouse.Products().getList().set(j, temp);
+				} else if (Warehouse.Products().getList().get(i).getPrice() ==
+															Warehouse.Products().getList().get(j).getPrice()) {
+					if (Warehouse.Products().getList().get(i).getId() >
+															Warehouse.Products().getList().get(j).getId()) {
+						temp = Warehouse.Products().getList().get(i);
+						Warehouse.Products().getList().set(i, Warehouse.Products().getList().get(j));
+						Warehouse.Products().getList().set(j, temp);
 					}
 				}
 			}
@@ -396,22 +404,25 @@ public class ProductsMenuActivity extends Activity {
 
 		refreshProductMenu();
 	}
-	
+
 	// 在庫数順
 	public void sortCountOnHand() {
 		Product temp;
-		
-		for (int i = 0; i < Warehouse.Products().list.size() - 1; i++) {
-			for (int j = i + 1; j < Warehouse.Products().list.size(); j++) {
-				if (Warehouse.Products().list.get(i).countOnHand < Warehouse.Products().list.get(j).countOnHand) {
-					temp = Warehouse.Products().list.get(i);
-					Warehouse.Products().list.set(i, Warehouse.Products().list.get(j));
-					Warehouse.Products().list.set(j, temp);
-				} else if (Warehouse.Products().list.get(i).countOnHand == Warehouse.Products().list.get(j).countOnHand) {
-					if (Warehouse.Products().list.get(i).id > Warehouse.Products().list.get(j).id) {
-						temp = Warehouse.Products().list.get(i);
-						Warehouse.Products().list.set(i, Warehouse.Products().list.get(j));
-						Warehouse.Products().list.set(j, temp);
+
+		for (int i = 0; i < Warehouse.Products().getList().size() - 1; i++) {
+			for (int j = i + 1; j < Warehouse.Products().getList().size(); j++) {
+				if (Warehouse.Products().getList().get(i).getCountOnHand() <
+														Warehouse.Products().getList().get(j).getCountOnHand()) {
+					temp = Warehouse.Products().getList().get(i);
+					Warehouse.Products().getList().set(i, Warehouse.Products().getList().get(j));
+					Warehouse.Products().getList().set(j, temp);
+				} else if (Warehouse.Products().getList().get(i).getCountOnHand() ==
+														Warehouse.Products().getList().get(j).getCountOnHand()) {
+					if (Warehouse.Products().getList().get(i).getId() >
+														Warehouse.Products().getList().get(j).getId()) {
+						temp = Warehouse.Products().getList().get(i);
+						Warehouse.Products().getList().set(i, Warehouse.Products().getList().get(j));
+						Warehouse.Products().getList().set(j, temp);
 					}
 				}
 			}
@@ -419,22 +430,25 @@ public class ProductsMenuActivity extends Activity {
 
 		refreshProductMenu();
 	}
-	
+
 	// 名前順
 	public void sortName(){
 		Product temp;
-		
-		for (int i = 0; i < Warehouse.Products().list.size() - 1; i++) {
-			for (int j = i + 1; j < Warehouse.Products().list.size(); j++) {
-				if (Warehouse.Products().list.get(i).name.compareTo(Warehouse.Products().list.get(j).name) > 0) {
-					temp = Warehouse.Products().list.get(i);
-					Warehouse.Products().list.set(i, Warehouse.Products().list.get(j));
-					Warehouse.Products().list.set(j, temp);
-				} else if (Warehouse.Products().list.get(i).name.compareTo(Warehouse.Products().list.get(j).name) == 0) {
-					if (Warehouse.Products().list.get(i).id > Warehouse.Products().list.get(j).id) {
-						temp = Warehouse.Products().list.get(i);
-						Warehouse.Products().list.set(i, Warehouse.Products().list.get(j));
-						Warehouse.Products().list.set(j, temp);
+
+		for (int i = 0; i < Warehouse.Products().getList().size() - 1; i++) {
+			for (int j = i + 1; j < Warehouse.Products().getList().size(); j++) {
+				if (Warehouse.Products().getList().get(i).getName().compareTo
+														(Warehouse.Products().getList().get(j).getName()) > 0) {
+					temp = Warehouse.Products().getList().get(i);
+					Warehouse.Products().getList().set(i, Warehouse.Products().getList().get(j));
+					Warehouse.Products().getList().set(j, temp);
+				} else if (Warehouse.Products().getList().get(i).getName().compareTo
+														(Warehouse.Products().getList().get(j).getName()) == 0) {
+					if (Warehouse.Products().getList().get(i).getId() >
+														Warehouse.Products().getList().get(j).getId()) {
+						temp = Warehouse.Products().getList().get(i);
+						Warehouse.Products().getList().set(i, Warehouse.Products().getList().get(j));
+						Warehouse.Products().getList().set(j, temp);
 					}
 				}
 			}
@@ -442,11 +456,11 @@ public class ProductsMenuActivity extends Activity {
 
 		refreshProductMenu();
 	}
-	
+
 	// 長押しで最初の画面へ
 	@Override
 	public boolean onKeyLongPress(int keyCode, KeyEvent event) {
-	    if (keyCode == KeyEvent.KEYCODE_BACK) 
+	    if (keyCode == KeyEvent.KEYCODE_BACK)
 	    {
 	    	startActivity(new Intent(this, WarehouseActivity.class));
 	        return true;

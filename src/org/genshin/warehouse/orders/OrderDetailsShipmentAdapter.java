@@ -10,40 +10,44 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 public class OrderDetailsShipmentAdapter extends ArrayAdapter<OrderDetailsShipment>{
-	Context context;
-	OrderDetailsShipment[] data;
+	private Context ctx;
+	private LayoutInflater inflater;
+	private OrderDetailsShipment[] data;
 
-	public OrderDetailsShipmentAdapter(Context context, OrderDetailsShipment[] data) {
-		super(context, R.layout.order_details_shipment_list, data);
-		this.context = context;
+	// コンストラクタ
+	public OrderDetailsShipmentAdapter(Context ctx, OrderDetailsShipment[] data) {
+		super(ctx, R.layout.order_details_shipment_list, data);
+		this.ctx = ctx;
+		this.inflater = (LayoutInflater)ctx.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         this.data = data;
 	}
 
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
-		LayoutInflater inflater;
-		if (convertView == null) {
-			inflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-			convertView = inflater.inflate(R.layout.order_details_shipment_list, parent, false);
+		try {
+			if (convertView == null)
+				convertView = inflater.inflate(R.layout.order_details_shipment_list, parent, false);
+
+			TextView number = (TextView) convertView.findViewById(R.id.order_details_shipment_number);
+			number.setText(data[position].getNumber());
+			TextView method = (TextView) convertView.findViewById(R.id.order_details_shipment_method);
+			method.setText(data[position].getShippingMethod());
+			TextView cost = (TextView) convertView.findViewById(R.id.order_details_shipment_cost);
+			cost.setText(data[position].getCost() + ctx.getString(R.string.currency_unit));
+			TextView tracking =  (TextView) convertView.findViewById(R.id.order_details_shipment_tracking);
+			tracking.setText(data[position].getTracking());
+			TextView state = (TextView) convertView.findViewById(R.id.order_details_shipment_state);
+			state.setText("" + data[position].getState());
+
+			TextView date = (TextView) convertView.findViewById(R.id.order_details_shipment_date);
+			date.setText("yyyy/MM/dd");
+			TextView action = (TextView) convertView.findViewById(R.id.order_details_shipment_action);
+			action.setText("");
+
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
-		
-		TextView number = (TextView) convertView.findViewById(R.id.order_details_shipment_number);
-		number.setText(data[position].number);
-		TextView method = (TextView) convertView.findViewById(R.id.order_details_shipment_method);
-		method.setText(data[position].shippingMethod);
-		TextView cost = (TextView) convertView.findViewById(R.id.order_details_shipment_cost);
-		cost.setText(data[position].cost + context.getString(R.string.currency_unit));
-		TextView tracking = 
-				(TextView) convertView.findViewById(R.id.order_details_shipment_tracking);
-		tracking.setText(data[position].tracking);
-		TextView state = (TextView) convertView.findViewById(R.id.order_details_shipment_state);
-		state.setText("" + data[position].state);
-		
-		TextView date = (TextView) convertView.findViewById(R.id.order_details_shipment_date);
-		date.setText("yyyy/MM/dd");
-		TextView action = (TextView) convertView.findViewById(R.id.order_details_shipment_action);
-		action.setText("");
-		
+
 		return convertView;
 	}
 }

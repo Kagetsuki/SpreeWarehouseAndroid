@@ -1,21 +1,21 @@
 package org.genshin.warehouse.products;
 
 public class Variant {
-	public int		id;
-	public String	name;
-	public int		countOnHand;
-	public String	visualCode;
-	public String	sku;
-	public double	price;
-	public double	weight;
-	public double	height;
-	public double	width;
-	public double	depth;
-	public Boolean	isMaster;
-	public double	costPrice;
-	public String	permalink;
+	private int		id;
+	private String	name;
+	private int		countOnHand;
+	private String	visualCode;
+	private String	sku;
+	private double	price;
+	private double	weight;
+	private double	height;
+	private double	width;
+	private double	depth;
+	private Boolean	isMaster;
+	private double	costPrice;
+	private String	permalink;
 	//TODO options
-	
+
 	//dummy init
 	public Variant () {
 		this.id = -1;
@@ -52,6 +52,57 @@ public class Variant {
 			this.costPrice = costPrice;
 			this.permalink = permalink;
 	}
-	
-	
+
+	// 各種ゲッター
+	public int getId() {
+		return this.id;
+	}
+
+	public String getName() {
+		return this.name;
+	}
+
+	public int getCountOnHand() {
+		return this.countOnHand;
+	}
+
+	public String getVisualCode() {
+		return this.visualCode;
+	}
+
+	public String getSku() {
+		return this.sku;
+	}
+
+	public double getPrice() {
+		return this.price;
+	}
+
+	public double getWeight() {
+		return this.weight;
+	}
+
+	public double getHeight() {
+		return this.height;
+	}
+
+	public double getWidth() {
+		return this.width;
+	}
+
+	public double getDepth() {
+		return this.depth;
+	}
+
+	public Boolean getIsMaster() {
+		return this.isMaster;
+	}
+
+	public double getCostPrice() {
+		return this.costPrice;
+	}
+
+	public String getPermalink() {
+		return this.permalink;
+	}
 }

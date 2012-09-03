@@ -27,13 +27,13 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 public class StockingRepetitiveScanner extends RepetitiveScanner {
-	
+
 	private ListView historyListView;
-	
+
 	@Override
 	public void beforeScanning() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	private void hookupInterface() {
@@ -44,7 +44,7 @@ public class StockingRepetitiveScanner extends RepetitiveScanner {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.stocking_history);
         Warehouse.setContext(this);
-        
+
         hookupInterface();
 	}
 
@@ -58,7 +58,7 @@ public class StockingRepetitiveScanner extends RepetitiveScanner {
 				// Not a JSON QR Code
 				return;
 			}
-			
+
 			//it's a QR code, so see what type
 			JSONObject containerJSON = null;
 			try {
@@ -67,45 +67,45 @@ public class StockingRepetitiveScanner extends RepetitiveScanner {
 				//not a container
 				containerJSON = null;
 			}
-			
+
 			if (containerJSON != null) {
 				ContainerTaxon container = new ContainerTaxon(containerJSON);
 				Warehouse.setContainer(container);
-				
-				Toast.makeText(this, "ContainerTaxon Set to:\n" + Warehouse.getContainer().name , Toast.LENGTH_LONG).show();
-				
-				status = RepetitiveScanCodes.FINISH.ordinal(); 
+
+				Toast.makeText(this, "ContainerTaxon Set to:\n" + Warehouse.getContainer().getName() , Toast.LENGTH_LONG).show();
+
+				status = RepetitiveScanCodes.FINISH.ordinal();
 				return;
-			} 		
+			}
 		} else if (ScanSystem.isProductCode(format)) {
         	Warehouse.setContext(this);
-        	new ProductSearcher(Warehouse.getContext(), format, contents, "SELECT").execute();			
+        	new ProductSearcher(Warehouse.getContext(), format, contents, "SELECT").execute();
 		}
 	}
-	
+
 	@Override
 	public void onResultCode(int requestCode, int resultCode, Intent intent) {
 		if (requestCode == ResultCodes.PRODUCT_SELECT.ordinal()) {
-			stockProductToContainer(Warehouse.Products().selected(), 1, Warehouse.getContainer());
+			stockProductToContainer(Warehouse.Products().getSelected(), 1, Warehouse.getContainer());
 		}
 	}
-	
+
 	public void stockProductToContainer(Product product, int quantity, ContainerTaxon container) {
 		ArrayList<NameValuePair> pairs = new ArrayList<NameValuePair>();
 		Toast.makeText(this, "Registering" , Toast.LENGTH_LONG).show();
-		pairs.add(new BasicNameValuePair("stock_record[variant_id]", "" + product.id));
+		pairs.add(new BasicNameValuePair("stock_record[variant_id]", "" + product.getId()));
 		pairs.add(new BasicNameValuePair("stock_record[quantity]", "" + quantity));
 		if (container != null)
-			pairs.add(new BasicNameValuePair("stock_record[container_taxon_id]", "" + container.id));
+			pairs.add(new BasicNameValuePair("stock_record[container_taxon_id]", "" + container.getId()));
 		pairs.add(new BasicNameValuePair("stock_record[direction]", "in"));
-		  
+
 		Warehouse.Spree().connector.postWithArgs("api/stock.json", pairs);
-		
+
 	/*	Warehouse.Products().find(product)*/product.refresh();
 	}
 
 	@Override
 	protected void finishScanning() {
-		// TODO Auto-generated method stub	
+		// TODO Auto-generated method stub
 	}
 }

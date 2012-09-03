@@ -13,29 +13,30 @@ import android.graphics.drawable.Drawable;
 import android.util.Log;
 
 public class Product {
-	public int id;
-	public String name;
-	public String sku;
-	public double price;
-	public String availableOn;
-	public int countOnHand;
-	public String description;
-	public String metaDescription;
-	public String permalink;
-	public String visualCode;
-	public SpreeImageData thumbnail;
-	public ArrayList<SpreeImageData> images;
+	private int id;
+	private String name;
+	private String sku;
+	private double price;
+	private String availableOn;
+	private int countOnHand;
+	private String description;
+	private String metaDescription;
+	private String permalink;
+	private String visualCode;
+	private SpreeImageData thumbnail;
+	private ArrayList<SpreeImageData> images;
 	private int primaryVarientIndex;
-	public ArrayList<Variant> variants;
+	private ArrayList<Variant> variants;
 
-
+	// images初期化
 	private void init() {
 		this.images = new ArrayList<SpreeImageData>();
 	}
-	
+
+	// コンストラクタ
 	public Product() {
 		init();
-		
+
 		this.id = -1;
 		this.name = "";
 		this.sku = "";
@@ -45,33 +46,38 @@ public class Product {
 		this.permalink = "";
 		this.visualCode = "";
 	}
-	
-	public Variant variant() {
-		if (variants.size() == 0) // no variants
-			return new Variant(); // return dummy
-		
-		return variants.get(primaryVarientIndex);
+
+	// コンストラクタ
+	public Product(int id, String name, String sku, double price,
+												int countOnHand, String description, String permalink) {
+		init();
+
+		this.id = id;
+		this.name = name;
+		this.sku = sku;
+		this.price = price;
+		this.countOnHand = countOnHand;
+		this.description = description;
+		this.permalink = permalink;
 	}
-	
-	public Variant variant(int idx) {
-		return variants.get(idx);
-	}
-	
+
+	// コンストラクタ　JSONObjectを格納
 	public Product(JSONObject productJSON) {
 		init();
-		
+
 		parseProductJSON(productJSON);
-		
+
 		obtainImagesInfo(productJSON);
 		obtainVariants(productJSON);
 		obtainThumbnail();
 	}
-	
+
+	// JSONObjectを分解、格納
 	private void parseProductJSON(JSONObject productJSON) {
 		try {
 			this.id = productJSON.getInt("id");
 			this.name = productJSON.getString("name");
-			
+
 			this.sku = "";
 			this.price = productJSON.getDouble("price");
 			this.countOnHand = productJSON.getInt("count_on_hand");
@@ -87,24 +93,25 @@ public class Product {
 			e.printStackTrace();
 		}
 	}
-	
-	public Product(int id, String name, String sku, double price, int countOnHand, String description, String permalink) {
-		init();
-		
-		this.id = id;
-		this.name = name;
-		this.sku = sku;
-		this.price = price;
-		this.countOnHand = countOnHand;
-		this.description = description;
-		this.permalink = permalink;
+
+	// variant ゲッター、セッター
+	public Variant variant() {
+		if (variants.size() == 0) // no variants
+			return new Variant(); // return dummy
+
+		return variants.get(primaryVarientIndex);
 	}
-	
+	public Variant variant(int idx) {
+		return variants.get(idx);
+	}
+
+	// variant格納
 	public void addVariant(int id, String name, int countOnHand, // basics
 			String visualCode, String sku, double price, // extended identifying information
 			double weight, double height, double width, double depth, //physical specifications
 			Boolean isMaster, double costPrice,	String permalink) { // extended data information
-		variants.add(new Variant(id, name, countOnHand, visualCode, sku, price, weight, height, width, depth, isMaster, costPrice, permalink));
+		variants.add(new Variant(id, name, countOnHand, visualCode, sku,
+										price, weight, height, width, depth, isMaster, costPrice, permalink));
 
 		if (isMaster) {
 			this.visualCode = visualCode;
@@ -112,7 +119,8 @@ public class Product {
 			this.primaryVarientIndex = variants.size() - 1; // set as last added variant
 		}
 	}
-	
+
+	// サムネイル格納
 	private void obtainThumbnail() {
 		if (images.size() > 0) {
 			this.thumbnail = images.get(0);
@@ -121,19 +129,22 @@ public class Product {
 		} else
 			this.thumbnail = null;
 	}
-	
+
+	// JSONObjectからimages、id格納
 	private void obtainImagesInfo(JSONObject productJSON) {
 		try {
 			JSONArray imageInfoArray = productJSON.getJSONArray("images");
 			for (int i = 0; i < imageInfoArray.length(); i++) {
 				JSONObject imageInfo = imageInfoArray.getJSONObject(i).getJSONObject("image");
-				images.add(new SpreeImageData(imageInfo.getString("attachment_file_name"), imageInfo.getInt("id")));
+				images.add(new SpreeImageData
+										(imageInfo.getString("attachment_file_name"), imageInfo.getInt("id")));
 			}
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
 	}
-	
+
+	// サムネイル格納
 	private SpreeImageData getThumbnailData(SpreeImageData image) {
 		String path = "spree/products/" + image.id + "/small/" + image.name;
 
@@ -146,6 +157,7 @@ public class Product {
 		return image;
 	}
 
+	// イメージ画像パス格納
 	private SpreeImageData getImageData(SpreeImageData image) {
 		String path = "spree/products/" + image.id + "/product/" + image.name;
 
@@ -157,18 +169,19 @@ public class Product {
 
 		return image;
 	}
-	
+
+	//
 	private void obtainImages(JSONObject productJSON) {
-		
 		if (images.size() <= 0) {
 			obtainImagesInfo(productJSON);
 		}
-		
+
 		for (int i = 0; i < this.images.size(); i++) {
-					getImageData(this.images.get(i));			
+					getImageData(this.images.get(i));
 		}
 	}
-	
+
+	// JSONObjectを分解、格納
 	private void processVariantJSON(JSONObject v) {
 		//pre-build object
 		boolean isMaster = false;
@@ -177,7 +190,7 @@ public class Product {
 		} catch (JSONException e) {
 			isMaster = false;
 		}
-		
+
 		int id = this.id;
 		try {
 			id = v.getInt("id");
@@ -185,103 +198,103 @@ public class Product {
 			//no unique ID, so set to product ID
 			id = this.id;
 		}
-		
+
 		String name = this.name;
 		try {
 			name = v.getString("name");
 		} catch (JSONException e) {
 			name = this.name;
 		}
-		
+
 		int countOnHand = this.countOnHand;
 		try {
 			countOnHand = v.getInt("count_on_hand");
 		} catch (JSONException e) {
 			countOnHand = this.countOnHand;
 		}
-		
+
 		String visualCode = this.visualCode;
 		try {
 			visualCode = v.getString("visual_code");
 		} catch (JSONException e) {
 			visualCode = this.visualCode;
 		}
-		
+
 		String sku = this.sku;
 		try {
 			sku = v.getString("sku");
 		} catch (JSONException e) {
 			sku = this.sku;
 		}
-		
+
 		double price = this.price;
 		try {
 			price = v.getDouble("price");
 		} catch (JSONException e) {
 			price = this.price;
 		}
-		
+
 		double weight = 0.0;
 		try {
 			weight = v.getDouble("weight");
 		} catch (JSONException e) {
-			weight = this.variant().weight;
+			weight = this.variant().getWeight();
 		}
-		
+
 		double height = 0.0;
 		try {
 			height = v.getDouble("height");
 		} catch (JSONException e) {
-			height = this.variant().height;
+			height = this.variant().getHeight();
 		}
-		
+
 		double width = 0.0;
 		try {
 			width = v.getDouble("width");
 		} catch (JSONException e) {
-			width = this.variant().width;
+			width = this.variant().getWidth();
 		}
-		
+
 		double depth = 0.0;
 		try {
 			depth = v.getDouble("depth");
 		} catch (JSONException e) {
-			depth = this.variant().depth;
+			depth = this.variant().getDepth();
 		}
-		
+
 		double costPrice = 0.0;
 		try {
 			costPrice = v.getDouble("cost_price");
 		} catch (JSONException e) {
-			
+
 		}
-		
+
 		String permalink = this.permalink;
 		try {
 			permalink = v.getString("permalink");
 		} catch (JSONException e) {
-			
+
 		}
 		addVariant(id, name, countOnHand,
 			visualCode,	sku, price,
 			weight, height, width, depth,
 			isMaster, costPrice, permalink);
-		
+
 	}
-	
+
+	// JSONObjectからvariantsを格納
 	private void obtainVariants(JSONObject productJSON) {
 		JSONArray variantArray = new JSONArray();
-		
-		
+
 		try {
 			variantArray = productJSON.getJSONArray("variants");
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
-		
-		
+
+
 		//Log.d("VARIANTS", "Length: " + variantArray.length());
-		
+
 		// get master first
 		for (int i = 0; i < variantArray.length(); i++) {
 			JSONObject v = new JSONObject();
@@ -292,20 +305,20 @@ public class Product {
 				// something broken? skip this one
 				continue;
 			}
-			
+
 			boolean isMaster = false;
 			try {
 				isMaster = v.getBoolean("is_master");
 			} catch (JSONException e) {
 				isMaster = false;
 			}
-			
+
 			if (isMaster) {
 				processVariantJSON(v);
 				break;
-			} 
+			}
 		}
-		
+
 		/*for (int i = 0; i < variantArray.length(); i++) {
 			JSONObject v = new JSONObject();
 			try {
@@ -315,23 +328,81 @@ public class Product {
 				// something broken? skip this one
 				continue;
 			}
-			
+
 			boolean isMaster = false;
 			try {
 				isMaster = v.getBoolean("is_master");
 			} catch (JSONException e) {
 				isMaster = false;
 			}
-			
+
 			if (!isMaster) {
 				processVariantJSON(v);
 			}
 		}*/
-		
+
 	}
-	
+
+	// JSONObject取得
 	public void refresh() {
 		JSONObject productJSON = Warehouse.Spree().connector.getJSONObject("api/products/" + permalink + ".json");
 		parseProductJSON(productJSON);
+	}
+
+	// 各種ゲッター
+	public int getId() {
+		return this.id;
+	}
+
+	public String getName() {
+		return this.name;
+	}
+
+	public String getSku() {
+		return this.sku;
+	}
+
+	public double getPrice() {
+		return this.price;
+	}
+
+	public String getAvailableOn() {
+		return this.availableOn;
+	}
+
+	public int getCountOnHand() {
+		return this.countOnHand;
+	}
+
+	public String getDescription() {
+		return this.description;
+	}
+
+	public String getMetaDescription() {
+		return this.metaDescription;
+	}
+
+	public String getPermalink() {
+		return this.permalink;
+	}
+
+	public String getVisualCode() {
+		return this.visualCode;
+	}
+
+	public SpreeImageData getThumbnail() {
+		return this.thumbnail;
+	}
+
+	public ArrayList<SpreeImageData> getImages() {
+		return this.images;
+	}
+
+	public int getPrimaryVarientIndex() {
+		return this.primaryVarientIndex;
+	}
+
+	public ArrayList<Variant> getVariants() {
+		return this.variants;
 	}
 }

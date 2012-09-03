@@ -5,36 +5,46 @@
     android:orientation="vertical" >
 
     <TextView
+        android:id="@+id/order_details_number"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/black"
+        android:background="@color/lightblue"
+        android:textSize="24sp"
+        android:gravity="center"
+        android:layout_marginBottom="10dp" />
+
+    <TextView
         android:text="@string/new_product_add"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
     </TextView>
-    
+
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" >
-        
-		<EditText 
+
+		<EditText
 	        android:id="@+id/new_product_name"
 	        android:layout_width="0dp"
 	        android:layout_height="wrap_content"
 	        android:layout_weight="1"
 	        android:hint="@string/product_name" />
-	    <Button 
+	    <Button
 	        android:id="@+id/select_button"
 	        android:text="@string/select"
 	        android:layout_width="60dp"
 	        android:layout_height="wrap_content" />
-        
+
     </LinearLayout>
-    
+
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" >
-        
-		<EditText 
+
+		<EditText
 	        android:id="@+id/new_product_num"
 	        android:layout_width="0dp"
 	        android:layout_height="wrap_content"
@@ -46,9 +56,9 @@
 	        android:layout_width="60dp"
 	        android:layout_height="wrap_content" >
 	    </TextView>
-        
+
     </LinearLayout>
-    
+
     <Button
         android:id="@+id/add_button"
         android:text="@string/add"

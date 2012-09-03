@@ -97,7 +97,7 @@
 	<string name="no_profiles">プロフィールが登録されていません</string>
 	<string name="please_register_profile">一つ以上のプロフィールを登録して下さい</string>
 	<string name="register">登録</string>
-	
+
 	<!-- alert content -->
 	<string name="unregistered_barcode_title">未登録バーコード</string>
 	<string name="unregistered_barcode_new_product">バーコードが未登録です。\n新規商品登録を行いますか?</string>
@@ -109,7 +109,7 @@
 	<string name="loading">読み込み中</string>
 	<string name="saving">保存中</string>
 	<string name="deleting">削除中</string>
-	
+
 	<!-- 追加分 -->
 	<string name="edit_order_details">注文編集</string>
 	<string name="order_edit">注文情報編集</string>
@@ -136,7 +136,7 @@
 	<string name="ship_address">配送先住所</string>
 	<string name="guest_order">ゲスト注文</string>
 	<string name="email">Eメール</string>
-	
+
 	<string name="register_this_product">この商品に登録しますか？</string>
 	<string name="yes">はい</string>
 	<string name="no">いいえ</string>
@@ -165,21 +165,28 @@
 	<string name="use_bill_address">請求先住所を使用する</string>
 	<string name="add_this_product">この商品を追加しますか？</string>
 	<string name="fill_blank">空欄を埋めてください</string>
-	
+
 	<string name="new_register">新規登録</string>
 	<string name="rack_name">倉庫名称</string>
 	<string name="rack_code">倉庫コード</string>
 	<string name="container_component">コンテナ構成</string>
 	<string name="address">住所・場所</string>
 	<string name="note">備考・詳細</string>
-	
+
+	<string name="input_search">検索項目を入力</string>
 	<string name="date_range">日範囲</string>
 	<string name="start">始まり</string>
 	<string name="end">終わり</string>
 	<string name="firstname_start">名前（名）が次の文字列で始まる</string>
 	<string name="lastname_start">名前（姓）が次の文字列で始まる</string>
 	<string name="treated_order">処理済みの注文のみを表示</string>
-	
+	<string name="check_item">チェックした項目を</string>
+	<string name="check_complete">完了にする</string>
+	<string name="check_void">無効にする</string>
+	<string name="attention_void">本当に無効にしますか？</string>
+	<string name="attention_complete">本当に完了にしますか？</string>
+	<string name="amount_owed">未払額：</string>
+
 	<string-array name="order_search">
 	    <item>カート</item>
 	    <item>住所</item>
@@ -192,5 +199,5 @@
 	    <item>返品済み</item>
 	    <item>再開</item>
 	</string-array>
-	
+
 </resources>

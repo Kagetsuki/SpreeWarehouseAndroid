@@ -6,42 +6,42 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public class OrderDetailsPayment {
-
+	public int id;
 	public Date date;
 	public double amount;
 	public String paymentMethod;
 	public String paymentState;
-	public String action;
-	
+
+	// コンストラクタ
 	public OrderDetailsPayment() {
+		this.id = 0;
 		this.date = new Date();
 		this.amount = 0;
 		this.paymentMethod = "";
 		this.paymentState = "";
-		this.action = "";
 	}
-	
-	public OrderDetailsPayment
-		(Date date, double amount, String method, String state, String action) {
+
+	// コンストラクタ
+	public OrderDetailsPayment(int id, Date date, double amount, String method, String paymentState) {
+		this.id = id;
 		this.date = new Date();
 		this.amount = amount;
 		this.paymentMethod = method;
-		this.paymentState = state;
-		this.action = "";
+		this.paymentState = paymentState;
 	}
-	
-	public OrderDetailsPayment(JSONObject jsonObject) {	
+
+	// コンストラクタ jsonObjectを格納
+	public OrderDetailsPayment(JSONObject jsonObject) {
 		this.date = null;
-		this.action = null;
-		
+
 		try {
+			this.id = jsonObject.getInt("id");
 			this.amount = jsonObject.getDouble("amount");
 			this.paymentState = jsonObject.getString("state");
 			JSONObject str = jsonObject.getJSONObject("payment_method");
-			this.paymentMethod = str.getString("name");		
+			this.paymentMethod = str.getString("name");
 		} catch (JSONException e) {
-			// TODO 自動生成された catch ブロック
 			e.printStackTrace();
-		}		
+		}
 	};
 }

@@ -115,7 +115,7 @@
 	<string name="ordernumber_dummy">R000000000</string>
 	<string name="customer_name_dummy">Spree Customer</string>
 	<string name="three_zero">000</string>
-	
+
 	<!-- 追加分 -->
 	<string name="edit_order_details">Edit Order</string>
 	<string name="order_edit">Edit Order</string>
@@ -142,14 +142,14 @@
 	<string name="ship_address">Ship Address</string>
 	<string name="guest_order">Guest Order</string>
 	<string name="email">E-mail</string>
-	
+
 	<string name="register_this_product">Register this product?</string>
 	<string name="yes">Yes</string>
 	<string name="no">No</string>
 	<string name="stock_number">Number of stock?</string>
 	<string name="name">Name</string>
 	<string name="register_this_container">Register this container?</string>
-	
+
 	<string name="new_product_add">Add Product</string>
 	<string name="add">Add</string>
 	<string name="create_new_order">Create New Order?</string>
@@ -171,21 +171,28 @@
 	<string name="use_bill_address">Use Bill Address</string>
 	<string name="add_this_product">Add this product?</string>
 	<string name="fill_blank">Fill in blank</string>
-	
+
 	<string name="new_register">New Register</string>
 	<string name="rack_name">Rack Name</string>
 	<string name="rack_code">Rack Code</string>
 	<string name="container_component">Container Component</string>
 	<string name="address">Address</string>
 	<string name="note">Note</string>
-	
+
+	<string name="input_search">Input Search Word</string>
 	<string name="date_range">Date Rande</string>
 	<string name="start">Start</string>
 	<string name="end">End</string>
 	<string name="firstname_start">First Name Start</string>
 	<string name="lastname_start">Last Name Start</string>
 	<string name="treated_order">Show Treated Order</string>
-	
+	<string name="check_item">Checked Item</string>
+	<string name="check_complete">completed</string>
+	<string name="check_void">blank out</string>
+	<string name="attention_void">Are you sure? :blank out</string>
+	<string name="attention_complete">Are you sure? :complete</string>
+	<string name="amount_owed">Amount owed：</string>
+
 	<string-array name="order_search">
 	    <item>cart</item>
 	    <item>address</item>
@@ -198,5 +205,5 @@
 	    <item>done returned goods</item>
 	    <item>restart</item>
 	</string-array>
-	
+
 </resources>

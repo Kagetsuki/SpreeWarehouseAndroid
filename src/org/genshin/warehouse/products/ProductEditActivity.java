@@ -24,14 +24,13 @@ import org.genshin.gsa.ScanSystem;
 import org.genshin.gsa.network.NetworkTask;
 import org.genshin.spree.SpreeConnector;
 import org.genshin.warehouse.R;
-import org.genshin.warehouse.WarehouseActivity;
 import org.genshin.warehouse.Warehouse.ResultCodes;
 import org.genshin.warehouse.products.Product;
 
 public class ProductEditActivity extends Activity {
 	private SpreeConnector spree;
-	
-	boolean isNew;
+
+	private boolean isNew;
 	private Product product;
 
 	private EditText nameEdit;
@@ -51,38 +50,39 @@ public class ProductEditActivity extends Activity {
 
 	private void hookupInterface() {
 		nameEdit = (EditText) findViewById(R.id.product_name_edit);
-		nameEdit.setText(product.name);
-		
+		nameEdit.setText(product.getName());
+
 		skuEdit = (EditText) findViewById(R.id.product_sku_edit);
-		skuEdit.setText(product.sku);
-		
+		skuEdit.setText(product.getSku());
+
 		priceEdit = (EditText) findViewById(R.id.product_price_edit);
-		priceEdit.setText("" + product.price);
-		
+		priceEdit.setText("" + product.getPrice());
+
 		permalinkEdit = (EditText) findViewById(R.id.product_permalink_edit);
-		permalinkEdit.setText(product.permalink);
-		
+		permalinkEdit.setText(product.getPermalink());
+
 		barcodeEdit = (EditText) findViewById(R.id.barcode_text);
-		barcodeEdit.setText(product.visualCode);
+		barcodeEdit.setText(product.getVisualCode());
 		barcodeScanButton = (ImageButton) findViewById(R.id.barcode_scan_button);
 		barcodeScanButton.setOnClickListener(new View.OnClickListener() {
         	public void onClick(View v) {
         		ScanSystem.initiateScan(v.getContext());
             }
 		});
-		
+
 		descriptionEdit = (EditText) findViewById(R.id.product_description_edit);
-		descriptionEdit.setText(product.description);
+		descriptionEdit.setText(product.getDescription());
 
 		imageSwitcher = (ImageSwitcher) findViewById(R.id.product_image_switcher);
 		imageViewer = new ProductImageViewer(this);
 		imageSwitcher.setFactory(imageViewer);
 		imageSwitcher.setInAnimation(AnimationUtils.loadAnimation(this, android.R.anim.fade_in));
         imageSwitcher.setOutAnimation(AnimationUtils.loadAnimation(this,android.R.anim.fade_out));
-        if (product.images.size() == 0)
+        // イメージ画像が登録されていない場合デフォルト画像を使用
+        if (product.getImages().size() == 0)
         	imageSwitcher.setImageResource(R.drawable.spree);
         else
-        	imageSwitcher.setImageDrawable(product.images.get(0).data);
+        	imageSwitcher.setImageDrawable(product.getImages().get(0).data);
 
         saveButton = (Button) findViewById(R.id.save_button);
 		saveButton.setOnClickListener(new View.OnClickListener() {
@@ -90,7 +90,7 @@ public class ProductEditActivity extends Activity {
 				new saveProduct(getApplicationContext()).execute();
 			}
 		});
-		
+
 		deleteButton = (Button) findViewById(R.id.delete_button);
 		//TODO implement delete
 	}
@@ -100,20 +100,22 @@ public class ProductEditActivity extends Activity {
 		Intent intent = getIntent();
 		isNew = intent.getBooleanExtra("IS_NEW", false);
 		String barcode = intent.getStringExtra("BARCODE");
-			
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.product_edit);
 
+        // 新規商品の場合は作成、そうでない場合は情報取得
         if (isNew)
         	product = new Product();
         else
         	product = ProductsMenuActivity.getSelectedProduct();
-        
+
         hookupInterface();
+        //　他画面でバーコードを取得してきた場合、表示する
         if (barcode != "" && barcode != null)
         	barcodeEdit.setText(barcode);
 	}
-	
+
 	public void onActivityResult(int requestCode, int resultCode, Intent intent) {
         if (requestCode == ResultCodes.SCAN.ordinal()) {
             if (resultCode == RESULT_OK) {
@@ -134,14 +136,14 @@ public class ProductEditActivity extends Activity {
             }
         }
     }
-	
+
 	// 保存
 	class saveProduct extends NetworkTask {
 
 		public saveProduct(Context ctx) {
 			super(ctx);
 		}
-		
+
 		@Override
 		protected void process() {
 			spree = new SpreeConnector(getApplicationContext());
@@ -156,14 +158,16 @@ public class ProductEditActivity extends Activity {
 				pairs.add(new BasicNameValuePair("product[visual_code]", barcodeEdit.getText().toString()));
 			if (descriptionEdit.getText().toString() != "")
 				pairs.add(new BasicNameValuePair("product[description]", descriptionEdit.getText().toString()));
-			
+
 			if (isNew) {
 				spree.connector.postWithArgs("api/products#create", pairs);
 				isNew = false;
-			} else
-				spree.connector.putWithArgs("api/products/" + product.id + ".json", pairs);
+			} else {
+				int id = product.getId();
+				spree.connector.putWithArgs("api/products/" + id + ".json", pairs);
+			}
 		}
-		
+
 		@Override
 		protected void complete() {
 	        Toast.makeText(getApplicationContext(), getString(R.string.saved), Toast.LENGTH_LONG).show();

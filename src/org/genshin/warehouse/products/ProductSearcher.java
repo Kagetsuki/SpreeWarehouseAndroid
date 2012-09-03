@@ -18,10 +18,11 @@ public class ProductSearcher extends SpreeConnector {
 	private JSONObject productContainer;
 	protected String code;
 	protected String format;
-	public int count;
+	private int count;
 	protected String mode;
 	private Context context;
 
+	// コンストラクタ
 	public ProductSearcher(Context ctx, String format, String code) {
 		super(ctx);
 		collection = new ArrayList<Product>();
@@ -30,7 +31,8 @@ public class ProductSearcher extends SpreeConnector {
 		this.mode = "LIST";
 		this.context = ctx;
 	}
-	
+
+	// コンストラクタ
 	public ProductSearcher(Context ctx, String format,  String code, String mode) {
 		super(ctx);
 		collection = new ArrayList<Product>();
@@ -39,20 +41,21 @@ public class ProductSearcher extends SpreeConnector {
 		this.mode = mode;
 		this.context = ctx;
 	}
-	
+
+	// JSONObjectを格納
 	private ArrayList<Product> processProductContainer(JSONObject productContainer) {
 		ArrayList<Product> collection = new ArrayList<Product>();
-		
+
 		if (productContainer == null)
 			return null;
-		
+
 		//Pick apart JSON object
 		try {
 			this.count = productContainer.getInt("count");
 			JSONArray products = productContainer.getJSONArray("products");
 			for (int i = 0; i < products.length(); i++) {
 				JSONObject productJSON = products.getJSONObject(i).getJSONObject("product");
-				
+
 				//TODO put this in variant stuff
 				String sku = "";
 				try {
@@ -61,38 +64,38 @@ public class ProductSearcher extends SpreeConnector {
 					//No SKU
 					sku = "";
 				}
-				
-				Product product = new Product(productJSON);		
-				collection.add(product);				
+
+				Product product = new Product(productJSON);
+				collection.add(product);
 			}
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
-				
+
 		list = collection;;
 		return collection;
 	}
-	
+
 	@Override
 	public void process() {
 		productContainer = getJSONObject("api/products/search.json?q[variants_including_master_visual_code_eq]=" + code);
 		collection = processProductContainer(productContainer);
 	}
-	
+
 	@Override
 	public void complete() {
-		Warehouse.Products().list = collection;
+		Warehouse.Products().setList(collection);
 
 		//if we have one hit that's the product we want, so go to it
-    	if (Warehouse.Products().list.size() == 1) {
+    	if (Warehouse.Products().getList().size() == 1) {
     		if (mode.equals("SELECT")) {
     			//int selectMode = Warehouse.ResultCodes.STOCK_PRODUCT.ordinal();
     			//ProductsMenuActivity.showProductDetails(context, Warehouse.Products().list.get(0), selectMode);
     		} else if (mode.equals("LIST")) {
     			int selectMode = Warehouse.ResultCodes.NORMAL.ordinal();
-    			ProductsMenuActivity.showProductDetails(context, Warehouse.Products().list.get(0), selectMode);
+    			ProductsMenuActivity.showProductDetails(context, Warehouse.Products().getList().get(0), selectMode);
     		}
-    	} else if (Warehouse.Products().list.size() == 0) {
+    	} else if (Warehouse.Products().getList().size() == 0) {
     		//New product?
     		Warehouse.Products().unregisteredBarcode(context, code);
     	} else {

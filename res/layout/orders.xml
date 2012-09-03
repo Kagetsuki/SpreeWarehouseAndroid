@@ -3,13 +3,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical" >
-    
-    <Button 
+
+    <Button
         android:id="@+id/order_search"
-        android:text="@string/search"
-        android:layout_width="wrap_content"
+        android:text="@string/input_search"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center" />	    
+        android:layout_gravity="center" />
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -33,6 +33,6 @@
         android:layout_height="wrap_content"
         android:divider="@color/black" >
 
-    </ListView>    
+    </ListView>
 
 </LinearLayout>

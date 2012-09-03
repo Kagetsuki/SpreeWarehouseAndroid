@@ -6,15 +6,15 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public class OrderDetailsShipment {
-	
-	public String number;
-	public String shippingMethod;
-	public String tracking;
-	public double cost;
-	public String state;
-	public Date date;
-	public String action;
-	
+	private String number;
+	private String shippingMethod;
+	private String tracking;
+	private double cost;
+	private String state;
+	private Date date;
+	private String action;
+
+	// コンストラクタ
 	public OrderDetailsShipment() {
 		this.number = "";
 		this.shippingMethod = "";
@@ -24,9 +24,10 @@ public class OrderDetailsShipment {
 		this.date = new Date();
 		this.action = "";
 	}
-	
-	public OrderDetailsShipment(String number, String method, 
-			String tracking, double cost, String state, Date date, String action) {
+
+	// コンストラクタ
+	public OrderDetailsShipment(String number, String method,
+										String tracking, double cost, String state, Date date, String action) {
 		this.number = number;
 		this.shippingMethod = method;
 		this.tracking = tracking;
@@ -35,21 +36,50 @@ public class OrderDetailsShipment {
 		this.date = new Date();
 		this.action = "";
 	}
-	
-	public OrderDetailsShipment(JSONObject jsonObject) {	
+
+	// コンストラクタ jsonObjectを格納
+	public OrderDetailsShipment(JSONObject jsonObject) {
 		this.date = null;
 		this.action = null;
-		
+
 		try {
 			this.number = jsonObject.getString("number");
 			this.tracking = jsonObject.getString("tracking");
 			this.cost = jsonObject.getDouble("cost");
 			this.state = jsonObject.getString("state");
 			JSONObject str = jsonObject.getJSONObject("shipping_method");
-			this.shippingMethod = str.getString("name");		
+			this.shippingMethod = str.getString("name");
 		} catch (JSONException e) {
-			// TODO 自動生成された catch ブロック
 			e.printStackTrace();
-		}		
+		}
 	};
+
+	// 各種ゲッター
+	public String getNumber() {
+		return this.number;
+	}
+
+	public String getShippingMethod() {
+		return this.shippingMethod;
+	}
+
+	public String getTracking() {
+		return this.tracking;
+	}
+
+	public double getCost() {
+		return this.cost;
+	}
+
+	public String getState() {
+		return this.state;
+	}
+
+	public Date getDate() {
+		return this.date;
+	}
+
+	public String getAction() {
+		return this.action;
+	}
 }

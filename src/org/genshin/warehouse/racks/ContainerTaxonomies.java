@@ -9,32 +9,39 @@ import org.json.JSONObject;
 import android.util.Log;
 
 public class ContainerTaxonomies {
+	private ArrayList<ContainerTaxonomy> taxonomies;
 
-	public ArrayList<ContainerTaxonomy> taxonomies;
-	
-	public ContainerTaxonomy get(int index) {
-		return taxonomies.get(index);
-	}
-	
-	public int size() {
-		return taxonomies.size();
-	}
-	
+	// コンストラクタ
 	public ContainerTaxonomies() {
 		if (taxonomies == null) {
 			taxonomies = new ArrayList<ContainerTaxonomy>();
 		}
 	}
-	
+
+	// コンストラクタ JSONArrayを格納
 	public ContainerTaxonomies(JSONArray taxonomiesJSON) {
 		if (taxonomies == null) {
 			taxonomies = new ArrayList<ContainerTaxonomy>();
 		}
-		
+
 		getTaxonomies(taxonomiesJSON);
 	}
-	
-	public void getTaxonomies(JSONArray taxonomiesJSON) {		
+
+	// 各種ゲッター
+	public int size() {
+		return taxonomies.size();
+	}
+
+	public ArrayList<ContainerTaxonomy> getTaxonomies() {
+		return this.taxonomies;
+	}
+
+	public ContainerTaxonomy get(int index) {
+		return taxonomies.get(index);
+	}
+
+	// JSONArrayからcontainer_taxonomyを取り出す
+	public void getTaxonomies(JSONArray taxonomiesJSON) {
 		for (int i = 0; i < taxonomiesJSON.length(); i++) {
 			JSONObject taxonomyJSON = null;
 			try {
@@ -43,7 +50,7 @@ public class ContainerTaxonomies {
 				taxonomyJSON = null;
 				e.printStackTrace();
 			}
-				
+
 			if (taxonomyJSON != null) {
 				// take off the wrapper
 				JSONObject taxonomyJSONData = null;
@@ -52,11 +59,12 @@ public class ContainerTaxonomies {
 				} catch (JSONException e) {
 					taxonomyJSONData = null;
 				}
-				
-				if (taxonomyJSONData != null) 
+
+				if (taxonomyJSONData != null)
 					taxonomies.add(new ContainerTaxonomy(taxonomyJSONData));
-				
-				Log.d("ContainerTaxonomies", "Added container taxonomy " + taxonomies.get(taxonomies.size() - 1).name);
+
+				Log.d("ContainerTaxonomies", "Added container taxonomy " +
+															taxonomies.get(taxonomies.size() - 1).getName());
 			}
 		}
 	}

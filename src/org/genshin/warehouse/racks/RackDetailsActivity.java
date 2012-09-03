@@ -15,20 +15,21 @@ import android.widget.TextView;
 
 public class RackDetailsActivity extends Activity {
 	private TextView rackName;
-	
+
 	private Intent intent;
 	private int mode;
-	
+
 	private void hookupInterface() {
 		rackName = (TextView) findViewById(R.id.rack_name);
-		
+
 		mode = Warehouse.ResultCodes.NORMAL.ordinal();
-		
+
 		intent = getIntent();
 		String modeString = intent.getStringExtra("MODE");
 		String name = intent.getStringExtra("SELECT_NAME");
 		rackName.setText(name);
-		
+
+		// 別の場所からコンテナを選択する時
 		if (modeString != null) {
 		    if (modeString.equals("CONTAINER_SELECT")) {
 		    	mode = Warehouse.ResultCodes.CONTAINER_SELECT.ordinal();
@@ -36,20 +37,21 @@ public class RackDetailsActivity extends Activity {
 		    }
 		}
 	}
-	
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.rack_details);
-		
+
         Warehouse.setContext(this);
-        
+
 		hookupInterface();
 	}
-	
+
+	// 別の場所からコンテナを選択する時
 	public void containerSelect(String selectName) {
 		final String name = selectName;
-		
+
 		AlertDialog.Builder question = new AlertDialog.Builder(this);
 		question.setTitle(getString(R.string.register_this_container));
 		question.setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
@@ -66,11 +68,11 @@ public class RackDetailsActivity extends Activity {
 		});
 		question.show();
 	}
-	
+
 	// 長押しで最初の画面へ
 	@Override
 	public boolean onKeyLongPress(int keyCode, KeyEvent event) {
-	    if (keyCode == KeyEvent.KEYCODE_BACK) 
+	    if (keyCode == KeyEvent.KEYCODE_BACK)
 	    {
 	    	startActivity(new Intent(this, WarehouseActivity.class));
 	        return true;

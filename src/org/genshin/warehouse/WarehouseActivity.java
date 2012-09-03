@@ -29,28 +29,26 @@ import org.genshin.warehouse.settings.WarehouseSettingsActivity;
 import org.genshin.warehouse.shipping.ShippingMenuActivity;
 import org.genshin.warehouse.stocking.StockingMenuActivity;
 
-
-
 public class WarehouseActivity extends Activity {
 	Warehouse warehouse;
-	
+
 	//Interface objects
 	private Button scanButton;
 	private ListView menuList;
-	
-	private Spinner profileSpinner; 
+
+	private Spinner profileSpinner;
 	private Profiles profiles;
 
 	ThumbListItem[] menuListItems;
-	
+
 	private void createMainMenu() {
 		if (profiles.list.size() <= 0) {
 			Profiles.noRegisteredProfiles();
 			return;
 		}
-		
+
 		//Create main menu list items
-		menuListItems  = new ThumbListItem[] { 
+		menuListItems  = new ThumbListItem[] {
 				new ThumbListItem(R.drawable.products, getString(R.string.products), "", ProductsMenuActivity.class),
 				new ThumbListItem(R.drawable.orders, getString(R.string.orders), "", OrdersMenuActivity.class),
 				new ThumbListItem(R.drawable.stocking, getString(R.string.stocking), "", StockingMenuActivity.class),
@@ -59,7 +57,7 @@ public class WarehouseActivity extends Activity {
 				new ThumbListItem(R.drawable.packing, getString(R.string.packing), "", PackingMenuActivity.class),
 				new ThumbListItem(R.drawable.shipping, getString(R.string.shipping), "", ShippingMenuActivity.class)
 			};
-		
+
 		//Menu List
         menuList = (ListView) findViewById(R.id.main_menu_actions_list);
         ThumbListAdapter menuAdapter = new ThumbListAdapter(this, menuListItems);
@@ -71,11 +69,11 @@ public class WarehouseActivity extends Activity {
             }
         });
 	}
-	
+
 	private void loadProfiles() {
 		//Load profiles from the local DB
 		profiles = new Profiles(this);
-		
+
 		//set up spinner and select default
 		profileSpinner = profiles.attachToSpinner(profileSpinner);
 		profileSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -84,13 +82,13 @@ public class WarehouseActivity extends Activity {
                 profiles.selectProfile(position);
                 checkConnection();
             }
-	
-			public void onNothingSelected(AdapterView<?> arg0) {	
+
+			public void onNothingSelected(AdapterView<?> arg0) {
                 //checkConnection();
 			}
 		});
 	}
-	
+
 	private void hookupInterface() {
 		//Scan Button
 		scanButton = (Button) findViewById(R.id.scan_button);
@@ -99,23 +97,23 @@ public class WarehouseActivity extends Activity {
         		ScanSystem.initiateScan(v.getContext());
             }
 		});
-             
+
       //Profile Spinner
       profileSpinner = (Spinner) findViewById(R.id.warehouse_profile_spinner);
       //Profile Spinner contents loaded and spinner refreshsed in loadProfiles
       loadProfiles();
-      
+
       createMainMenu();
-      
-      
+
+
 	}
-	
+
 	private class ConnectionStatusIndicator extends ConnectionStatus {
 		private ImageView connectionStatusIcon;
 		public ConnectionStatusIndicator(Context ctx) {
 			super(ctx);
 		}
-		
+
 		@Override
 		protected void complete() {
 			connectionStatusIcon = (ImageView) findViewById(R.id.connection_status_icon);
@@ -130,22 +128,22 @@ public class WarehouseActivity extends Activity {
 				}
 			}
 		}
-		
+
 	}
-	
+
 	private void checkConnection() {
 		//Dialogs.showConnecting(this);
 		new ConnectionStatusIndicator(this).execute();
 		//Dialogs.dismiss();
 	}
-	
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_menu);
-        
-        warehouse = new Warehouse(this); 
-        
+
+        warehouse = new Warehouse(this);
+
         hookupInterface();
         NetworkTask.Setup(warehouse.Profiles().selected.server,
         		warehouse.Profiles().selected.port,
@@ -153,20 +151,20 @@ public class WarehouseActivity extends Activity {
         		warehouse.Profiles().selected.useHTTPS);
         checkConnection();
     }
-    
+
     public void settingsClickHandler(View view) {
 		Intent settingsIntent = new Intent(this, WarehouseSettingsActivity.class);
     	startActivityForResult(settingsIntent, ResultCodes.SETTINGS.ordinal());
 	}
-    
+
     private void menuListClickHandler(AdapterView<?> parent, View view, int position) {
         Intent menuItemIntent = new Intent(parent.getContext(), menuListItems[position].cls);
     	startActivity(menuItemIntent);
     }
-    
+
 	public void onActivityResult(int requestCode, int resultCode, Intent intent) {
 		Warehouse.setContext(this);
-		
+
         if (requestCode == ResultCodes.SCAN.ordinal()) {
             if (resultCode == RESULT_OK) {
                 String contents = intent.getStringExtra("SCAN_RESULT");
@@ -180,9 +178,9 @@ public class WarehouseActivity extends Activity {
 
 				} else if (ScanSystem.isProductCode(format)) {
 					// if it's a Barcode it's a product
-					
+
 					new ProductSearcher(this, format, contents).execute();
-                	
+
                 	/*ArrayList<Product> foundProducts = Warehouse.Products().findByBarcode(contents);
                 	//one result means forward to that product
                 	if (foundProducts.size() == 1) {
@@ -201,7 +199,7 @@ public class WarehouseActivity extends Activity {
             	Toast.makeText(WarehouseActivity.this, getString(R.string.scan_cancelled), Toast.LENGTH_LONG).show();
             }
 		} else if (resultCode == ResultCodes.PRODUCT_SELECT.ordinal()) {
-			ProductsMenuActivity.showProductDetails(this, Warehouse.Products().selected(), resultCode);
+			ProductsMenuActivity.showProductDetails(this, Warehouse.Products().getSelected(), resultCode);
         } else if (resultCode == ResultCodes.SETTINGS.ordinal()) {
         	loadProfiles();
         	checkConnection();

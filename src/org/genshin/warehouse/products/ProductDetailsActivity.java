@@ -35,9 +35,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class ProductDetailsActivity extends Activity {
-	SpreeConnector spree;
-	
-	Bundle extras;
+	private SpreeConnector spree;
+
+	private Bundle extras;
 	//private EditText id;
 	private TextView name;
 	private TextView sku;
@@ -51,11 +51,11 @@ public class ProductDetailsActivity extends Activity {
 	private ProductImageViewer imageViewer;
 	//private Image image;
 
-	Product product;
-	
+	private Product product;
+
 	private String modeString;
 	private String barcodeString;
-	
+
 	private void initViewElements() {
 		//id = (TextView) findViewById(R.id.product_id);
 		name = (TextView) findViewById(R.id.product_name);
@@ -68,21 +68,23 @@ public class ProductDetailsActivity extends Activity {
 		visualCode = (TextView) findViewById(R.id.product_visualCode);
 		imageSwitcher = (ImageSwitcher) findViewById(R.id.product_image_switcher);
 	}
-	
+
 	private void hookupInterface() {
 		imageViewer = new ProductImageViewer(this);
 		imageSwitcher.setFactory(imageViewer);
 		imageSwitcher.setInAnimation(AnimationUtils.loadAnimation(this, android.R.anim.fade_in));
         imageSwitcher.setOutAnimation(AnimationUtils.loadAnimation(this,android.R.anim.fade_out));
-        if (product.images.size() == 0)
+        // イメージ画像が登録されていない場合デフォルト画像を使用
+        if (product.getImages().size() == 0)
         	imageSwitcher.setImageResource(R.drawable.spree);
         else
-        	imageSwitcher.setImageDrawable(product.images.get(0).data);
-        
+        	imageSwitcher.setImageDrawable(product.getImages().get(0).data);
+
         Intent intent = getIntent();
         modeString = intent.getStringExtra("MODE");
         barcodeString = intent.getStringExtra("BARCODE");
         if (modeString != null) {
+        	// バーコード登録
 	        if (modeString.equals("UPDATE_PRODUCT_BARCODE")) {
 	        	AlertDialog.Builder question = new AlertDialog.Builder(this);
 				question.setTitle(getString(R.string.register_this_product));
@@ -97,6 +99,7 @@ public class ProductDetailsActivity extends Activity {
 					}
 				});
 				question.show();
+			// 商品追加
 	        } else if (modeString.equals("ADD_PRODUCT")) {
 	        	AlertDialog.Builder question = new AlertDialog.Builder(this);
 				question.setTitle(getString(R.string.add_this_product));
@@ -114,6 +117,7 @@ public class ProductDetailsActivity extends Activity {
 				});
 				question.show();
 			/*
+			// 商品入荷
 	        } else if (modeString.equals("STOCK_PRODUCT")) {
 	        	AlertDialog.Builder question = new AlertDialog.Builder(this);
 	        	final EditText edit = new EditText(this);
@@ -140,31 +144,32 @@ public class ProductDetailsActivity extends Activity {
         }
 	}
 
+	// ゲッター
 	private void getProductInfo() {
 		product = ProductsMenuActivity.getSelectedProduct();
 	}
 
 	private void setViewFields() {
-		name.setText(product.name);
-		
-		if (product.sku == "") {
+		name.setText(product.getName());
+
+		if (product.getSku() == "") {
 			sku.setVisibility(View.GONE);
 			skuTitle.setVisibility(View.GONE);
 		} else
-			sku.setText(product.sku);
-		
-		price.setText(product.price + getString(R.string.currency_unit));
-		countOnHand.setText(product.countOnHand + getString(R.string.units_counter));
-		description.setText(product.description);
-		permalink.setText(product.permalink);
-		visualCode.setText(product.visualCode);
+			sku.setText(product.getSku());
+
+		price.setText(product.getPrice() + getString(R.string.currency_unit));
+		countOnHand.setText(product.getCountOnHand() + getString(R.string.units_counter));
+		description.setText(product.getDescription());
+		permalink.setText(product.getPermalink());
+		visualCode.setText(product.getVisualCode());
 	}
 
 	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.product_details);
-        
+
         spree = new SpreeConnector(this);
 
 		getProductInfo();
@@ -172,9 +177,9 @@ public class ProductDetailsActivity extends Activity {
 		setViewFields();
 		hookupInterface();
 	}
-	
+
 	public static enum menuCodes { stock, destock, registerVisualCode, addProductImage, editProductDetails };
-	
+
 	@Override
     public boolean onCreateOptionsMenu(Menu menu) {
 		Resources res = getResources();
@@ -187,32 +192,33 @@ public class ProductDetailsActivity extends Activity {
         menu.add(Menu.NONE, menuCodes.editProductDetails.ordinal(), Menu.NONE, res.getString(R.string.edit_product_details));
         return super.onCreateOptionsMenu(menu);
     }
-	
+
+	// メニュー実装
 	@Override
     public boolean onOptionsItemSelected(MenuItem item) {
-		  
+
 		//Java can't do this!? WTF!
         /*switch (item.getItemId()) {
         	default:
         		return super.onOptionsItemSelected(item);
         	case registerVisualCode:
-            
+
         		return true;
         }*/
 		int id = item.getItemId();
 
 		if (id == menuCodes.registerVisualCode.ordinal()) {
 			ScanSystem.initiateScan(this);
-        	
+
 			return true;
 		} else if (id == menuCodes.editProductDetails.ordinal()) {
 			Intent intent = new Intent(this, ProductEditActivity.class);
 			startActivity(intent);
 		}
-        
+
         return false;
     }
-	
+
 	public void onActivityResult(int requestCode, int resultCode, Intent intent) {
         if (requestCode == ResultCodes.SCAN.ordinal()) {
             if (resultCode == RESULT_OK) {
@@ -228,7 +234,7 @@ public class ProductDetailsActivity extends Activity {
             }
         }
     }
-	
+
 	// onActivityResult
 	class Result extends NetworkTask {
 		String contents;
@@ -237,12 +243,12 @@ public class ProductDetailsActivity extends Activity {
 			super(ctx);
 			this.contents = contents;
 		}
-		
+
 		@Override
 		protected void process() {
-			spree.connector.genericPut("api/products/" + product.permalink + "?product[visual_code]=" + contents);
+			spree.connector.genericPut("api/products/" + product.getPermalink() + "?product[visual_code]=" + contents);
 		}
-		
+
 		@Override
 		protected void complete() {
 			Toast.makeText(getApplicationContext(), R.string.register_barcode, Toast.LENGTH_LONG).show();
@@ -264,7 +270,7 @@ public class ProductDetailsActivity extends Activity {
 			this.pairs = new ArrayList<NameValuePair>();
 			pairs.add(new BasicNameValuePair("product[visual_code]", code));
 		}
-		
+
 		/*
 		public registrationNewData(Context ctx, int num) {
 			super(ctx);
@@ -274,12 +280,13 @@ public class ProductDetailsActivity extends Activity {
 			pairs.add(new BasicNameValuePair("product[count_on_hand]", String.valueOf(num)));
 		}
 		*/
-		
+
 		@Override
 		protected void process() {
-			spree.connector.putWithArgs("api/products/" + product.id + ".json", pairs);
+			int id = product.getId();
+			spree.connector.putWithArgs("api/products/" + id + ".json", pairs);
 		}
-		
+
 		@Override
 		protected void complete() {
 			modeString = null;
@@ -289,13 +296,13 @@ public class ProductDetailsActivity extends Activity {
 			//	Toast.makeText(getApplicationContext(), R.string.stock_in, Toast.LENGTH_LONG).show();
 			Intent intent = new Intent(getApplicationContext(), StockingMenuActivity.class);
 			startActivity(intent);
-		}		
+		}
 	}
-	
+
 	// 長押しで最初の画面へ
 	@Override
 	public boolean onKeyLongPress(int keyCode, KeyEvent event) {
-	    if (keyCode == KeyEvent.KEYCODE_BACK) 
+	    if (keyCode == KeyEvent.KEYCODE_BACK)
 	    {
 	    	startActivity(new Intent(this, WarehouseActivity.class));
 	        return true;

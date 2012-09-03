@@ -33,37 +33,37 @@ import android.widget.ListView;
 import android.widget.Spinner;
 
 public class OrdersMenuActivity extends Activity {
-	
 	private OrderListAdapter ordersAdapter;
 	private ListView orderList;
-	
+
 	private Button searchButton;
 	private Spinner orderSpinner;
 	private ArrayAdapter<String> sadapter;
-	
+
 	private ImageButton backwardButton;
-	private boolean updown = false;		// falseの時は▽、trueの時は△表示
-	
+	// falseの時は▽、trueの時は△表示
+	private boolean updown = false;
+
 	private void hookupInterface() {
-		
 		// 検索
 		searchButton = (Button) findViewById(R.id.order_search);
-		searchButton.setOnClickListener(new OnClickListener() {		
+		searchButton.setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
-				// TODO 自動生成されたメソッド・スタブ
+				/*
 				new SearchOrdersRefresh(v.getContext(), "R0555").execute();
 				clearImage();
-				orderSpinner.setSelection(0);				
+				orderSpinner.setSelection(0);
+				*/
 			}
 		});
-		
+
 		orderList = (ListView) findViewById(R.id.order_menu_list);
-		
+
 		// Order spinner
 		orderSpinner = (Spinner) findViewById(R.id.order_spinner);
 		sadapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item);
 	    sadapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-	    // アイテムを追加します
+	    // アイテムを追加
 	    sadapter.add(getString(R.string.no_select));
 	    sadapter.add(getString(R.string.return_default));
 	    sadapter.add(getString(R.string.order_date));
@@ -73,11 +73,11 @@ public class OrdersMenuActivity extends Activity {
 	    sadapter.add(getString(R.string.shipment_state));
 	    orderSpinner.setPrompt(getString(R.string.sort));
 	    orderSpinner.setAdapter(sadapter);
-	    
+
 	    orderSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             public void onItemSelected(AdapterView<?> parent, View view,
                     int position, long id) {
-                Spinner spinner = (Spinner) parent;
+                // Spinner spinner = (Spinner) parent;
                 switch(position) {
                 	case 0:		// 未選択
                 		break;
@@ -106,17 +106,17 @@ public class OrdersMenuActivity extends Activity {
 	                	clearImage();
 	                	break;
 	                default :
-	                	break;             
+	                	break;
                 }
             }
 
 			public void onNothingSelected(AdapterView<?> arg0) {
 			}
         });
-	    
+
 	    // backwardButton 並びを逆に
 	    backwardButton = (ImageButton)findViewById(R.id.order_menu_backward_button);
-	    backwardButton.setOnClickListener(new View.OnClickListener() {			
+	    backwardButton.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
 				if (!updown) {
 					backwardButton.setImageResource(android.R.drawable.arrow_up_float);
@@ -129,22 +129,23 @@ public class OrdersMenuActivity extends Activity {
 			}
 		});
 	}
-	
+
 	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.orders);
         Warehouse.setContext(this);
-        
+
         hookupInterface();
 
         Intent intent = getIntent();
         String mode = intent.getStringExtra("MODE");
 
+        // mode判別
         if (mode != null)
         	new NewOrdersRefresh(Warehouse.getContext(), 25, "NEW_ORDER").execute();
         else
-        	new NewOrdersRefresh(Warehouse.getContext(), 25, "NORMAL").execute();   
+        	new NewOrdersRefresh(Warehouse.getContext(), 25, "NORMAL").execute();
 	}
 
 	public static enum menuCodes { registerOrder };
@@ -153,11 +154,11 @@ public class OrdersMenuActivity extends Activity {
 	@Override
     public boolean onCreateOptionsMenu(Menu menu) {
 		Resources res = getResources();
-        // メニューアイテムを追加する
+        // メニューアイテムを追加
         menu.add(Menu.NONE, menuCodes.registerOrder.ordinal(), Menu.NONE, res.getString(R.string.new_order));
         return super.onCreateOptionsMenu(menu);
     }
-	
+
 	// メニュー実装
 	@Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -177,23 +178,26 @@ public class OrdersMenuActivity extends Activity {
 				}
 			});
 			question.show();
-        	
+
 			return true;
 		}
 
         return false;
     }
-	
+
+	// orderDetailsの画面へ移動
 	public static void showOrderDetails(Context ctx, Order order) {
 		OrdersMenuActivity.setSelectedOrder(order);
 		Intent orderDetailsIntent = new Intent(ctx, OrderDetailsActivity.class);
     	ctx.startActivity(orderDetailsIntent);
 	}
-	
+
+	// Listアイテムをクリックした時
 	private void orderListClickHandler(AdapterView<?> parent, View view, int position) {
-		OrdersMenuActivity.showOrderDetails(this, Warehouse.Orders().list.get(position));				
+		OrdersMenuActivity.showOrderDetails(this, Warehouse.Orders().getList().get(position));
 	}
 
+	/** ↓今後使うか不明 */
 	/*
 	public void onActivityResult(int requestCode, int resultCode, Intent intent) {
         if (requestCode == ResultCodes.SCAN.ordinal()) {
@@ -209,7 +213,7 @@ public class OrdersMenuActivity extends Activity {
                 	refreshOrderMenu();
                 	if (Warehouse.Orders().list.size() == 1)
                 		showOrderDetails(this, Warehouse.Orders().list.get(0));
-                    
+
                 	//Toast.makeText(this, "Results:" + orders.count, Toast.LENGTH_LONG).show();
                 }
                 // Handle successful scan
@@ -221,27 +225,30 @@ public class OrdersMenuActivity extends Activity {
     }
     */
 
+	// ゲッター、セッター
 	public static Order getSelectedOrder() {
-		return Warehouse.Orders().selected();
+		return Warehouse.Orders().getSelectedOrder();
 	}
 
 	public static void setSelectedOrder(Order selectedOrder) {
 		if (selectedOrder == null) {
 			selectedOrder = new Order();
 		}
-		
-		Warehouse.Orders().select(selectedOrder);
+
+		Warehouse.Orders().setSelectedOrder(selectedOrder);
 	}
-	
-	private void refreshOrderMenu() {	
-		OrderListItem[] orderListItems = new OrderListItem[Warehouse.Orders().list.size()];
-		
-		for (int i = 0; i < Warehouse.Orders().list.size(); i++) {
-			Order p = Warehouse.Orders().list.get(i);
-			orderListItems[i] = new OrderListItem(p.number, p.date, p.name, p.count, p.price, 
-					p.division, p.paymentState, p.pickingState, p.packingState, p.shipmentState);
+
+	// ListViewを再表示
+	private void refreshOrderMenu() {
+		OrderListItem[] orderListItems = new OrderListItem[Warehouse.Orders().getList().size()];
+
+		for (int i = 0; i < Warehouse.Orders().getList().size(); i++) {
+			Order p = Warehouse.Orders().getList().get(i);
+			orderListItems[i] = new OrderListItem
+					(p.getNumber(), p.getDate(), p.getName(), p.getCount(), p.getPrice(), p.getDivision(),
+							p.getPaymentState(), p.getPickingState(), p.getPackingState(), p.getShipmentState());
 		}
-		
+
 		ordersAdapter = new OrderListAdapter(this, orderListItems);
 		orderList.setAdapter(ordersAdapter);
         orderList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -250,24 +257,25 @@ public class OrdersMenuActivity extends Activity {
             }
         });
 	}
-	
-	class OrdersListRefresh extends NetworkTask {
 
+	// ListViewを再表示
+	class OrdersListRefresh extends NetworkTask {
 		public OrdersListRefresh(Context ctx) {
 			super(ctx);
 		}
-		
+
 		@Override
 		protected void complete() {
 			orderList = (ListView) findViewById(R.id.order_menu_list);
 			refreshOrderMenu();
-		}	
+		}
 	}
-	
+
+	// 新しくListViewを表示
 	class NewOrdersRefresh extends OrdersListRefresh {
 		int count;
 		String mode;
-		
+
 		public NewOrdersRefresh(Context ctx, int count, String mode) {
 			super(ctx);
 			this.count = count;
@@ -277,23 +285,24 @@ public class OrdersMenuActivity extends Activity {
 		@Override
 		protected void process() {
 			Warehouse.Orders().getNewestOrders(count, mode);
-		}		
+		}
 	}
-	
+
+	// order検索
 	class SearchOrdersRefresh extends OrdersListRefresh {
 		String query;
-		
+
 		public SearchOrdersRefresh(Context ctx, String query) {
 			super(ctx);
 			this.query = query;
 		}
-		
+
 		@Override
 		protected void process() {
 			Warehouse.Orders().textSearch(query);
 		}
 	}
-	
+
 	/////////////////////////////////////////////////////////////////////////////////////
 	//
 	// 各種ソート
@@ -307,29 +316,30 @@ public class OrdersMenuActivity extends Activity {
 			updown = false;
 		}
 	}
-	
+
 	// 並びを逆にする
 	public void switchOrder() {
 		ArrayList<Order> sortedList = new ArrayList<Order>();
-		
-		for (int i = Warehouse.Orders().list.size() - 1; i >= 0; i--) {
-			sortedList.add(Warehouse.Orders().list.get(i));
+
+		for (int i = Warehouse.Orders().getList().size() - 1; i >= 0; i--) {
+			sortedList.add(Warehouse.Orders().getList().get(i));
 		}
-		
-		Warehouse.Orders().list = sortedList;
+
+		Warehouse.Orders().setList(sortedList);
 		refreshOrderMenu();
 	}
-	
+
 	// 注文日順
 	public void sortDate() {
 		Order temp;
 
-		for (int i = 0; i < Warehouse.Orders().list.size() - 1; i++) {
-			for (int j = i + 1; j < Warehouse.Orders().list.size(); j++) {
-				if (Warehouse.Orders().list.get(j).date.after(Warehouse.Orders().list.get(i).date)) {
-					temp = Warehouse.Orders().list.get(i);
-					Warehouse.Orders().list.set(i, Warehouse.Orders().list.get(j));
-					Warehouse.Orders().list.set(j, temp);
+		for (int i = 0; i < Warehouse.Orders().getList().size() - 1; i++) {
+			for (int j = i + 1; j < Warehouse.Orders().getList().size(); j++) {
+				if (Warehouse.Orders().getList().get(j).getDate().after
+															(Warehouse.Orders().getList().get(i).getDate())) {
+					temp = Warehouse.Orders().getList().get(i);
+					Warehouse.Orders().getList().set(i, Warehouse.Orders().getList().get(j));
+					Warehouse.Orders().getList().set(j, temp);
 				}
 			}
 		}
@@ -340,18 +350,21 @@ public class OrdersMenuActivity extends Activity {
 	// 入金状態
 	public void sortPayment() {
 		Order temp;
-		
-		for (int i = 0; i < Warehouse.Orders().list.size() - 1; i++) {
-			for (int j = i + 1; j < Warehouse.Orders().list.size(); j++) {
-				if (Warehouse.Orders().list.get(i).paymentState.compareTo(Warehouse.Orders().list.get(j).paymentState) > 0) {
-					temp = Warehouse.Orders().list.get(i);
-					Warehouse.Orders().list.set(i, Warehouse.Orders().list.get(j));
-					Warehouse.Orders().list.set(j, temp);
-				} else if (Warehouse.Orders().list.get(i).paymentState.compareTo(Warehouse.Orders().list.get(j).paymentState) == 0) {
-					if (Warehouse.Orders().list.get(j).date.after(Warehouse.Orders().list.get(i).date)) {
-						temp = Warehouse.Orders().list.get(i);
-						Warehouse.Orders().list.set(i, Warehouse.Orders().list.get(j));
-						Warehouse.Orders().list.set(j, temp);
+
+		for (int i = 0; i < Warehouse.Orders().getList().size() - 1; i++) {
+			for (int j = i + 1; j < Warehouse.Orders().getList().size(); j++) {
+				if (Warehouse.Orders().getList().get(i).getPaymentState().compareTo
+												(Warehouse.Orders().getList().get(j).getPaymentState()) > 0) {
+					temp = Warehouse.Orders().getList().get(i);
+					Warehouse.Orders().getList().set(i, Warehouse.Orders().getList().get(j));
+					Warehouse.Orders().getList().set(j, temp);
+				} else if (Warehouse.Orders().getList().get(i).getPaymentState().compareTo
+												(Warehouse.Orders().getList().get(j).getPaymentState()) == 0) {
+					if (Warehouse.Orders().getList().get(j).getDate().after
+															(Warehouse.Orders().getList().get(i).getDate())) {
+						temp = Warehouse.Orders().getList().get(i);
+						Warehouse.Orders().getList().set(i, Warehouse.Orders().getList().get(j));
+						Warehouse.Orders().getList().set(j, temp);
 					}
 				}
 			}
@@ -363,18 +376,21 @@ public class OrdersMenuActivity extends Activity {
 	// ピッキング状態
 	public void sortPicking() {
 		Order temp;
-		
-		for (int i = 0; i < Warehouse.Orders().list.size() - 1; i++) {
-			for (int j = i + 1; j < Warehouse.Orders().list.size(); j++) {
-				if (Warehouse.Orders().list.get(i).pickingState.compareTo(Warehouse.Orders().list.get(j).pickingState) > 0) {
-					temp = Warehouse.Orders().list.get(i);
-					Warehouse.Orders().list.set(i, Warehouse.Orders().list.get(j));
-					Warehouse.Orders().list.set(j, temp);
-				} else if (Warehouse.Orders().list.get(i).pickingState.compareTo(Warehouse.Orders().list.get(j).pickingState) == 0) {
-					if (Warehouse.Orders().list.get(j).date.after(Warehouse.Orders().list.get(i).date)) {
-						temp = Warehouse.Orders().list.get(i);
-						Warehouse.Orders().list.set(i, Warehouse.Orders().list.get(j));
-						Warehouse.Orders().list.set(j, temp);
+
+		for (int i = 0; i < Warehouse.Orders().getList().size() - 1; i++) {
+			for (int j = i + 1; j < Warehouse.Orders().getList().size(); j++) {
+				if (Warehouse.Orders().getList().get(i).getPickingState().compareTo
+											(Warehouse.Orders().getList().get(j).getPickingState()) > 0) {
+					temp = Warehouse.Orders().getList().get(i);
+					Warehouse.Orders().getList().set(i, Warehouse.Orders().getList().get(j));
+					Warehouse.Orders().getList().set(j, temp);
+				} else if (Warehouse.Orders().getList().get(i).getPickingState().compareTo
+											(Warehouse.Orders().getList().get(j).getPickingState()) == 0) {
+					if (Warehouse.Orders().getList().get(j).getDate().after
+															(Warehouse.Orders().getList().get(i).getDate())) {
+						temp = Warehouse.Orders().getList().get(i);
+						Warehouse.Orders().getList().set(i, Warehouse.Orders().getList().get(j));
+						Warehouse.Orders().getList().set(j, temp);
 					}
 				}
 			}
@@ -382,22 +398,25 @@ public class OrdersMenuActivity extends Activity {
 
 		refreshOrderMenu();
 	}
-	
+
 	// 梱包状態
 	public void sortPacking() {
 		Order temp;
-		
-		for (int i = 0; i < Warehouse.Orders().list.size() - 1; i++) {
-			for (int j = i + 1; j < Warehouse.Orders().list.size(); j++) {
-				if (Warehouse.Orders().list.get(i).packingState.compareTo(Warehouse.Orders().list.get(j).packingState) > 0) {
-					temp = Warehouse.Orders().list.get(i);
-					Warehouse.Orders().list.set(i, Warehouse.Orders().list.get(j));
-					Warehouse.Orders().list.set(j, temp);
-				} else if (Warehouse.Orders().list.get(i).packingState.compareTo(Warehouse.Orders().list.get(j).packingState) == 0) {
-					if (Warehouse.Orders().list.get(j).date.after(Warehouse.Orders().list.get(i).date)) {
-						temp = Warehouse.Orders().list.get(i);
-						Warehouse.Orders().list.set(i, Warehouse.Orders().list.get(j));
-						Warehouse.Orders().list.set(j, temp);
+
+		for (int i = 0; i < Warehouse.Orders().getList().size() - 1; i++) {
+			for (int j = i + 1; j < Warehouse.Orders().getList().size(); j++) {
+				if (Warehouse.Orders().getList().get(i).getPackingState().compareTo
+												(Warehouse.Orders().getList().get(j).getPackingState()) > 0) {
+					temp = Warehouse.Orders().getList().get(i);
+					Warehouse.Orders().getList().set(i, Warehouse.Orders().getList().get(j));
+					Warehouse.Orders().getList().set(j, temp);
+				} else if (Warehouse.Orders().getList().get(i).getPackingState().compareTo
+												(Warehouse.Orders().getList().get(j).getPackingState()) == 0) {
+					if (Warehouse.Orders().getList().get(j).getDate().after
+													(Warehouse.Orders().getList().get(i).getDate())) {
+						temp = Warehouse.Orders().getList().get(i);
+						Warehouse.Orders().getList().set(i, Warehouse.Orders().getList().get(j));
+						Warehouse.Orders().getList().set(j, temp);
 					}
 				}
 			}
@@ -405,21 +424,24 @@ public class OrdersMenuActivity extends Activity {
 
 		refreshOrderMenu();
 	}
-	
+
 	// 発送状態
 	public void sortShipment() {
 		Order temp;
-		for (int i = 0; i < Warehouse.Orders().list.size() - 1; i++) {
-			for (int j = i + 1; j < Warehouse.Orders().list.size(); j++) {
-				if (Warehouse.Orders().list.get(i).shipmentState.compareTo(Warehouse.Orders().list.get(j).shipmentState) > 0) {
-					temp = Warehouse.Orders().list.get(i);
-					Warehouse.Orders().list.set(i, Warehouse.Orders().list.get(j));
-					Warehouse.Orders().list.set(j, temp);
-				} else if (Warehouse.Orders().list.get(i).shipmentState.equals(Warehouse.Orders().list.get(j).shipmentState)) {
-					if (Warehouse.Orders().list.get(j).date.after(Warehouse.Orders().list.get(i).date)) {
-						temp = Warehouse.Orders().list.get(i);
-						Warehouse.Orders().list.set(i, Warehouse.Orders().list.get(j));
-						Warehouse.Orders().list.set(j, temp);
+		for (int i = 0; i < Warehouse.Orders().getList().size() - 1; i++) {
+			for (int j = i + 1; j < Warehouse.Orders().getList().size(); j++) {
+				if (Warehouse.Orders().getList().get(i).getShipmentState().compareTo
+												(Warehouse.Orders().getList().get(j).getShipmentState()) > 0) {
+					temp = Warehouse.Orders().getList().get(i);
+					Warehouse.Orders().getList().set(i, Warehouse.Orders().getList().get(j));
+					Warehouse.Orders().getList().set(j, temp);
+				} else if (Warehouse.Orders().getList().get(i).getShipmentState().equals
+												(Warehouse.Orders().getList().get(j).getShipmentState())) {
+					if (Warehouse.Orders().getList().get(j).getDate().after
+															(Warehouse.Orders().getList().get(i).getDate())) {
+						temp = Warehouse.Orders().getList().get(i);
+						Warehouse.Orders().getList().set(i, Warehouse.Orders().getList().get(j));
+						Warehouse.Orders().getList().set(j, temp);
 					}
 				}
 			}
@@ -427,11 +449,11 @@ public class OrdersMenuActivity extends Activity {
 
 		refreshOrderMenu();
 	}
-	
+
 	// 長押しで最初の画面へ
 	@Override
 	public boolean onKeyLongPress(int keyCode, KeyEvent event) {
-	    if (keyCode == KeyEvent.KEYCODE_BACK) 
+	    if (keyCode == KeyEvent.KEYCODE_BACK)
 	    {
 	    	startActivity(new Intent(this, WarehouseActivity.class));
 	        return true;

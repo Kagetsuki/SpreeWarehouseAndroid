@@ -19,44 +19,46 @@ import android.util.Log;
 public class Products {
 	private Context ctx;
 	private Product selected;
-	ArrayList<Product> list;
-	public int count;
-	
+	private ArrayList<Product> list;
+	private int count;
+
+	// コンストラクタ
 	public Products(Context ctx) {
 		this.ctx = ctx;
 		this.selected = null;
 		this.list = new ArrayList<Product>();
 		count = 0;
 	}
-	
-	public void select(Product product) {
-		selected = product;
-	}
-	
-	public Product selected() {
+
+	// ゲッター、セッター
+	public Product getSelected() {
 		return selected;
 	}
-	
+	public void setSelect(Product product) {
+		selected = product;
+	}
+
+	// リストを初期化
 	public void clear() {
 		this.list = new ArrayList<Product>();
 		count = 0;
 	}
-	
+
 	// JSONデータを取得
 	private ArrayList<Product> processProductContainer(JSONObject productContainer) {
 		ArrayList<Product> collection = new ArrayList<Product>();
-		
+
 		if (productContainer == null)
 			return null;
-		
+
 		//Pick apart JSON object
 		try {
 			this.count = productContainer.getInt("count");
 			JSONArray products = productContainer.getJSONArray("products");
-			
+
 			for (int i = 0; i < products.length(); i++) {
 				JSONObject productJSON = products.getJSONObject(i).getJSONObject("product");
-				
+
 				//TODO put this in variant stuff
 				String sku = "";
 				try {
@@ -65,25 +67,25 @@ public class Products {
 					//No SKU
 					sku = "";
 				}
-				
-				Product product = new Product(productJSON);	
-				collection.add(product);				
+
+				Product product = new Product(productJSON);
+				collection.add(product);
 			}
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
-				
+
 		list = collection;
 		return collection;
 	}
-	
+
 	// 最新の（limit）件数を取得…現在は１ページ表示
-	public ArrayList<Product> getNewestProducts(int limit) {		
+	public ArrayList<Product> getNewestProducts(int limit) {
 		ArrayList<Product> collection = new ArrayList<Product>();
-		JSONObject productContainer = 
+		JSONObject productContainer =
 				Warehouse.Spree().connector.getJSONObject("api/products.json?page=1");
 		collection = processProductContainer(productContainer);
-		
+
 		return collection;
 	}
 
@@ -97,13 +99,13 @@ public class Products {
 			// WTF unsupported encoding? fine, just take it raw
 			escapedQuery = query;
 		}
-		JSONObject productContainer = 
+		JSONObject productContainer =
 				Warehouse.Spree().connector.getJSONObject("api/products/search.json?q[name_cont]=" + escapedQuery);
 		collection = processProductContainer(productContainer);
-		
+
 		return collection;
 	}
-	
+
 	// バーコードが登録されていない場合
 	public static void unregisteredBarcode(Context ctxt, final String code) {
 		final Context ctx = ctxt;
@@ -120,7 +122,7 @@ public class Products {
 				intent.putExtra("BARCODE", code);
 	            ctx.startActivity(intent);
 			}
-		});	
+		});
 		// 登録済商品に追加
 		question.setNeutralButton(ctx.getString(R.string.register_to_existing_product), new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface arg0, int arg1) {
@@ -132,5 +134,13 @@ public class Products {
 		});
 
 		question.show();
+	}
+
+	// ゲッター、セッター
+	public ArrayList<Product> getList() {
+		return this.list;
+	}
+	public void setList(ArrayList<Product> list) {
+		this.list = list;
 	}
 }
