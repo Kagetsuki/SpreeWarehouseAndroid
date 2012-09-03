@@ -29,6 +29,8 @@ import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpParams;
 import org.apache.http.params.HttpProtocolParams;
 import org.apache.http.protocol.HTTP;
+
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
 
@@ -38,43 +40,45 @@ public class NetworkTask extends AsyncTask<String, Void, HttpResponse>{
 	protected static String apiKey;
 	protected static int port;
 	protected static boolean useHTTPS;
-	
+
 	Context ctx;
-	
+
+	private  ProgressDialog m_ProgressDialog;
+
 	public NetworkTask(Context ctx) {
 		usePresets = true;
 		this.ctx = ctx;
 		prepare();
 	}
-	
+
 	public static void Setup(String server, int port, String apiKey) {
 		NetworkTask.server = server;
 		NetworkTask.apiKey = apiKey;
 		NetworkTask.port = port;
 		NetworkTask.useHTTPS = isStandardHTTPSPort(port);
 	}
-	
+
 	public static void Setup(String server, int port, String apiKey, boolean useHTTPS) {
 		NetworkTask.server = server;
 		NetworkTask.apiKey = apiKey;
 		NetworkTask.port = port;
 		NetworkTask.useHTTPS = useHTTPS;
 	}
-	
+
 	public static boolean isStandardHTTPSPort(int port) {
 		if (port ==  443)
 			return true;
 		else
 			return false;
 	}
-	
+
 	private String protocolHeader() {
 		if (NetworkTask.useHTTPS)
 			return "https://";
 		else
 			return "http://";
 	}
-	
+
 	public String baseURL() {
 		return protocolHeader() + server + ":" + port + "/";
 	}
@@ -83,10 +87,10 @@ public class NetworkTask extends AsyncTask<String, Void, HttpResponse>{
 		try {
 			KeyStore trustStore = KeyStore.getInstance(KeyStore.getDefaultType());
 	        trustStore.load(null, null);
-	        
+
 			SSLSocketFactory sf = new AnyCertSSLSocketFactory(trustStore);
 	        sf.setHostnameVerifier(SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
-	        
+
 	        HttpParams params = new BasicHttpParams();
 	        //HttpProtocolParams.setVersion(params, HttpVersion.HTTP_1_1);
 	        HttpProtocolParams.setContentCharset(params, HTTP.UTF_8);
@@ -99,25 +103,43 @@ public class NetworkTask extends AsyncTask<String, Void, HttpResponse>{
 
 	        return new DefaultHttpClient(ccm, params);
 		} catch (Exception e) {
-	        return new DefaultHttpClient();	
+	        return new DefaultHttpClient();
 		}
 	}
-	
+
 	public void DisablePresets() {
 		usePresets = false;
 	}
-	
+
+	@Override
+	protected void onPreExecute() {
+		// プログレスダイアログの生成
+		this.m_ProgressDialog = new ProgressDialog(this.ctx);
+
+		// プログレスダイアログの設定
+		this.m_ProgressDialog.setMessage("読み込み中...");  // メッセージをセット
+
+		// プログレスダイアログの表示
+		this.m_ProgressDialog.show();
+
+		return;
+	}
+
 	@Override
 	protected HttpResponse doInBackground(String... params) {
 		process();
 		return null;
 	}
-	
+
 	@Override
 	protected void onPostExecute(HttpResponse result) {
+		// プログレスダイアログを閉じる
+		if (this.m_ProgressDialog != null && this.m_ProgressDialog.isShowing()) {
+			this.m_ProgressDialog.dismiss();
+		}
 		complete();
 	}
-	
+
 	public class AnyCertSSLSocketFactory extends SSLSocketFactory {
 	    SSLContext sslContext = SSLContext.getInstance("TLS");
 
@@ -149,13 +171,13 @@ public class NetworkTask extends AsyncTask<String, Void, HttpResponse>{
 	        return sslContext.getSocketFactory().createSocket();
 	    }
 	}
-	
+
 	protected void prepare() {
 	}
-	
+
 	protected void process() {
 	}
-	
+
 	protected void complete() {
 	}
 

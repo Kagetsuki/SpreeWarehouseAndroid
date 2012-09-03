@@ -64,8 +64,7 @@ public class OrdersMenuActivity extends Activity {
 		sadapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item);
 	    sadapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 	    // アイテムを追加
-	    sadapter.add(getString(R.string.no_select));
-	    sadapter.add(getString(R.string.return_default));
+	    sadapter.add(getString(R.string.none));
 	    sadapter.add(getString(R.string.order_date));
 	    sadapter.add(getString(R.string.payment_state));
 	    sadapter.add(getString(R.string.picking_state));
@@ -79,29 +78,25 @@ public class OrdersMenuActivity extends Activity {
                     int position, long id) {
                 // Spinner spinner = (Spinner) parent;
                 switch(position) {
-                	case 0:		// 未選択
+                	case 0:		// なし
                 		break;
-                	case 1:		// 初期状態に戻す
-                		new NewOrdersRefresh(Warehouse.getContext(), 25, "NORMAL").execute();
-                		clearImage();
-                		break;
-                	case 2:		// 注文日順
+                	case 1:		// 注文日順
 						sortDate();
 						clearImage();
                 		break;
-	                case 3:		// 入金状態
+	                case 2:		// 入金状態
 	                	sortPayment();
 	                	clearImage();
 	                	break;
-	                case 4:		// ピッキング状態
+	                case 3:		// ピッキング状態
 	                	sortPicking();
 	                	clearImage();
 	                	break;
-	                case 5:		// 梱包状態
+	                case 4:		// 梱包状態
 	                	sortPacking();
 	                	clearImage();
 	                	break;
-	                case 6:		// 発送状態
+	                case 5:		// 発送状態
 	                	sortShipment();
 	                	clearImage();
 	                	break;
@@ -207,7 +202,8 @@ public class OrdersMenuActivity extends Activity {
                 //TODO limit this to bar code types?
                 if (format != "QR_CODE") {
                 	//Assume barcode, and barcodes correlate to orders
-                	//Toast.makeText(this, "[" + format + "]: " + contents + "\nSearching!", Toast.LENGTH_LONG).show();
+                	//Toast.makeText
+                	//	(this, "[" + format + "]: " + contents + "\nSearching!", Toast.LENGTH_LONG).show();
                 	orders.findByBarcode(contents);
                 	//if we have one hit that's the order we want, so go to it
                 	refreshOrderMenu();

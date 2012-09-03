@@ -118,8 +118,7 @@
 	<string name="payment_method">支払い方法</string>
 	<string name="returned_goods">返品承認</string>
 	<string name="currency_unit">円</string>
-	<string name="no_select">未選択</string>
-	<string name="return_default">初期状態に戻す</string>
+	<string name="none">なし</string>
 	<string name="order_date">注文日時</string>
 	<string name="payment_state">入金状態</string>
 	<string name="picking_state">ピッキング状態</string>
@@ -166,6 +165,7 @@
 	<string name="add_this_product">この商品を追加しますか？</string>
 	<string name="fill_blank">空欄を埋めてください</string>
 
+	<string name="select_container">：このコンテナに入荷しますか？</string>
 	<string name="new_register">新規登録</string>
 	<string name="rack_name">倉庫名称</string>
 	<string name="rack_code">倉庫コード</string>

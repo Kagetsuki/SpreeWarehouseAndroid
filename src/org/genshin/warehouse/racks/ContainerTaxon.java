@@ -13,6 +13,16 @@ public class ContainerTaxon {
 	private String warehouse;
 	private ContainerTaxon root;
 
+	// コンストラクタ
+	public ContainerTaxon() {
+		this.id = 0;
+		this.name = "";
+		this.permalink = "";
+		this.updatedAt = "";
+		this.warehouse = "";
+		this.root = null;
+	}
+
 	// コンストラクタ　JSONObjectを格納
 	public ContainerTaxon(JSONObject json) {
 		try {

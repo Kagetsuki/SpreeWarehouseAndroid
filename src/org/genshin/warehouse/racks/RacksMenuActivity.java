@@ -6,9 +6,14 @@ import org.genshin.gsa.network.NetworkTask;
 import org.genshin.warehouse.R;
 import org.genshin.warehouse.Warehouse;
 import org.genshin.warehouse.WarehouseActivity;
+import org.genshin.warehouse.orders.Order;
+import org.genshin.warehouse.orders.SaveOrder;
+import org.genshin.warehouse.stocking.StockingMenuActivity;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
@@ -17,6 +22,7 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.ExpandableListView;
 import android.widget.ExpandableListView.OnChildClickListener;
 import android.widget.ExpandableListView.OnGroupClickListener;
@@ -27,25 +33,25 @@ public class RacksMenuActivity extends Activity {
     private RacksMenuAdapter adapter;
 
     private Intent intent;
+    private TextView rootRack;
     private TextView selectRack;
 
     private static int mode;
-    private String selectId;
+    private String groupName;
+    private String groupId;
+    private String childId;
 
 	private WarehouseDivisions warehouses;
     private ArrayList<RacksListData> warehouseRoots;
     private ArrayList<ArrayList<RacksListData>> containerTaxonomyNodes;
 
-    private ContainerTaxonomy selectContainer;
+    private ContainerTaxonomy selectContainerTaxonomy;
 
 	private void hookupInterface() {
-		racksRootList = (ExpandableListView) findViewById(R.id.racks_root_list);
-		selectRack = (TextView) findViewById(R.id.racks_select);
-
 		intent = getIntent();
 		mode = Warehouse.ResultCodes.NORMAL.ordinal();
-		String modeString = intent.getStringExtra("MODE");
-		String expand = intent.getStringExtra("EXPAND");
+		final String modeString = intent.getStringExtra("MODE");
+		final String expand = intent.getStringExtra("EXPAND");
 		String selectName = null;
 
 		// モード判別
@@ -55,31 +61,68 @@ public class RacksMenuActivity extends Activity {
 		} else
 			mode = Warehouse.ResultCodes.NORMAL.ordinal();
 
+		racksRootList = (ExpandableListView) findViewById(R.id.racks_root_list);
+		rootRack = (TextView) findViewById(R.id.racks_root);
+
+		selectRack = (TextView) findViewById(R.id.racks_select);
 		// 表示判別
 		if (expand != null) {
 			if (expand.equals("MORE")) {
-				selectName = intent.getStringExtra("SELECT_NAME");
-				selectId = intent.getStringExtra("ID");
+				groupName = intent.getStringExtra("GROUP_NAME");
+				groupId = intent.getStringExtra("GROUP_ID");
+				rootRack.setText(groupName);
+				selectName = intent.getStringExtra("CHILD_NAME");
+				childId = intent.getStringExtra("CHILD_ID");
 				selectRack.setText(selectName);
 			}
 		} else {
-			selectId = null;
-			selectRack.setText("/");
+			childId = null;
+			rootRack.setText("/");
 		}
+		selectRack.setOnClickListener(new OnClickListener() {
+			public void onClick(View v) {
+				// コンテナ選択の時のみ動作
+				if (mode == Warehouse.ResultCodes.CONTAINER_SELECT.ordinal()) {
+					AlertDialog.Builder dialog = new AlertDialog.Builder(Warehouse.getContext());
+					dialog.setTitle(getString(R.string.select_container));
+					dialog.setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface arg0, int arg1) {
+							Intent intent = new Intent(getApplicationContext(), StockingMenuActivity.class);
+
+							startActivity(intent);
+						}
+					});
+					dialog.setNegativeButton(getString(R.string.no), new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface arg0, int arg1) {
+						}
+					});
+					dialog.show();
+				}
+			}
+		});
 
 		// 一度拡張した後かどうか（Rootでない）
 		if (expand != null) {
-			new showExpandRacksMenu(this, selectId).execute();
+			new showExpandRacksMenu(this, childId).execute();
 		} else
 			new showRacksMenuList(this).execute();
 
+		// 子要素をクリックした時
         racksRootList.setOnChildClickListener(new OnChildClickListener() {
 			public boolean onChildClick(ExpandableListView parent, View v,
 					int groupPosition, int childPosition, long id) {
 
 				RacksMenuAdapter adapter = (RacksMenuAdapter)parent.getExpandableListAdapter();
-				String selectId = adapter.getChild(groupPosition, childPosition).getId();
-				String text = adapter.getChild(groupPosition, childPosition).getName();
+				String groupName = adapter.getGroup(groupPosition).getName();
+				String groupId = adapter.getGroup(groupPosition).getId();
+				String childId = adapter.getChild(groupPosition, childPosition).getId();
+				String childName = adapter.getChild(groupPosition, childPosition).getName();
+
+				if (mode == Warehouse.ResultCodes.CONTAINER_SELECT.ordinal()) {
+					Warehouse.setSelectContainerName(adapter.getGroup(groupPosition).getName());
+					Warehouse.setSelectContainerId(adapter.getGroup(groupPosition).getId());
+					Warehouse.setSelectContainerPermalink(adapter.getGroup(groupPosition).getPermalink());
+				}
 
 				// 下の階層に移動か詳細に移動か
 				if (adapter.getChild(groupPosition, childPosition).getIcon()) {
@@ -87,8 +130,11 @@ public class RacksMenuActivity extends Activity {
 					intent.putExtra("EXPAND", "MORE");
 				} else
 					intent = new Intent(getApplicationContext(), RackDetailsActivity.class);
-				intent.putExtra("SELECT_NAME", text);
-				intent.putExtra("ID", selectId);
+
+				intent.putExtra("GROUP_NAME", groupName);
+				intent.putExtra("GROUP_ID", groupId);
+				intent.putExtra("CHILD_NAME", childName);
+				intent.putExtra("CHILD_ID", childId);
 
 				// 別画面からコンテナ選択に来た場合
 				if (mode == Warehouse.ResultCodes.CONTAINER_SELECT.ordinal())
@@ -100,17 +146,26 @@ public class RacksMenuActivity extends Activity {
 			}
 		});
 
+        // 親要素をクリックした時
         racksRootList.setOnGroupClickListener(new OnGroupClickListener() {
 			public boolean onGroupClick(ExpandableListView parent, View v,
 													int groupPosition, long id) {
 				if (adapter.getChild(groupPosition, 0).getId() == null) {
 					// 子要素が空の場合の処理
-					//String selectId = adapter.getGroup(groupPosition).getId();
-					String selectId = "0";
-					String text = adapter.getGroup(groupPosition).getName();
+					//String childId = adapter.getGroup(groupPosition).getId();
+					String childId = "0";
+					String childName = adapter.getGroup(groupPosition).getName();
+					String gName = groupName + " / " + selectRack.getText();
 					intent = new Intent(getApplicationContext(), RackDetailsActivity.class);
-					intent.putExtra("SELECT_NAME", text);
-					intent.putExtra("ID", selectId);
+					if (expand.equals("MORE")) {
+						intent.putExtra("GROUP_NAME", gName);
+						intent.putExtra("GROUP_ID", "");
+					} else	{
+						intent.putExtra("GROUP_NAME", "/");
+						intent.putExtra("GROUP_ID", "");
+					}
+					intent.putExtra("CHILD_NAME", childName);
+					intent.putExtra("CHILD_ID", childId);
 
 					// 別画面からコンテナ選択に来た場合
 					if (mode == Warehouse.ResultCodes.CONTAINER_SELECT.ordinal())
@@ -158,7 +213,6 @@ public class RacksMenuActivity extends Activity {
 			racksRootList = (ExpandableListView) findViewById(R.id.racks_root_list);
 			adapter = new RacksMenuAdapter(
 					Warehouse.getContext(), warehouseRoots, containerTaxonomyNodes);
-			Log.v("test", "" + adapter);
 			racksRootList.setAdapter(adapter);
 	        racksRootList.setGroupIndicator(null);
 		}
@@ -177,7 +231,7 @@ public class RacksMenuActivity extends Activity {
 		protected void process() {
 			warehouses = Warehouse.Warehouses();
 			warehouses.getWarehouses();
-			selectContainer = new ContainerTaxonomy(selectId);
+			selectContainerTaxonomy = new ContainerTaxonomy(selectId);
 			putJsonDataExpand(selectId);
 		}
 	}
@@ -205,7 +259,8 @@ public class RacksMenuActivity extends Activity {
 					taxonomyNode.setGroup(warehouses.getDivisions().get(i).getName());
 					taxonomyNode.setName(warehouses.getDivisions().get(i).getContainers().get(j).getName());
 					taxonomyNode.setId("" + warehouses.getDivisions().get(i).getContainers().get(j).getId());
-					taxonomyNode.setPermalink(warehouses.getDivisions().get(i).getContainers().get(j).getPermalink());
+					taxonomyNode.setPermalink
+									(warehouses.getDivisions().get(i).getContainers().get(j).getPermalink());
 					taxonomyNodeList.add(taxonomyNode);
 
 					if (warehouses.getDivisions().get(i).getContainers().getTaxonomies().get(j).getChild())
@@ -223,11 +278,11 @@ public class RacksMenuActivity extends Activity {
 		warehouseRoots = new ArrayList<RacksListData>();
         containerTaxonomyNodes = new ArrayList<ArrayList<RacksListData>>();
 
-    	for (int i = 0; i < selectContainer.getList().size(); i++) {
+    	for (int i = 0; i < selectContainerTaxonomy.getList().size(); i++) {
 			RacksListData warehouseDivisionMap = new RacksListData();
-			warehouseDivisionMap.setName(selectContainer.getList().get(i).getName());
-			warehouseDivisionMap.setId("" + selectContainer.getList().get(i).getId());
-			warehouseDivisionMap.setPermalink(selectContainer.getList().get(i).getPermalink());
+			warehouseDivisionMap.setName(selectContainerTaxonomy.getList().get(i).getName());
+			warehouseDivisionMap.setId("" + selectContainerTaxonomy.getList().get(i).getId());
+			warehouseDivisionMap.setPermalink(selectContainerTaxonomy.getList().get(i).getPermalink());
 
 			ArrayList<RacksListData> taxonomyNodeList = new ArrayList<RacksListData>();
 

@@ -3,15 +3,24 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical" >
-    
-    <TextView 
-        android:id="@+id/racks_select"
+
+    <TextView
+        android:id="@+id/racks_root"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="@color/white"
         android:textSize="22dp"
-        android:textStyle="bold"
         android:layout_marginLeft="10dp" />
+
+    <TextView
+        android:id="@+id/racks_select"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/black"
+        android:background="@color/lightblue"
+        android:textSize="22dp"
+        android:textStyle="bold"
+        android:paddingLeft="10dp" />
 
     <ExpandableListView
         android:id="@+id/racks_root_list"

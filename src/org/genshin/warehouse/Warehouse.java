@@ -23,19 +23,25 @@ public class Warehouse {
 	//Result codes from other Activities
 	public static enum ResultCodes { NORMAL, SCAN, SETTINGS, PRODUCT_SELECT,
 			PRODUCT_LIST, CONTAINER_SELECT, UPDATE_PRODUCT_BARCODE, STOCK_PRODUCT, ADD_PRODUCT};
-	
+
 	private static Context ctx;
 	private static SpreeConnector spree;
-	
+
 	private static ContainerTaxon container;
 	private static VisualCode code;
 
 	private static Products products;
 	private static Orders orders;
 	private static Profiles profiles;
-	
+
 	private static WarehouseDivisions warehouses;
-	
+
+	// 入荷の時に使用
+	private static Product selectProduct = new Product();
+	private static String selectContainerName = "";
+	private static String selectContainerId = "";
+	private static String selectContainerPermalink = "";
+
 	public Warehouse(Context homeContext) {
 		Warehouse.ctx = homeContext;
 		Warehouse.container = null;
@@ -43,15 +49,15 @@ public class Warehouse {
 		products = new Products(homeContext);
 		orders = new Orders(homeContext);
 	}
-	
+
 	public static SpreeConnector Spree() {
 		return spree;
 	}
-	
+
 	public static Products Products() {
 		return Warehouse.products;
 	}
-	
+
 	public static Orders Orders() {
 		return Warehouse.orders;
 	}
@@ -62,40 +68,66 @@ public class Warehouse {
 
 		return profiles;
 	}
-	
+
 	public static WarehouseDivisions Warehouses() {
 		if (Warehouse.warehouses == null)
 			Warehouse.warehouses = new WarehouseDivisions();
-		
+
 		return Warehouse.warehouses;
 	}
-	
+
 	public static void setContext(Context newContext) {
 		Warehouse.ctx = newContext;
 		spree = new SpreeConnector(Warehouse.ctx);
 	}
-	
+
 	public static Context getContext() {
 		return Warehouse.ctx;
 	}
-	
+
 	public static String getLocalDateString(Date date) {
 		return DateFormat.getDateFormat(ctx).format(date);
 	}
-	
+
 	public static void setContainer(ContainerTaxon container) {
 		Warehouse.container = container;
 	}
-	
+
 	public static ContainerTaxon getContainer() {
 		return Warehouse.container;
 	}
-	
+
 	public static void setVisualCode(VisualCode code) {
 		Warehouse.code = code;
 	}
-	
+
 	public static VisualCode getVisualCode() {
 		return Warehouse.code;
+	}
+
+	public static Product getSelectProduct() {
+		return Warehouse.selectProduct;
+	}
+	public static void setSelectProduct(Product product) {
+		Warehouse.selectProduct =product;
+	}
+
+	public static String getSelectContainerName() {
+		return Warehouse.selectContainerName;
+	}
+	public static void setSelectContainerName(String name) {
+		Warehouse.selectContainerName = name;
+	}
+	public static String getSelectContainerId() {
+		return Warehouse.selectContainerId;
+	}
+	public static void setSelectContainerId(String id) {
+		Warehouse.selectContainerId = id;
+	}
+	public static String getSelectContainerPermalink() {
+		return Warehouse.selectContainerPermalink;
+	}
+	public static void setSelectContainerPermalink(String permalink) {
+		Warehouse.selectContainerName = permalink;
 	}
 }

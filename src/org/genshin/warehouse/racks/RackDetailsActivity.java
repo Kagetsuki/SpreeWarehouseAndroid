@@ -14,19 +14,23 @@ import android.view.KeyEvent;
 import android.widget.TextView;
 
 public class RackDetailsActivity extends Activity {
+	private TextView rootName;
 	private TextView rackName;
 
 	private Intent intent;
 	private int mode;
 
 	private void hookupInterface() {
-		rackName = (TextView) findViewById(R.id.rack_name);
+		rootName = (TextView) findViewById(R.id.rack_root);
+		rackName = (TextView) findViewById(R.id.rack_select);
 
 		mode = Warehouse.ResultCodes.NORMAL.ordinal();
 
 		intent = getIntent();
 		String modeString = intent.getStringExtra("MODE");
-		String name = intent.getStringExtra("SELECT_NAME");
+		String name = intent.getStringExtra("GROUP_NAME");
+		rootName.setText(name);
+		name = intent.getStringExtra("CHILD_NAME");
 		rackName.setText(name);
 
 		// 別の場所からコンテナを選択する時

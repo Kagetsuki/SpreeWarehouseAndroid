@@ -95,8 +95,7 @@ public class ProductsMenuActivity extends Activity {
 		sadapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item);
 	    sadapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 	    // アイテムを追加します
-	    sadapter.add(getString(R.string.no_select));
-	    sadapter.add(getString(R.string.return_default));
+	    sadapter.add(getString(R.string.none));
 	    sadapter.add(getString(R.string.name));
 	    sadapter.add(getString(R.string.price));
 	    sadapter.add(getString(R.string.stock));
@@ -109,21 +108,17 @@ public class ProductsMenuActivity extends Activity {
                 Spinner spinner = (Spinner) parent;
                 //String item = (String) spinner.getSelectedItem();
                 switch(position) {
-                	case 0:		// 未選択
+                	case 0:		// なし
                 		break;
-                	case 1:		// 初期状態に戻す
-                		new NewProductsRefresh(view.getContext(), 10).execute();
-                		clearImage();
-                		break;
-                	case 2:		// 名前順
+                	case 1:		// 名前順
 						sortName();
 						clearImage();
                 		break;
-	                case 3:		// 値段順
+	                case 2:		// 値段順
 	                	sortPrice();
 	                	clearImage();
 	                	break;
-	                case 4:		// 在庫数順
+	                case 3:		// 在庫数順
 	                	sortCountOnHand();
 	                	clearImage();
 	                	break;
@@ -178,7 +173,7 @@ public class ProductsMenuActivity extends Activity {
 				mode = Warehouse.ResultCodes.ADD_PRODUCT.ordinal();
 				Toast.makeText(this, getString(R.string.select_a_product), Toast.LENGTH_LONG).show();
 			}
-		} else if (Warehouse.Products().getList().size() == 0)
+		} else
 			new NewProductsRefresh(this, 10).execute();
 	}
 
