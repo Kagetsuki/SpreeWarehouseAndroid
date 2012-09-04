@@ -149,6 +149,8 @@
 	<string name="stock_number">Number of stock?</string>
 	<string name="name">Name</string>
 	<string name="register_this_container">Register this container?</string>
+	<string name="stock_this_product">Stocking this product?</string>
+	<string name="stock_done">Stock in</string>
 
 	<string name="new_product_add">Add Product</string>
 	<string name="add">Add</string>

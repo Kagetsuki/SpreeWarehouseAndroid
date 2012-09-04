@@ -160,18 +160,27 @@ public class ProductsMenuActivity extends Activity {
 		mode = Warehouse.ResultCodes.NORMAL.ordinal();
 		String modeString = intent.getStringExtra("MODE");
 		if (modeString != null) {
+			//
 			if (modeString.equals("PRODUCT_SELECT")) {
 				mode = Warehouse.ResultCodes.PRODUCT_SELECT.ordinal();
 				refreshProductMenu();
 				Toast.makeText(this, getString(R.string.select_a_product), Toast.LENGTH_LONG).show();
+			//
 			} else if (modeString.equals("PRODUCT_LIST")) {
 				refreshProductMenu();
+			// バーコード登録（更新）
 			} else if (modeString.equals("UPDATE_PRODUCT_BARCODE")) {
 				mode = Warehouse.ResultCodes.UPDATE_PRODUCT_BARCODE.ordinal();
 				Toast.makeText(this, getString(R.string.select_a_product), Toast.LENGTH_LONG).show();
+			//
 			} else if (modeString.equals("ADD_PRODUCT")) {
 				mode = Warehouse.ResultCodes.ADD_PRODUCT.ordinal();
 				Toast.makeText(this, getString(R.string.select_a_product), Toast.LENGTH_LONG).show();
+			// 商品入荷
+			} else if (modeString.equals("STOCK_PRODUCT")) {
+				mode = Warehouse.ResultCodes.STOCK_PRODUCT.ordinal();
+				Toast.makeText(this, getString(R.string.select_a_product), Toast.LENGTH_LONG).show();
+				new NewProductsRefresh(this, 10).execute();
 			}
 		} else
 			new NewProductsRefresh(this, 10).execute();
@@ -223,7 +232,8 @@ public class ProductsMenuActivity extends Activity {
     public boolean onCreateOptionsMenu(Menu menu) {
 		Resources res = getResources();
         // メニューアイテムを追加する
-        menu.add(Menu.NONE, menuCodes.registerProduct.ordinal(), Menu.NONE, res.getString(R.string.register_product));
+        menu.add
+        	(Menu.NONE, menuCodes.registerProduct.ordinal(), Menu.NONE, res.getString(R.string.register_product));
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -232,6 +242,7 @@ public class ProductsMenuActivity extends Activity {
     public boolean onOptionsItemSelected(MenuItem item) {
 		int id = item.getItemId();
 
+		// 新規商品登録
 		if (id == menuCodes.registerProduct.ordinal()) {
 			Intent intent = new Intent(this, ProductEditActivity.class);
 			intent.putExtra("IS_NEW", true);
@@ -251,7 +262,7 @@ public class ProductsMenuActivity extends Activity {
 			Product p = Warehouse.Products().getList().get(i);
 			Drawable thumb = null;
 			if (p.getThumbnail() != null)
-				thumb = p.getThumbnail().data;
+				thumb = p.getThumbnail().getData();
 
 			productListItems[i] = new ProductListItem(thumb, p.getName(),
 									p.getSku(), p.getCountOnHand(), p.getPermalink(), p.getPrice(), p.getId());
@@ -278,8 +289,8 @@ public class ProductsMenuActivity extends Activity {
 			String barcodeString = intent.getStringExtra("BARCODE");
 			productDetailsIntent.putExtra("MODE", modeString);
 			productDetailsIntent.putExtra("BARCODE", barcodeString);
-		//} else if (selectMode == Warehouse.ResultCodes.STOCK_PRODUCT.ordinal()) {
-		//	productDetailsIntent.putExtra("MODE", "STOCK_PRODUCT");
+		} else if (selectMode == Warehouse.ResultCodes.STOCK_PRODUCT.ordinal()) {
+			productDetailsIntent.putExtra("MODE", "STOCK_PRODUCT");
 		} else if (mode == Warehouse.ResultCodes.ADD_PRODUCT.ordinal()) {
 			String modeString = intent.getStringExtra("MODE");
 			productDetailsIntent.putExtra("MODE", modeString);

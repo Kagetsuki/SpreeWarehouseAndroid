@@ -142,6 +142,8 @@
 	<string name="stock_number">いくつ入荷しますか？</string>
 	<string name="name">名前</string>
 	<string name="register_this_container">このコンテナに登録しますか？</string>
+	<string name="stock_this_product">この商品を入荷しますか？</string>
+	<string name="stock_done">入荷しました</string>
 
 	<string name="new_product_add">商品追加</string>
 	<string name="add">追加</string>

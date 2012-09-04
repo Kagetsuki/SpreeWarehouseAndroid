@@ -10,6 +10,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.widget.TextView;
 
@@ -20,7 +21,12 @@ public class RackDetailsActivity extends Activity {
 	private Intent intent;
 	private int mode;
 
+	private ContainerTaxon selectContainer;
+
 	private void hookupInterface() {
+		// 選択したRackのデータを取得
+		selectContainer = Warehouse.getSelectContainer();
+
 		rootName = (TextView) findViewById(R.id.rack_root);
 		rackName = (TextView) findViewById(R.id.rack_select);
 
@@ -37,7 +43,7 @@ public class RackDetailsActivity extends Activity {
 		if (modeString != null) {
 		    if (modeString.equals("CONTAINER_SELECT")) {
 		    	mode = Warehouse.ResultCodes.CONTAINER_SELECT.ordinal();
-		    	containerSelect(name);
+		    	containerSelect();
 		    }
 		}
 	}
@@ -53,15 +59,16 @@ public class RackDetailsActivity extends Activity {
 	}
 
 	// 別の場所からコンテナを選択する時
-	public void containerSelect(String selectName) {
-		final String name = selectName;
+	public void containerSelect() {
 
 		AlertDialog.Builder question = new AlertDialog.Builder(this);
 		question.setTitle(getString(R.string.register_this_container));
 		question.setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface arg0, int arg1) {
+				// パスだけ入ってないのでセット
+				String path = rootName.getText() + " / " + rackName.getText();
+				Warehouse.getSelectContainer().setFullPath(path);
 				Intent intent = new Intent(getApplicationContext(), StockingMenuActivity.class);
-				intent.putExtra("CONTAINER_NAME", name);
 				startActivity(intent);
 			}
 		});

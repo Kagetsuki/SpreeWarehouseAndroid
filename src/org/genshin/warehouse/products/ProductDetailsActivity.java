@@ -8,11 +8,13 @@ import org.genshin.gsa.ScanSystem;
 import org.genshin.gsa.network.NetworkTask;
 import org.genshin.spree.SpreeConnector;
 import org.genshin.warehouse.R;
+import org.genshin.warehouse.Warehouse;
 import org.genshin.warehouse.WarehouseActivity;
 import org.genshin.warehouse.Warehouse.ResultCodes;
 import org.genshin.warehouse.orders.EditProductActivity;
 import org.genshin.warehouse.products.ProductEditActivity;
 import org.genshin.warehouse.stocking.StockingMenuActivity;
+import org.genshin.warehouse.stocking.StockingRepetitiveScanner;
 
 
 import android.app.Activity;
@@ -78,7 +80,7 @@ public class ProductDetailsActivity extends Activity {
         if (product.getImages().size() == 0)
         	imageSwitcher.setImageResource(R.drawable.spree);
         else
-        	imageSwitcher.setImageDrawable(product.getImages().get(0).data);
+        	imageSwitcher.setImageDrawable(product.getImages().get(0).getData());
 
         Intent intent = getIntent();
         modeString = intent.getStringExtra("MODE");
@@ -116,30 +118,23 @@ public class ProductDetailsActivity extends Activity {
 					}
 				});
 				question.show();
-			/*
 			// 商品入荷
 	        } else if (modeString.equals("STOCK_PRODUCT")) {
 	        	AlertDialog.Builder question = new AlertDialog.Builder(this);
-	        	final EditText edit = new EditText(this);
-				question.setTitle(getString(R.string.stock_number));
-				question.setView(edit);
-				question.setPositiveButton(getString(R.string.stock),
-										new DialogInterface.OnClickListener() {
+				question.setTitle(getString(R.string.stock_this_product));
+				question.setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface arg0, int arg1) {
-						String count = edit.getText().toString();
-						int tmp = Integer.parseInt(count);
-						int totalCount = tmp + product.countOnHand;
-						new registrationNewData(getApplicationContext(), totalCount).execute();
+						Warehouse.setSelectProduct(product);
+						Intent intent = new Intent(getApplicationContext(), StockingMenuActivity.class);
+						startActivity(intent);
 					}
 				});
-				question.setNegativeButton(getString(R.string.cancel),
-										new DialogInterface.OnClickListener() {
+				question.setNegativeButton(getString(R.string.no), new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface arg0, int arg1) {
 						finish();
 					}
 				});
 				question.show();
-			*/
 	        }
         }
 	}
@@ -207,9 +202,13 @@ public class ProductDetailsActivity extends Activity {
         }*/
 		int id = item.getItemId();
 
-		if (id == menuCodes.registerVisualCode.ordinal()) {
+		if (id == menuCodes.stock.ordinal()) {
+			Warehouse.setSelectProduct(product);
+			Intent intent = new Intent(this, StockingMenuActivity.class);
+			intent.putExtra("MODE", "STOCK_PRODUCT");
+			startActivity(intent);
+		} else if (id == menuCodes.registerVisualCode.ordinal()) {
 			ScanSystem.initiateScan(this);
-
 			return true;
 		} else if (id == menuCodes.editProductDetails.ordinal()) {
 			Intent intent = new Intent(this, ProductEditActivity.class);

@@ -12,6 +12,7 @@ public class ContainerTaxon {
 	private String updatedAt; //TODO make this a date
 	private String warehouse;
 	private ContainerTaxon root;
+	private String fullPath;
 
 	// コンストラクタ
 	public ContainerTaxon() {
@@ -21,6 +22,7 @@ public class ContainerTaxon {
 		this.updatedAt = "";
 		this.warehouse = "";
 		this.root = null;
+		this.fullPath = "";
 	}
 
 	// コンストラクタ　JSONObjectを格納
@@ -56,16 +58,32 @@ public class ContainerTaxon {
 		Log.d("container", "container added!");
 	}
 
-	// 各種ゲッター
+	// 各種ゲッター、セッター
 	public int getId() {
 		return this.id;
+	}
+	public void setId(int id) {
+		this.id = id;
 	}
 
 	public String getName() {
 		return this.name;
 	}
+	public void setName(String name) {
+		this.name = name;
+	}
 
 	public String getPermalink() {
 		return this.permalink;
+	}
+	public void setPermalink(String permalink) {
+		this.permalink = permalink;
+	}
+
+	public String getFullPath() {
+		return this.fullPath;
+	}
+	public void setFullPath(String path) {
+		this.fullPath = path;
 	}
 }

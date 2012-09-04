@@ -45,6 +45,7 @@ public class Product {
 		this.description = "";
 		this.permalink = "";
 		this.visualCode = "";
+		this.variants = new ArrayList<Variant>();
 	}
 
 	// コンストラクタ
@@ -59,11 +60,13 @@ public class Product {
 		this.countOnHand = countOnHand;
 		this.description = description;
 		this.permalink = permalink;
+		this.variants = new ArrayList<Variant>();
 	}
 
 	// コンストラクタ　JSONObjectを格納
 	public Product(JSONObject productJSON) {
 		init();
+		this.variants = new ArrayList<Variant>();
 
 		parseProductJSON(productJSON);
 
@@ -109,7 +112,7 @@ public class Product {
 	public void addVariant(int id, String name, int countOnHand, // basics
 			String visualCode, String sku, double price, // extended identifying information
 			double weight, double height, double width, double depth, //physical specifications
-			Boolean isMaster, double costPrice,	String permalink) { // extended data information
+			Boolean isMaster, double costPrice,	String permalink) { // extended data informationß
 		variants.add(new Variant(id, name, countOnHand, visualCode, sku,
 										price, weight, height, width, depth, isMaster, costPrice, permalink));
 
@@ -124,7 +127,7 @@ public class Product {
 	private void obtainThumbnail() {
 		if (images.size() > 0) {
 			this.thumbnail = images.get(0);
-			this.thumbnail.name = this.thumbnail.name;
+			this.thumbnail.setName(this.thumbnail.getName());
 			this.thumbnail = getThumbnailData(this.thumbnail);
 		} else
 			this.thumbnail = null;
@@ -146,12 +149,12 @@ public class Product {
 
 	// サムネイル格納
 	private SpreeImageData getThumbnailData(SpreeImageData image) {
-		String path = "spree/products/" + image.id + "/small/" + image.name;
+		String path = "spree/products/" + image.getId() + "/small/" + image.getName();
 
 		InputStream is = Warehouse.Spree().connector.getStream(path);
 		if (is != null) {
-			Drawable imageData = Drawable.createFromStream(is, image.name);
-			image.data = imageData;
+			Drawable imageData = Drawable.createFromStream(is, image.getName());
+			image.setData(imageData);
 		}
 
 		return image;
@@ -159,12 +162,12 @@ public class Product {
 
 	// イメージ画像パス格納
 	private SpreeImageData getImageData(SpreeImageData image) {
-		String path = "spree/products/" + image.id + "/product/" + image.name;
+		String path = "spree/products/" + image.getId() + "/product/" + image.getName();
 
 		InputStream is = Warehouse.Spree().connector.getStream(path);
 		if (is != null) {
-			Drawable imageData = Drawable.createFromStream(is, image.name);
-			image.data = imageData;
+			Drawable imageData = Drawable.createFromStream(is, image.getName());
+			image.setData (imageData);
 		}
 
 		return image;
@@ -238,28 +241,28 @@ public class Product {
 		try {
 			weight = v.getDouble("weight");
 		} catch (JSONException e) {
-			weight = this.variant().getWeight();
+			//weight = this.variant().getWeight();
 		}
 
 		double height = 0.0;
 		try {
 			height = v.getDouble("height");
 		} catch (JSONException e) {
-			height = this.variant().getHeight();
+			//height = this.variant().getHeight();
 		}
 
 		double width = 0.0;
 		try {
 			width = v.getDouble("width");
 		} catch (JSONException e) {
-			width = this.variant().getWidth();
+			//width = this.variant().getWidth();
 		}
 
 		double depth = 0.0;
 		try {
 			depth = v.getDouble("depth");
 		} catch (JSONException e) {
-			depth = this.variant().getDepth();
+			//depth = this.variant().getDepth();
 		}
 
 		double costPrice = 0.0;
@@ -275,6 +278,7 @@ public class Product {
 		} catch (JSONException e) {
 
 		}
+
 		addVariant(id, name, countOnHand,
 			visualCode,	sku, price,
 			weight, height, width, depth,
@@ -292,7 +296,6 @@ public class Product {
 			e.printStackTrace();
 		}
 
-
 		//Log.d("VARIANTS", "Length: " + variantArray.length());
 
 		// get master first
@@ -308,11 +311,11 @@ public class Product {
 
 			boolean isMaster = false;
 			try {
+				v = v.getJSONObject("variant");
 				isMaster = v.getBoolean("is_master");
 			} catch (JSONException e) {
 				isMaster = false;
 			}
-
 			if (isMaster) {
 				processVariantJSON(v);
 				break;

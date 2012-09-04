@@ -38,9 +38,7 @@ public class Warehouse {
 
 	// 入荷の時に使用
 	private static Product selectProduct = new Product();
-	private static String selectContainerName = "";
-	private static String selectContainerId = "";
-	private static String selectContainerPermalink = "";
+	private static ContainerTaxon selectContainer = new ContainerTaxon();
 
 	public Warehouse(Context homeContext) {
 		Warehouse.ctx = homeContext;
@@ -112,22 +110,10 @@ public class Warehouse {
 		Warehouse.selectProduct =product;
 	}
 
-	public static String getSelectContainerName() {
-		return Warehouse.selectContainerName;
+	public static ContainerTaxon getSelectContainer() {
+		return Warehouse.selectContainer;
 	}
-	public static void setSelectContainerName(String name) {
-		Warehouse.selectContainerName = name;
-	}
-	public static String getSelectContainerId() {
-		return Warehouse.selectContainerId;
-	}
-	public static void setSelectContainerId(String id) {
-		Warehouse.selectContainerId = id;
-	}
-	public static String getSelectContainerPermalink() {
-		return Warehouse.selectContainerPermalink;
-	}
-	public static void setSelectContainerPermalink(String permalink) {
-		Warehouse.selectContainerName = permalink;
+	public static void setSelectContainer(ContainerTaxon container) {
+		Warehouse.selectContainer = container;
 	}
 }

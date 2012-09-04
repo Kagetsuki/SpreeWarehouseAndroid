@@ -34,12 +34,13 @@ public class RacksMenuActivity extends Activity {
 
     private Intent intent;
     private TextView rootRack;
-    private TextView selectRack;
+    private TextView currentRack;
 
     private static int mode;
-    private String groupName;
-    private String groupId;
-    private String childId;
+    private String rootName;
+    private String rootId;
+    private String currentName;
+    private String currentId;
 
 	private WarehouseDivisions warehouses;
     private ArrayList<RacksListData> warehouseRoots;
@@ -49,46 +50,52 @@ public class RacksMenuActivity extends Activity {
 
 	private void hookupInterface() {
 		intent = getIntent();
-		mode = Warehouse.ResultCodes.NORMAL.ordinal();
+		// モード取得
 		final String modeString = intent.getStringExtra("MODE");
+		// 一度拡張した後かどうか
 		final String expand = intent.getStringExtra("EXPAND");
-		String selectName = null;
 
 		// モード判別
 		if (modeString != null) {
+			// 入荷画面からコンテナを選択しにきたかどうか
 			if (modeString.equals("CONTAINER_SELECT"))
 				mode = Warehouse.ResultCodes.CONTAINER_SELECT.ordinal();
+			else
+				mode = Warehouse.ResultCodes.NORMAL.ordinal();
 		} else
 			mode = Warehouse.ResultCodes.NORMAL.ordinal();
 
 		racksRootList = (ExpandableListView) findViewById(R.id.racks_root_list);
 		rootRack = (TextView) findViewById(R.id.racks_root);
 
-		selectRack = (TextView) findViewById(R.id.racks_select);
-		// 表示判別
+		currentRack = (TextView) findViewById(R.id.racks_select);
+		// 一度拡張した後かどうか
 		if (expand != null) {
 			if (expand.equals("MORE")) {
-				groupName = intent.getStringExtra("GROUP_NAME");
-				groupId = intent.getStringExtra("GROUP_ID");
-				rootRack.setText(groupName);
-				selectName = intent.getStringExtra("CHILD_NAME");
-				childId = intent.getStringExtra("CHILD_ID");
-				selectRack.setText(selectName);
+				// 親コンテナ名、現在表示中のコンテナ名の取得
+				rootName = intent.getStringExtra("GROUP_NAME");
+				rootRack.setText(rootName);
+				currentName = intent.getStringExtra("CHILD_NAME");
+				currentRack.setText(currentName);
+				currentId = intent.getStringExtra("CHILD_ID");
 			}
 		} else {
-			childId = null;
 			rootRack.setText("/");
+			// ルートを表示している時は現在表示中のコンテナのTextViewを非表示にする
+			currentRack.setVisibility(View.INVISIBLE);
 		}
-		selectRack.setOnClickListener(new OnClickListener() {
+		currentRack.setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
-				// コンテナ選択の時のみ動作
-				if (mode == Warehouse.ResultCodes.CONTAINER_SELECT.ordinal()) {
+				// 入荷画面からコンテナを選択しにきた時のみ動作
+				if (mode == Warehouse.ResultCodes.CONTAINER_SELECT.ordinal() && expand != null) {
 					AlertDialog.Builder dialog = new AlertDialog.Builder(Warehouse.getContext());
-					dialog.setTitle(getString(R.string.select_container));
+					dialog.setTitle(currentRack.getText() + getString(R.string.select_container));
 					dialog.setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
 						public void onClick(DialogInterface arg0, int arg1) {
+							// currentRackの場合はすでにWarehouseに格納されている。パスだけ格納
+							String path = rootRack.getText() + " / " + currentRack.getText();
+							Warehouse.getSelectContainer().setFullPath(path);
 							Intent intent = new Intent(getApplicationContext(), StockingMenuActivity.class);
-
 							startActivity(intent);
 						}
 					});
@@ -103,7 +110,7 @@ public class RacksMenuActivity extends Activity {
 
 		// 一度拡張した後かどうか（Rootでない）
 		if (expand != null) {
-			new showExpandRacksMenu(this, childId).execute();
+			new showExpandRacksMenu(this, currentId).execute();
 		} else
 			new showRacksMenuList(this).execute();
 
@@ -112,17 +119,19 @@ public class RacksMenuActivity extends Activity {
 			public boolean onChildClick(ExpandableListView parent, View v,
 					int groupPosition, int childPosition, long id) {
 
+				// 必要なデータ取得
 				RacksMenuAdapter adapter = (RacksMenuAdapter)parent.getExpandableListAdapter();
 				String groupName = adapter.getGroup(groupPosition).getName();
-				String groupId = adapter.getGroup(groupPosition).getId();
 				String childId = adapter.getChild(groupPosition, childPosition).getId();
 				String childName = adapter.getChild(groupPosition, childPosition).getName();
+				String childPermalink = adapter.getChild(groupPosition, childPosition).getPermalink();
 
-				if (mode == Warehouse.ResultCodes.CONTAINER_SELECT.ordinal()) {
-					Warehouse.setSelectContainerName(adapter.getGroup(groupPosition).getName());
-					Warehouse.setSelectContainerId(adapter.getGroup(groupPosition).getId());
-					Warehouse.setSelectContainerPermalink(adapter.getGroup(groupPosition).getPermalink());
-				}
+				// 入荷画面からコンテナ選択にきた場合にも詳細表示にも必要。Warehouseに格納しておく
+				ContainerTaxon containerData = new ContainerTaxon();
+				containerData.setName(childName);
+				containerData.setId(Integer.parseInt(childId));
+				containerData.setPermalink(childPermalink);
+				Warehouse.setSelectContainer(containerData);
 
 				// 下の階層に移動か詳細に移動か
 				if (adapter.getChild(groupPosition, childPosition).getIcon()) {
@@ -131,12 +140,12 @@ public class RacksMenuActivity extends Activity {
 				} else
 					intent = new Intent(getApplicationContext(), RackDetailsActivity.class);
 
+				// 次の表示用に格納
 				intent.putExtra("GROUP_NAME", groupName);
-				intent.putExtra("GROUP_ID", groupId);
 				intent.putExtra("CHILD_NAME", childName);
 				intent.putExtra("CHILD_ID", childId);
 
-				// 別画面からコンテナ選択に来た場合
+				// 入荷画面からコンテナ選択に来た場合
 				if (mode == Warehouse.ResultCodes.CONTAINER_SELECT.ordinal())
 					intent.putExtra("MODE", "CONTAINER_SELECT");
 
@@ -152,22 +161,27 @@ public class RacksMenuActivity extends Activity {
 													int groupPosition, long id) {
 				if (adapter.getChild(groupPosition, 0).getId() == null) {
 					// 子要素が空の場合の処理
-					//String childId = adapter.getGroup(groupPosition).getId();
-					String childId = "0";
+					String childId = adapter.getGroup(groupPosition).getId();
 					String childName = adapter.getGroup(groupPosition).getName();
-					String gName = groupName + " / " + selectRack.getText();
+					String childPermalink = adapter.getGroup(groupPosition).getPermalink();
+					String gName = rootName + " / " + currentRack.getText();
 					intent = new Intent(getApplicationContext(), RackDetailsActivity.class);
+					// 更に親要素の名前。親要素がない場合はRootなので/を入れる
 					if (expand.equals("MORE")) {
 						intent.putExtra("GROUP_NAME", gName);
-						intent.putExtra("GROUP_ID", "");
 					} else	{
 						intent.putExtra("GROUP_NAME", "/");
-						intent.putExtra("GROUP_ID", "");
 					}
 					intent.putExtra("CHILD_NAME", childName);
-					intent.putExtra("CHILD_ID", childId);
 
-					// 別画面からコンテナ選択に来た場合
+					// 子要素がない場合はWarehouseに選択したコンテナデータを格納しておく
+					ContainerTaxon containerData = new ContainerTaxon();
+					containerData.setName(childName);
+					containerData.setId(Integer.parseInt(childId));
+					containerData.setPermalink(childPermalink);
+					Warehouse.setSelectContainer(containerData);
+
+					// 入荷画面からコンテナ選択に来た場合
 					if (mode == Warehouse.ResultCodes.CONTAINER_SELECT.ordinal())
 						intent.putExtra("MODE", "CONTAINER_SELECT");
 
@@ -195,9 +209,8 @@ public class RacksMenuActivity extends Activity {
 		hookupInterface();
 	}
 
-	// コンテナ表示
+	// 最初のコンテナ表示
 	class showRacksMenuList extends NetworkTask {
-
 		public showRacksMenuList(Context ctx) {
 			super(ctx);
 		}
@@ -243,10 +256,11 @@ public class RacksMenuActivity extends Activity {
 
 		for (int i = 0; i < warehouses.getCount(); i++) {
 			RacksListData warehouseDivisionMap = new RacksListData();
+			// 親要素
 			warehouseDivisionMap.setName(warehouses.getDivisions().get(i).getName());
-			warehouseDivisionMap.setId("" + warehouses.getDivisions().get(i).getId());
 
 			ArrayList<RacksListData> taxonomyNodeList = new ArrayList<RacksListData>();
+			// 子要素が空の場合nullを挿入
 			if (warehouses.getDivisions().get(i).getContainers().size() == 0) {
 				RacksListData taxonomyNode = new RacksListData();
 				taxonomyNode.setGroup(null);
@@ -263,6 +277,7 @@ public class RacksMenuActivity extends Activity {
 									(warehouses.getDivisions().get(i).getContainers().get(j).getPermalink());
 					taxonomyNodeList.add(taxonomyNode);
 
+					// 更に子要素があるかないかで表示アイコンが変化
 					if (warehouses.getDivisions().get(i).getContainers().getTaxonomies().get(j).getChild())
 						taxonomyNode.setIcon(true);
 				}
@@ -280,6 +295,7 @@ public class RacksMenuActivity extends Activity {
 
     	for (int i = 0; i < selectContainerTaxonomy.getList().size(); i++) {
 			RacksListData warehouseDivisionMap = new RacksListData();
+			// 親要素
 			warehouseDivisionMap.setName(selectContainerTaxonomy.getList().get(i).getName());
 			warehouseDivisionMap.setId("" + selectContainerTaxonomy.getList().get(i).getId());
 			warehouseDivisionMap.setPermalink(selectContainerTaxonomy.getList().get(i).getPermalink());

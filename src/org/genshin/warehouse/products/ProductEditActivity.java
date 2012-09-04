@@ -82,7 +82,7 @@ public class ProductEditActivity extends Activity {
         if (product.getImages().size() == 0)
         	imageSwitcher.setImageResource(R.drawable.spree);
         else
-        	imageSwitcher.setImageDrawable(product.getImages().get(0).data);
+        	imageSwitcher.setImageDrawable(product.getImages().get(0).getData());
 
         saveButton = (Button) findViewById(R.id.save_button);
 		saveButton.setOnClickListener(new View.OnClickListener() {

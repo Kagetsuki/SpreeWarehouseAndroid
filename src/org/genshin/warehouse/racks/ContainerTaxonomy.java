@@ -62,6 +62,7 @@ public class ContainerTaxonomy {
 
 		if (rootJSON != null) {
 			try {
+				this.permalink = rootJSON.getString("permalink");
 				items = rootJSON.getJSONArray("container_taxons");
 			} catch (JSONException e) {
 				// TODO 自動生成された catch ブロック

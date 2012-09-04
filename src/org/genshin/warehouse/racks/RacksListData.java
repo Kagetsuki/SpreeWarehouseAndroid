@@ -1,5 +1,7 @@
 package org.genshin.warehouse.racks;
 
+import java.util.ArrayList;
+
 public class RacksListData {
 	private String name;
 	private String group;
@@ -7,6 +9,8 @@ public class RacksListData {
 	private String permalink;
 	// アイコン表示用
 	private boolean icon;
+	private ContainerTaxonomy containerTaxonomy;
+	private ContainerTaxon containerTaxon;
 
 	// コンストラクタ
 	public RacksListData() {
@@ -15,6 +19,8 @@ public class RacksListData {
 		this.id = null;
 		this.permalink = null;
 		this.icon = false;
+		this.containerTaxonomy = null;
+		this.containerTaxon = null;
 	}
 
 	// コンストラクタ
@@ -59,5 +65,19 @@ public class RacksListData {
 	}
 	public void setIcon(boolean icon) {
 		this.icon = icon;
+	}
+
+	public ContainerTaxonomy getContainerTaxonomy() {
+		return this.containerTaxonomy;
+	}
+	public void setContainerTaxonomy(ContainerTaxonomy containerTaxonomy) {
+		this.containerTaxonomy = containerTaxonomy;
+	}
+
+	public ContainerTaxon getContainerTaxon() {
+		return this.containerTaxon;
+	}
+	public void setContainerTaxon(ContainerTaxon containerTaxon) {
+		this.containerTaxon = containerTaxon;
 	}
 }
