@@ -25,6 +25,8 @@ public class Product {
 	private String visualCode;
 	private SpreeImageData thumbnail;
 	private ArrayList<SpreeImageData> images;
+	private ArrayList<String> smallImagePath;
+	private ArrayList<String> imagePath;
 	private int primaryVarientIndex;
 	private ArrayList<Variant> variants;
 
@@ -73,6 +75,7 @@ public class Product {
 		obtainImagesInfo(productJSON);
 		obtainVariants(productJSON);
 		obtainThumbnail();
+		setImagePath();
 	}
 
 	// JSONObjectを分解、格納
@@ -133,7 +136,7 @@ public class Product {
 			this.thumbnail = null;
 	}
 
-	// JSONObjectからimages、id格納
+	// JSONObjectからSpreeImageDataのファイル名、id格納
 	private void obtainImagesInfo(JSONObject productJSON) {
 		try {
 			JSONArray imageInfoArray = productJSON.getJSONArray("images");
@@ -147,11 +150,12 @@ public class Product {
 		}
 	}
 
-	// サムネイル格納
+	// 商品リストに表示されるため最初のサムネイルだけあらかじめ格納
 	private SpreeImageData getThumbnailData(SpreeImageData image) {
 		String path = "spree/products/" + image.getId() + "/small/" + image.getName();
 
 		InputStream is = Warehouse.Spree().connector.getStream(path);
+
 		if (is != null) {
 			Drawable imageData = Drawable.createFromStream(is, image.getName());
 			image.setData(imageData);
@@ -160,7 +164,30 @@ public class Product {
 		return image;
 	}
 
-	// イメージ画像パス格納
+	// とりあえず画像のパスだけ保存
+	private void setImagePath() {
+		String path;
+		smallImagePath = new ArrayList<String>();
+		imagePath = new ArrayList<String>();
+
+		for (int i = 0; i < images.size(); i++) {
+			path = "spree/products/" + images.get(i).getId() + "/small/" + images.get(i).getName();
+			smallImagePath.add(path);
+			path = "spree/products/" + images.get(i).getId() + "/product/" + images.get(i).getName();
+			imagePath.add(path);
+		}
+	}
+
+	// 画像格納　（処理が重くなるため現在未使用）
+	private void obtainImages(JSONObject productJSON) {
+		if (images.size() <= 0)
+			obtainImagesInfo(productJSON);
+
+		for (int i = 0; i < this.images.size(); i++)
+			getImageData(this.images.get(i));
+	}
+
+	// 画像格納　（処理が重くなるため現在未使用）
 	private SpreeImageData getImageData(SpreeImageData image) {
 		String path = "spree/products/" + image.getId() + "/product/" + image.getName();
 
@@ -171,17 +198,6 @@ public class Product {
 		}
 
 		return image;
-	}
-
-	//
-	private void obtainImages(JSONObject productJSON) {
-		if (images.size() <= 0) {
-			obtainImagesInfo(productJSON);
-		}
-
-		for (int i = 0; i < this.images.size(); i++) {
-					getImageData(this.images.get(i));
-		}
 	}
 
 	// JSONObjectを分解、格納
@@ -399,6 +415,14 @@ public class Product {
 
 	public ArrayList<SpreeImageData> getImages() {
 		return this.images;
+	}
+
+	public ArrayList<String> getSmallImagePath() {
+		return this.smallImagePath;
+	}
+
+	public ArrayList<String> getImagePath() {
+		return this.imagePath;
 	}
 
 	public int getPrimaryVarientIndex() {

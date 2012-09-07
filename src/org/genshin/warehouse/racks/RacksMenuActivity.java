@@ -82,7 +82,7 @@ public class RacksMenuActivity extends Activity {
 		} else {
 			rootRack.setText("/");
 			// ルートを表示している時は現在表示中のコンテナのTextViewを非表示にする
-			currentRack.setVisibility(View.INVISIBLE);
+			currentRack.setVisibility(View.GONE);
 		}
 		currentRack.setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {

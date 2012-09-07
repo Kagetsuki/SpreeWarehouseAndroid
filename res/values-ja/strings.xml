@@ -189,6 +189,8 @@
 	<string name="attention_complete">本当に完了にしますか？</string>
 	<string name="amount_owed">未払額：</string>
 
+	<string name="close">閉じる</string>
+
 	<string-array name="order_search">
 	    <item>カート</item>
 	    <item>住所</item>
