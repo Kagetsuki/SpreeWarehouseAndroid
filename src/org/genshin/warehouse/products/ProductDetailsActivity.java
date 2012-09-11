@@ -8,7 +8,6 @@ import org.apache.http.message.BasicNameValuePair;
 import org.genshin.gsa.ScanSystem;
 import org.genshin.gsa.network.NetworkTask;
 import org.genshin.spree.SpreeConnector;
-import org.genshin.spree.SpreeImageData;
 import org.genshin.warehouse.R;
 import org.genshin.warehouse.Warehouse;
 import org.genshin.warehouse.WarehouseActivity;
@@ -24,21 +23,16 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Matrix;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.Display;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
-import android.view.WindowManager;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageSwitcher;
 import android.widget.ImageView;
@@ -69,11 +63,10 @@ public class ProductDetailsActivity extends Activity {
 	private String barcodeString;
 
 	// サムネイル用
-	private ArrayList<Drawable> images;
+	private ArrayList<Drawable> images = null;
 	private LinearLayout gallery;
-	private int THUMBNAIL_SIZE = 48;
 	// 大きな画像用
-	private Drawable bigImage;
+	private Drawable bigImage = null;
 
 	private void initViewElements() {
 		//id = (TextView) findViewById(R.id.product_id);
@@ -323,29 +316,16 @@ public class ProductDetailsActivity extends Activity {
 
 	// 画像をViewにセット
 	private View insertImage(Drawable image, String mode){
-		Bitmap bm = null;
-		int width = 0;
-		int height = 0;
-		// サムネイルか大きい画像か
-		if (mode.equals("SMALL")) {
-			// 画像をリサイズ。THUMBNAIL_SIZEは設定サイズ
-			bm = resizeBitmap(image, THUMBNAIL_SIZE, THUMBNAIL_SIZE);
-		} else {
-			// 端末の解像度を取得
-			WindowManager wm = (WindowManager)Warehouse.getContext().getSystemService(Context.WINDOW_SERVICE);
-			Display display = wm.getDefaultDisplay();
-			DisplayMetrics metrics = new DisplayMetrics();
-			display.getMetrics(metrics);
-
-			// とりあえず画面の0.8倍くらいに…
-			width = (int)(metrics.xdpi * 0.8);
-			height = (int)(metrics.ydpi * 0.8);
-			bm = resizeBitmap(image, width, height);
-		}
+		Bitmap bm = Bitmap.createBitmap(((BitmapDrawable)image).getBitmap(),
+									0, 0, image.getIntrinsicWidth(), image.getIntrinsicHeight());
 
 		// 枠を少し大きめに作って
 		LinearLayout layout = new LinearLayout(getApplicationContext());
-		layout.setLayoutParams(new LayoutParams(bm.getWidth() + 10 , bm.getHeight() + 10));
+		// 正方形で表示するため、長い方に合わせる
+		if (bm.getWidth() > bm.getHeight())
+			layout.setLayoutParams(new LayoutParams(bm.getWidth() + 10 , bm.getWidth() + 10));
+		else
+			layout.setLayoutParams(new LayoutParams(bm.getHeight() + 10 , bm.getHeight() + 10));
 		layout.setGravity(Gravity.CENTER);
 
 		// 画像をセット
@@ -356,32 +336,6 @@ public class ProductDetailsActivity extends Activity {
 
 		layout.addView(imageView);
 		return layout;
-	}
-
-	// 画像をリサイズ
-	public Bitmap resizeBitmap(Drawable image, int reqWidth, int reqHeight) {
-		float resizeScaleH = 1;
-		float resizeScaleW = 1;
-		Matrix matrix = new Matrix();
-
-		// 実際の画像サイズと、設定サイズを元に縮尺値を設定
-		// 元の画像が設定サイズより大きい場合は縮小、小さい場合はそのまま
-		if (image.getIntrinsicHeight() > reqHeight || image.getIntrinsicWidth() > reqWidth) {
-			// 縦横の長さが違う場合、比率を合わせるためどちらか片方に合わせる
-			if (image.getIntrinsicWidth() < image.getIntrinsicHeight()) {
-				resizeScaleH = (float)reqHeight / (float)image.getIntrinsicHeight();
-				resizeScaleW = resizeScaleH;
-			} else {
-				resizeScaleW = (float)reqWidth / (float)image.getIntrinsicWidth();
-				resizeScaleH = resizeScaleW;
-			}
-		}
-		matrix.postScale(resizeScaleW, resizeScaleH);
-
-		Bitmap resizeBitmap = Bitmap.createBitmap(((BitmapDrawable)image).getBitmap(),
-									0, 0, image.getIntrinsicWidth(), image.getIntrinsicHeight(), matrix, true);
-
-		return resizeBitmap;
 	}
 
 	// 各画像（Drawable）を取得
@@ -402,7 +356,6 @@ public class ProductDetailsActivity extends Activity {
 				bigImage = Drawable.createFromStream(is, product.getImages().get(id).getName());
 			}
 		}
-
 	}
 
 	// 各画像（Drawable）を取得
@@ -432,6 +385,7 @@ public class ProductDetailsActivity extends Activity {
 					}
 				});
 			}
+			images = null;
 		}
 	}
 

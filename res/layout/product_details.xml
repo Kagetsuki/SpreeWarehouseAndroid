@@ -96,7 +96,7 @@
 		android:layout_below="@+id/product_image_switcher" >
 
 	<HorizontalScrollView
-		android:layout_width="match_parent"
+		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:layout_gravity="center" >
 
@@ -104,7 +104,6 @@
 			android:id="@+id/product_images"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:layout_gravity="center"
 			android:orientation="horizontal" />
 
 	</HorizontalScrollView>
