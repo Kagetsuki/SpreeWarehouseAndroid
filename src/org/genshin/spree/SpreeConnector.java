@@ -28,6 +28,15 @@ public class SpreeConnector extends NetworkTask{
 	public RESTConnector connector;
 	private Profile profile;
 
+	public SpreeConnector(Context ctx, Profile profile) {
+		super(ctx);
+		//set profile
+		this.profile = profile;
+		
+		connector = new RESTConnector(ctx);
+		connector.setup(profile.server, profile.port, profile.apiKey);
+	}
+	
 	public SpreeConnector(Context ctx) {
 		super(ctx);
 		//set profile
@@ -106,6 +115,10 @@ public class SpreeConnector extends NetworkTask{
 		// Something went wrong!
 		//Toast.makeText(ctx, "Server did not respond", Toast.LENGTH_LONG).show();
 		return null;
+	}
+	
+	public void testConnection() {
+		
 	}
 
 }

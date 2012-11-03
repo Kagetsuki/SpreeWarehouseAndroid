@@ -100,6 +100,10 @@
 	<string name="register">Register</string>
 	<string name="force_https">HTTPS?</string>
 	<string name="blank"></string>
+	<string name="new_profile_created">New Profile Created</string>
+	<string name="profile_updated">Profile Updated</string>
+	<string name="new_profile_ready">New Profile Ready</string>
+	<string name="profile_deleted">Profile Deleted</string>
 
 	<!-- alert content -->
 	<string name="unregistered_barcode_title">Unregistered Barcode</string>

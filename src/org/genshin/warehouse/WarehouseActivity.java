@@ -118,13 +118,13 @@ public class WarehouseActivity extends Activity {
 		protected void complete() {
 			connectionStatusIcon = (ImageView) findViewById(R.id.connection_status_icon);
 			if (connected) {
-				connectionStatusIcon.setImageResource(android.R.drawable.presence_away);
+				connectionStatusIcon.setImageResource(R.drawable.blue_tile);
 				if (status == "OK") {
-					connectionStatusIcon.setImageResource(android.R.drawable.presence_online);
-				} else if (status == "ERROR"){
-					connectionStatusIcon.setImageResource(android.R.drawable.presence_away);
-				} else {
-					connectionStatusIcon.setImageResource(android.R.drawable.presence_offline);
+					connectionStatusIcon.setImageResource(R.drawable.green_tile);
+				} else if (status == "Error"){
+					connectionStatusIcon.setImageResource(R.drawable.orange_tile);
+				} else if (status == "NotConnected") {
+					connectionStatusIcon.setImageResource(R.drawable.red_tile);
 				}
 			}
 		}

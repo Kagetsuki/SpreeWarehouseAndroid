@@ -12,16 +12,14 @@
 
         <Spinner
             android:id="@+id/warehouse_profile_spinner"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1" />
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
 
         <ImageView
             android:id="@+id/connection_status_icon"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_weight="0.73"
-            android:src="@android:drawable/presence_offline" />
+            android:src="@drawable/gray_tile" />
     </LinearLayout>
 
     <LinearLayout
@@ -36,7 +34,7 @@
         </ListView>
 
         <LinearLayout
-            android:layout_width="match_parent"
+            android:layout_width="0dip"
             android:layout_height="match_parent"
             android:layout_weight="0.13"
             android:orientation="vertical" >

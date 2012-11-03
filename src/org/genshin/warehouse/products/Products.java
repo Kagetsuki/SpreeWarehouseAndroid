@@ -20,14 +20,12 @@ public class Products {
 	private Context ctx;
 	private Product selected;
 	private ArrayList<Product> list;
-	private int count;
 
 	// コンストラクタ
 	public Products(Context ctx) {
 		this.ctx = ctx;
 		this.selected = null;
 		this.list = new ArrayList<Product>();
-		count = 0;
 	}
 
 	// ゲッター、セッター
@@ -41,7 +39,6 @@ public class Products {
 	// リストを初期化
 	public void clear() {
 		this.list = new ArrayList<Product>();
-		count = 0;
 	}
 
 	// JSONデータを取得
@@ -53,7 +50,7 @@ public class Products {
 
 		//Pick apart JSON object
 		try {
-			this.count = productContainer.getInt("count");
+			int count = productContainer.getInt("count");
 			JSONArray products = productContainer.getJSONArray("products");
 
 			for (int i = 0; i < products.length(); i++) {

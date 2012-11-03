@@ -97,7 +97,11 @@
 	<string name="no_profiles">プロフィールが登録されていません</string>
 	<string name="please_register_profile">一つ以上のプロフィールを登録して下さい</string>
 	<string name="register">登録</string>
-
+	<string name="new_profile_created">新規プロフィールが作成されました</string>
+	<string name="profile_updated">プロフィールが更新されました</string>
+	<string name="new_profile_ready">新規プロフィールの準備が出来ました</string>
+	<string name="profile_deleted">プロフィールが削除されました</string>
+	
 	<!-- alert content -->
 	<string name="unregistered_barcode_title">未登録バーコード</string>
 	<string name="unregistered_barcode_new_product">バーコードが未登録です。\n新規商品登録を行いますか?</string>

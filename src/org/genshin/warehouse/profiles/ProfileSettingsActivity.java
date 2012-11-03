@@ -1,7 +1,9 @@
 package org.genshin.warehouse.profiles;
 
 import org.genshin.gsa.network.NetworkTask;
+import org.genshin.spree.ConnectionStatus;
 import org.genshin.spree.RESTConnector;
+import org.genshin.spree.SpreeConnector;
 import org.genshin.warehouse.R;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -20,6 +22,7 @@ import android.widget.Toast;
 
 public class ProfileSettingsActivity extends Activity {
 	private int selectedProfile;
+	private Profile curProfile;
 	private Profiles profiles;
 	private Boolean creatingNew;
 	
@@ -149,7 +152,7 @@ public class ProfileSettingsActivity extends Activity {
 	}
 
 	private void selectProfile(int position) {
-		profiles.selectProfile(position);
+		curProfile = profiles.selectProfile(position);
 
         //insert values into fields for view/edit
         server.setText(profiles.selected.server);
@@ -169,10 +172,14 @@ public class ProfileSettingsActivity extends Activity {
 		server.setText("");
 		name.setText("");
 		apiKey.setText("");
+		curProfile = new Profile();
+		
+		Toast.makeText(this, getString(R.string.new_profile_ready), Toast.LENGTH_SHORT).show();
 	}
 	
 	private void createProfile() {
 		profiles.createProfile(server.getText().toString(), Long.parseLong(port.getText().toString()), name.getText().toString(), apiKey.getText().toString(), forceHTTPS.isChecked(), allowUnsigned.isChecked());
+		Toast.makeText(this, getString(R.string.new_profile_created), Toast.LENGTH_SHORT).show();
 		loadProfiles();
 	}
 	
@@ -192,6 +199,8 @@ public class ProfileSettingsActivity extends Activity {
 		//update!
 		profiles.updateProfile(updatedProfile);
 		
+		Toast.makeText(this, getString(R.string.profile_updated), Toast.LENGTH_SHORT).show();
+		
 		//reload profile list
 		loadProfiles();
 		
@@ -202,14 +211,18 @@ public class ProfileSettingsActivity extends Activity {
 	
 	private void deleteProfile() {
 		profiles.deleteSelectedProfile();
+		Toast.makeText(this, getString(R.string.profile_deleted), Toast.LENGTH_SHORT).show();
+
 		loadProfiles();
 	}
 
 	private void testProfile() {
-		RESTConnector connector = new RESTConnector(this);
-		connector.setup(server.getText().toString(), Integer.getInteger(port.getText().toString()), apiKey.getText().toString());
-		String result = connector.test();
+		//ConnectionStatus status = new ConnectionStatus(this);
+		//connector.setup(server.getText().toString(), Integer.getInteger(port.getText().toString()), apiKey.getText().toString());
+		//String result = connector.test();
 		//Toast.makeText(this, result, Toast.LENGTH_LONG).show();
+		Profile testProfile = new Profile(); 
+		ConnectionStatus connection = new ConnectionStatus(this, testProfile);
 	}
 	
 	public void onActivityResult(int requestCode, int resultCode, Intent intent) {
