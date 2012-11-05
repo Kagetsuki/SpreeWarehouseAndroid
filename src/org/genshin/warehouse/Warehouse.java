@@ -6,17 +6,12 @@ import org.genshin.warehouse.orders.Orders;
 import org.genshin.warehouse.products.Product;
 import org.genshin.warehouse.products.Products;
 import org.genshin.warehouse.profiles.Profiles;
+import org.genshin.warehouse.profiles.Profile;
 import org.genshin.warehouse.racks.ContainerTaxon;
-import org.genshin.warehouse.racks.WarehouseDivision;
 import org.genshin.warehouse.racks.WarehouseDivisions;
 
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.text.format.DateFormat;
-import android.util.Log;
-import android.view.MotionEvent;
-
-import java.util.ArrayList;
 import java.util.Date;
 
 public class Warehouse {
@@ -65,6 +60,10 @@ public class Warehouse {
 			Warehouse.profiles = new Profiles(ctx);
 
 		return profiles;
+	}
+	
+	public static Profile Profile() {
+		return Warehouse.Profiles().selected;
 	}
 
 	public static WarehouseDivisions Warehouses() {

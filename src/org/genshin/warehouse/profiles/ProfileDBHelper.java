@@ -96,7 +96,7 @@ public class ProfileDBHelper extends SQLiteOpenHelper {
 	//Update a profile
 	//The profile ID is held within the profile object
 	public void updateProfile(Profile profile) {
-		Log.d("ProfileDBHelper.updateProfile", "id: " + profile.id + " | name: " + profile.name);
+		//Log.d("ProfileDBHelper.updateProfile", "id: " + profile.id + " | name: " + profile.name);
 		openDB();
 			ContentValues values = new ContentValues();
 			values.put(ProfileDBHelper.COLUMN_SERVER, profile.server);

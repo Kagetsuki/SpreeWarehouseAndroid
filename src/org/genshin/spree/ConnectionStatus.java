@@ -37,6 +37,11 @@ public class ConnectionStatus extends SpreeConnector {
 	private void testAuth() {
 		int statusCode = 0;
 		
+		if (connector == null) {
+			status = "NOTCONNECTED";
+			return;
+		}
+		
 		HttpGet getter = getGetter("");
 		
 		try {
@@ -59,6 +64,7 @@ public class ConnectionStatus extends SpreeConnector {
 		}
 		
 		status = "NOTCONNECTED";
+		connected = false;
 	}
 	
 	@Override
