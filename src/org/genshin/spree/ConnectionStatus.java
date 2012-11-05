@@ -48,6 +48,11 @@ public class ConnectionStatus extends SpreeConnector {
 	private void testAuth() {
 		int statusCode = 0;
 		
+		if (connector == null) {
+			status = "NOTCONNECTED";
+			return;
+		}
+		
 		HttpGet getter = getGetter("");
 		status = "NotConnected";
 		
@@ -65,9 +70,18 @@ public class ConnectionStatus extends SpreeConnector {
 			status = "Error";
 		} catch (IOException e) {
 			e.printStackTrace();
+<<<<<<< HEAD
 			//Log.d("ConnectionStatus", "IOException");
 			status = "NotConnected";
 		}		
+=======
+			status = "ERROR";
+			return;
+		}
+		
+		status = "NOTCONNECTED";
+		connected = false;
+>>>>>>> origin/master
 	}
 	
 	@Override

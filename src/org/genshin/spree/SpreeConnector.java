@@ -30,8 +30,14 @@ public class SpreeConnector extends NetworkTask{
 
 	public SpreeConnector(Context ctx, Profile profile) {
 		super(ctx);
+<<<<<<< HEAD
 		//set profile
 		this.profile = profile;
+=======
+		
+		if (!checkProfile(profile))
+			return;
+>>>>>>> origin/master
 		
 		connector = new RESTConnector(ctx);
 		connector.setup(profile.server, profile.port, profile.apiKey);
@@ -39,11 +45,28 @@ public class SpreeConnector extends NetworkTask{
 	
 	public SpreeConnector(Context ctx) {
 		super(ctx);
+		
 		//set profile
-		this.profile = Warehouse.Profiles().selected;
+		this.profile = Warehouse.Profile();
+		if (!checkProfile(profile))
+			return;
 		
 		connector = new RESTConnector(ctx);
 		connector.setup(profile.server, profile.port, profile.apiKey);
+	}
+	
+	//check to make sure the profile exists and is complete
+	private Boolean checkProfile(Profile profile) {
+		if (profile == null)
+			return false;
+		
+		// check for dummy
+		if (profile.id == -1)
+			return false;
+		/*if (profile.server.compareTo("") != 0 || profile.apiKey.compareTo("") != 0)
+			return false;*/
+		
+		return true;
 	}
 
 	// Set up the Getter with the API token and proper URL
