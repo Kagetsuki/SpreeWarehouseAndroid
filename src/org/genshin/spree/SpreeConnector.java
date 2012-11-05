@@ -30,14 +30,10 @@ public class SpreeConnector extends NetworkTask{
 
 	public SpreeConnector(Context ctx, Profile profile) {
 		super(ctx);
-<<<<<<< HEAD
-		//set profile
-		this.profile = profile;
-=======
 		
+		//don't make a connector with a bad profile
 		if (!checkProfile(profile))
 			return;
->>>>>>> origin/master
 		
 		connector = new RESTConnector(ctx);
 		connector.setup(profile.server, profile.port, profile.apiKey);

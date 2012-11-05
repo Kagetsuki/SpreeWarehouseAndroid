@@ -112,21 +112,24 @@ public class WarehouseActivity extends Activity {
 		private ImageView connectionStatusIcon;
 		public ConnectionStatusIndicator(Context ctx) {
 			super(ctx);
+			connectionStatusIcon = (ImageView) findViewById(R.id.connection_status_icon);
+
+			connectionStatusIcon.setImageResource(android.R.drawable.ic_media_pause);
 		}
 
 		@Override
 		protected void complete() {
-			connectionStatusIcon = (ImageView) findViewById(R.id.connection_status_icon);
 			if (connected) {
 				connectionStatusIcon.setImageResource(R.drawable.blue_tile);
-				if (status == "OK") {
+				if (status.contentEquals("OK")) {
 					connectionStatusIcon.setImageResource(R.drawable.green_tile);
-				} else if (status == "Error"){
+				} else if (status.contentEquals("ERROR")){
 					connectionStatusIcon.setImageResource(R.drawable.orange_tile);
-				} else if (status == "NotConnected") {
+				} else if (status.contentEquals("NOTCONNECTED")) {
 					connectionStatusIcon.setImageResource(R.drawable.red_tile);
 				}
-			}
+			} else
+				connectionStatusIcon.setImageResource(R.drawable.red_tile);
 		}
 
 	}

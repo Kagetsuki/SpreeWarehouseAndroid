@@ -54,7 +54,7 @@ public class ConnectionStatus extends SpreeConnector {
 		}
 		
 		HttpGet getter = getGetter("");
-		status = "NotConnected";
+		status = "NOTCONNECTED";
 		
 		try {
 			HttpResponse response = getHttpClient().execute(getter);
@@ -67,21 +67,16 @@ public class ConnectionStatus extends SpreeConnector {
 		} catch (ClientProtocolException e) {
 			//e.printStackTrace();
 			Log.d("ConnectionStatus", "ClientProtocolException");
-			status = "Error";
+			status = "ERROR";
 		} catch (IOException e) {
 			e.printStackTrace();
-<<<<<<< HEAD
-			//Log.d("ConnectionStatus", "IOException");
-			status = "NotConnected";
-		}		
-=======
+
 			status = "ERROR";
 			return;
 		}
 		
 		status = "NOTCONNECTED";
 		connected = false;
->>>>>>> origin/master
 	}
 	
 	@Override
